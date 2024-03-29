@@ -1,5 +1,9 @@
 COMPOSE := docker compose
-COMPOSE_FILE := docker-compose.yml
+COMPOSE_FILE := compose.yaml
+
+COMPILED := backend/dist \
+			backend/node_modules \
+			frontend/node_modules
 
 all:
 	$(COMPOSE) -f $(COMPOSE_FILE) up --build
@@ -15,5 +19,6 @@ down:
 
 clean: down
 	docker system prune -f -a --volumes
+	rm -rf $(COMPILED)
 
 re: clean all
