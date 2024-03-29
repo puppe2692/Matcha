@@ -1,5 +1,5 @@
-"use strict";
-const { Pool } = require('pg');
+import { Pool } from 'pg';
+
 const pool = new Pool({
     user: 'postgres_user',
     host: 'postgres',
