@@ -101,8 +101,9 @@ class PrismaFromWish {
         }
         i += 1;
       }
+
       data = await pool.query(
-        `INSERT INTO users (${fieldsString}) VALUES (${placeholderString});`,
+        `INSERT INTO ${table} (${fieldsString}) VALUES (${placeholderString});`,
         values
       );
       return { data: data, error: false, errorMessage: null };
