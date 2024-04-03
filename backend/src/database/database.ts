@@ -1,10 +1,13 @@
 import pool from "./db_pool";
-import { Pool } from "pg";
+import { Pool, QueryResult } from "pg";
 
 // here is to define the db initialization
 
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32)";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(32), firstname VARCHAR(32), lastname VARCHAR(32), verified BOOLEAN DEFAULT FALSE";
+
+const tokenField: string =
+  "id SERIAL PRIMARY KEY, token VARCHAR(255) NOT NULL, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 hour'";
 
 class Database {
   pool: Pool;
@@ -15,16 +18,17 @@ class Database {
 
   async initDatabase(): Promise<boolean> {
     try {
-      await this.initUsersTable(); // to complete with more tables if necessary
+      await this.initTable("users", usersField);
+      await this.initTable("tokens", tokenField); // to complete with more tables if necessary
       return true;
     } catch (err) {
       return false;
     }
   }
 
-  async initUsersTable() {
+  async initTable(table: string, fields: string): Promise<void> {
     await pool.query(
-      `CREATE TABLE IF NOT EXISTS users(${usersField});` // to complete with more fields
+      `CREATE TABLE IF NOT EXISTS ${table}(${fields});` // to complete with more fields
     );
   }
 }
