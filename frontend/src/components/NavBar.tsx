@@ -52,7 +52,7 @@ const NavBar: React.FC = () => {
       className="sticky top-0 border-gray-200 bg-gray-900 z-50"
       style={{ height: NAVBAR_HEIGHT }}
     >
-      <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
+      <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-2">
         <Link
           to="/"
           className="items-center"
@@ -67,9 +67,10 @@ const NavBar: React.FC = () => {
             className="w-8 h-8 mr-3"
             alt="ft_tinder logo"
           />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
-            ft_tinder.com
-          </span>
+          <div className="flex flex-col whitespace-nowrap text-white">
+            <span className="text-2xl font-semibold">ft_tinder.com</span>
+            <span className="text-m italic">Plus tu paies, plus t'es beau</span>
+          </div>
         </Link>
         <NavLinks current={location.pathname} wideView={wideView} />
         <div
