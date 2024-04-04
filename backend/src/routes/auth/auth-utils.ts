@@ -5,6 +5,8 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
+import { PrismaReturn } from '../../data_structures/data';
 
 // Token generation
 
@@ -50,7 +52,6 @@ export async function generateMailToken(userId: Number, email: string){
 	}
 }
 
-
 export async function sendVerificationMail(email: string, subject: string, text: string) {
 	try {
 		const transporter = nodemailer.createTransport({
@@ -75,4 +76,53 @@ export async function sendVerificationMail(email: string, subject: string, text:
 		console.log("Error sending email");
 		console.log(error);
 	}
+}
+
+export async function deleteToken(token: string, userId: Number){
+	const userToken = await prismaFromWishInstance.delete(
+		"tokens",
+		["token", "user_id"],
+		[token, userId]
+	);
+	if (!userToken.data) {
+		return { error: userToken.errorMessage };
+	}
+}
+
+// Password verification
+export async function generatePasswordToken(user: PrismaReturn, email: string){
+	const token = await prismaFromWishInstance.selectAll(
+		"tokens",
+		["user_id"],
+		[user.data!.rows[0].id]
+	)	;
+	const currentTimestamp = new Date().getTime();	// Get the current timestamp
+	console.log(token);
+	if (token.data && token.data.rows.length != 0 && token.data.rows[0].expires_at.getTime() > currentTimestamp)
+		await deleteToken(user.data!.rows[0].id, token.data.rows[0].token);
+	const passToken = crypto.randomBytes(32).toString('hex');
+	const userToken = await prismaFromWishInstance.create(
+		"tokens",
+		["token", "user_id"],
+		[passToken, user.data!.rows[0].id]
+	);
+	if (!userToken.data) {
+		return { error: userToken.errorMessage };
+	} else {
+		const url = `${process.env.BASE_URL}/auth/resetpassword/${user.data!.rows[0].id}/${passToken}`;
+		await sendVerificationMail(email, "MATCHA: Reset your password", `Click on the following link to Reset your password: ${url}`);
+	}
+}
+
+// Hashing password
+
+export async function hashPassword(password: string){
+	const salt = await bcrypt.genSalt(Number(process.env.SALT));
+	const hashedPassword = await bcrypt.hash(password, salt);
+	return hashedPassword;
+}
+
+export async function comparePassword(password: string, hash: string){
+	const match = await bcrypt.compare(password, hash);
+	return match;
 }

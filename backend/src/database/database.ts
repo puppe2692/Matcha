@@ -4,7 +4,7 @@ import { Pool, QueryResult } from "pg";
 // here is to define the db initialization
 
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(32), firstname VARCHAR(32), lastname VARCHAR(32), verified BOOLEAN DEFAULT FALSE";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), verified BOOLEAN DEFAULT FALSE";
 
 const tokenField: string =
   "id SERIAL PRIMARY KEY, token VARCHAR(255) NOT NULL, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 hour'";
