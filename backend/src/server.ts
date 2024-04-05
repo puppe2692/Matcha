@@ -2,20 +2,18 @@ import express, { Express, Request, Response } from "express";
 import pool from "./database/db_pool";
 import dbInstance from "./database/database";
 import prismaFromWishInstance from "./database/prismaFromWish";
-import { io } from "./gateway/websocket";
-import { Socket } from "socket.io";
+import { WebSocket } from "./gateway/webSocket";
 
 const app: Express = express();
 app.use(express.json());
 
-export const server = app.listen(5000, () => {
+const appserver = app.listen(5000, () => {
   console.log("Server is running on port 5000");
 });
 
 dbInstance.initDatabase();
-io.on("connection", (socket: Socket) => {
-  console.log(socket.id);
-});
+
+export const webSocket = new WebSocket(appserver);
 
 //routes examples for testing database manipulation messages
 

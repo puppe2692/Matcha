@@ -9,6 +9,7 @@ export const WebSocketProvider = ({
   children: React.ReactNode;
 }) => {
   const socket = io("http://localhost:5000");
+  console.log(socket);
 
   return (
     <WebSocketContext.Provider value={socket}>
