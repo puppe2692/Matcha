@@ -3,6 +3,7 @@ import { body, validationResult, matchedData } from 'express-validator';
 import prismaFromWishInstance from "../../database/prismaFromWish";
 import passport from "passport";
 import { generateToken, generateMailToken, deleteToken, generatePasswordToken, hashPassword, comparePassword } from "./auth-utils";
+import { authJwtMiddleware } from './auth-middleware';
 
 const router = Router();	// Create a new router
 
@@ -38,7 +39,7 @@ router.post("/auth/signup", [
 router.post("/auth/signin", [
 	body("username").isLength({ min: 3, max: 32}),
 	body("password").isLength({ min: 8, max: 32}),
-	], async (request: Request, response: Response) => {
+	], authJwtMiddleware, async (request: Request, response: Response) => {
 	const errors = validationResult(request);	// Check for validation errors
 	if (!errors.isEmpty()) {
 		return response.status(400).json({ errors: errors.array() });
