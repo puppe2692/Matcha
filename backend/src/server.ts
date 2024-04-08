@@ -2,17 +2,19 @@ import express, { Express, Request, Response } from "express";
 import pool from "./database/db_pool";
 import dbInstance from "./database/database";
 import prismaFromWishInstance from "./database/prismaFromWish";
+import authRouters from "./routes/auth/auth-route";
 
 const app: Express = express();
 app.use(express.json());
+app.use(authRouters);
 
 dbInstance.initDatabase();
 
 //routes examples for testing database manipulation messages
 
-// app.get("/api", (req: Request, res: Response) => {
-//   res.json({ users: ["userOne", "userTwo", "userThree"] });
-// });
+app.get("/api", (req: Request, res: Response) => {
+  res.json({ users: ["userOne", "userTwo", "userThree"] });
+});
 
 // app.get("/api/get_all_users", async (req: Request, res: Response) => {
 //   const data = await prismaFromWishInstance.selectAll("users");
