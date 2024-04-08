@@ -4,7 +4,7 @@ import { Pool } from "pg";
 // here is to define the db initialization
 
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32)";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), CONSTRAINT unique_username UNIQUE (username), CONSTRAINT unique_email UNIQUE (email)";
 
 class Database {
   pool: Pool;

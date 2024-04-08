@@ -21,30 +21,30 @@ export const webSocket = new WebSocket(appserver);
 //   res.json({ users: ["userOne", "userTwo", "userThree"] });
 // });
 
-// app.get("/api/get_all_users", async (req: Request, res: Response) => {
-//   const data = await prismaFromWishInstance.selectAll("users");
-//   if (data.data) {
-//     res.status(200).send(data.data.rows);
-//   } else {
-//     res.status(404).send({ error: data.errorMessage });
-//   }
-// });
+app.get("/api/get_all_users", async (req: Request, res: Response) => {
+  const data = await prismaFromWishInstance.selectAll("users");
+  if (data.data) {
+    res.status(200).send(data.data.rows);
+  } else {
+    res.status(404).send({ error: data.errorMessage });
+  }
+});
 
-// app.post("/api", async (req: Request, res: Response) => {
-//   const { username, email } = req.body;
-//   const data = await prismaFromWishInstance.create(
-//     "users",
-//     ["username", "email"],
-//     [username, email]
-//   );
-//   if (data.data) {
-//     res
-//       .status(200)
-//       .send({ message: "Successfully added entry", data: data.data });
-//   } else {
-//     res.status(404).send({ error: data.errorMessage });
-//   }
-// });
+app.post("/api", async (req: Request, res: Response) => {
+  const { username, email } = req.body;
+  const data = await prismaFromWishInstance.create(
+    "users",
+    ["username", "email"],
+    [username, email]
+  );
+  if (data.data) {
+    res
+      .status(200)
+      .send({ message: "Successfully added entry", data: data.data });
+  } else {
+    res.status(404).send({ error: data.errorMessage });
+  }
+});
 
 // app.delete("/api", async (req: Request, res: Response) => {
 //   const { id } = req.body;
