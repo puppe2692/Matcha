@@ -1,35 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-
-interface User {
-  id: number;
-  name: string;
-  // Add more properties as needed
-}
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import NavBar from "./components/NavBar";
+import HomePage from "./pages/HomePage";
+import Page404 from "./pages/Page404";
+import Page1 from "./pages/Page1";
+import Page2 from "./pages/Page2";
+import ChatPage from "./pages/ChatPage";
 
 function App(): JSX.Element {
-  const [backData, setBackData] = useState<User[]>([]); // Specify the type of backData
-
-  useEffect(() => {
-    fetch('/api')
-      .then((res) => res.json())
-      .then((data: { users: string[] }) => {
-        // Assuming the response is an object with a 'users' property containing an array of strings
-        setBackData(data.users.map((name, index) => ({ id: index, name }))); // Convert user strings to User objects
-      })
-      .catch((error) => console.error('Error fetching data:', error)); // Handle fetch errors
-  }, []);
-
+  // boilerplate for a route
   return (
-    <div>
-      {backData.length === 0 ? (
-        <p>Loading...</p>
-      ) : (
-        backData.map((user) => (
-          <p key={user.id}>{user.name}</p>
-        ))
-      )}
-    </div>
+    <>
+      <NavBar />
+      <Routes>
+        <Route path="/" Component={HomePage} />
+        <Route path="/page1" Component={Page1} />
+        <Route path="/page2" Component={Page2} />
+        <Route path="/chat" Component={ChatPage} />
+        <Route path="*" Component={Page404} />
+      </Routes>
+    </>
   );
 }
 
