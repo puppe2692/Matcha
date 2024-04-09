@@ -27,7 +27,7 @@ async function signToken(userId: Number, email: String, username: String, access
 export async function generateToken(userId: Number, email: String, username: String, res: Response) {
 	const accessToken = await signToken(userId, email, username, true);
 
-	res.cookie("access_token", accessToken.JWTtoken, {
+	res.cookie('access-token', accessToken.JWTtoken, {
 		httpOnly: false,
 		secure: false,
 		sameSite: 'strict',

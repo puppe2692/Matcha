@@ -1,11 +1,19 @@
 import express, { Express, Request, Response } from "express";
 import pool from "./database/db_pool";
+import cors from "cors";
 import dbInstance from "./database/database";
 import prismaFromWishInstance from "./database/prismaFromWish";
 import authRouters from "./routes/auth/auth-route";
 
 const app: Express = express();
 app.use(express.json());
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true, // Autoriser les informations d'identification dans les requêtes
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Ajoute les méthodes HTTP nécessaires
+  allowedHeaders: ['Content-Type', 'Authorization'], // Ajoute les en-têtes CORS nécessaires
+};
+app.use(cors(corsOptions));
 app.use(authRouters);
 
 dbInstance.initDatabase();

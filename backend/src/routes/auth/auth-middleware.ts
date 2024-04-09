@@ -8,9 +8,14 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 
 
 const jwtOptions: any = {
-	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-	secretOrKey: process.env.JWT_SECRET! // Remplacez cela par votre propre clé secrète
-  };
+	jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
+		console.log(request.cookies);
+		let data =  (request as any).cookies['access-token'];
+		console.log(data);
+		return data;
+	}]),
+	secretOrKey: process.env.JWT_SECRET!, // Remplacez cela par votre propre clé secrète
+};
   
   passport.use(new JwtStrategy(jwtOptions, async (jwtPayload, done) => {
 	try {
@@ -23,9 +28,11 @@ const jwtOptions: any = {
 	  if (user.data) {
 		return done(null, user); // Si l'utilisateur est trouvé, renvoyez-le
 	  } else {
+		console.log("bonjour");
 		return done(null, false); // Sinon, indiquez qu'aucun utilisateur n'a été trouvé
 	  }
 	} catch (error) {
+		console.log("aurevoir	");
 	  return done(error, false); // En cas d'erreur, signalez une erreur
 	}
   }));
@@ -33,10 +40,10 @@ const jwtOptions: any = {
 
 export function authJwtMiddleware(request: Request, response: Response, next: any) {
 	passport.authenticate('jwt', { session: false }, (error: Error, user: PrismaReturn) => {
-		console.log(user);
+		console.log("LA" + user);
 		if (error || !user) {
-			console.log(error);
-			return response.status(401).json({ error: "Unauthorized" });
+			console.log("ICI" + error);
+			return response.status(401).json({ error: "Unauthorized ma couille" });
 		}
 		request.user = user;
 		return next();

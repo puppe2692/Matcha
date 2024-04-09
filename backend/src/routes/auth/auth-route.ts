@@ -109,7 +109,7 @@ router.get("/auth/:id/verify/:token", async (request: Request, response: Respons
 		);
 		response.json({ message: "User succesfully verified" });
 	} catch (error) {
-		response.status(500).json({ error: "Internal Server Error" });
+		response.status(500).json({ error: "Internal Server Error 1" });
 	}
 });
 
@@ -158,7 +158,7 @@ router.post("/auth/forgotpassword", [
 			}
 			response.status(200).json({ message: "Valid Url" });
 		} catch (error) {
-			response.status(500).json({ error: "Internal Server Error" });
+			response.status(500).json({ error: "Internal Server Error 2" });
 		}
 	});
 
@@ -203,7 +203,7 @@ router.post("/auth/resetpassword/:id/:token", [
 			await deleteToken(request.params.token, user.data.rows[0].id);
 			response.status(200).json({ message: "Password succesfully reset" });
 		} catch (error) {
-			response.status(500).json({ error: "Internal Server Error" });
+			response.status(500).json({ error: "Internal Server Error 3" });
 		}
 });
 
