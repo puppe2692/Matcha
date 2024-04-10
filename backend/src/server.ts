@@ -11,7 +11,7 @@ const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true, // Autoriser les informations d'identification dans les requêtes
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Ajoute les méthodes HTTP nécessaires
-  allowedHeaders: ['Content-Type', 'Authorization'], // Ajoute les en-têtes CORS nécessaires
+  //allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'], // Ajoute les en-têtes CORS nécessaires
 };
 app.use(cors(corsOptions));
 app.use(authRouters);

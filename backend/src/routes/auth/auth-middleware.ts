@@ -9,10 +9,10 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 
 const jwtOptions: any = {
 	jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
-		console.log(request.cookies);
-		let data =  (request as any).cookies['access-token'];
-		console.log(data);
-		return data;
+		console.log(request.headers.cookie);
+		let data =  (request as any).headers.cookie.split("=");
+		console.log(data[1]);
+		return data[1];
 	}]),
 	secretOrKey: process.env.JWT_SECRET!, // Remplacez cela par votre propre clé secrète
 };

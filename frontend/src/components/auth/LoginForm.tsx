@@ -37,6 +37,9 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
                 },
                 { withCredentials: true },
             );
+            console.log(response);
+            console.log(response.data);
+            console.log(response.data.user);
             loginUser(response.data.user);
             navigate('/');
         } catch (error: any) {

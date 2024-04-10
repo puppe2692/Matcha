@@ -27,11 +27,10 @@ async function signToken(userId: Number, email: String, username: String, access
 export async function generateToken(userId: Number, email: String, username: String, res: Response) {
 	const accessToken = await signToken(userId, email, username, true);
 
-	res.cookie('access-token', accessToken.JWTtoken, {
-		httpOnly: false,
+	res.cookie(process.env.JWT_ACCESS_TOKEN_COOKIE!, accessToken.JWTtoken, {
+		httpOnly: true,
 		secure: false,
 		sameSite: 'strict',
-		maxAge: 3600000,
 	});
 }
 
