@@ -27,16 +27,32 @@ class Database {
   }
 
   async initDatabase(): Promise<boolean> {
-    try {
-      await this.initTable("users", usersField);
-      await this.initTable("tokens", tokenField);
-      await this.initTable("status", statusField);
-      await this.initTable("connection", connectionField);
-      await this.initTable("messages", messageField);
-      await this.populateExample();
+    const initialized = await this.checkInit();
+    if (!initialized) {
+      try {
+        await this.initTable("users", usersField);
+        await this.initTable("tokens", tokenField);
+        await this.initTable("status", statusField);
+        await this.initTable("connection", connectionField);
+        await this.initTable("messages", messageField);
+        await this.populateExample();
+        return true;
+      } catch (err) {
+        return false;
+      }
+    } else {
       return true;
-    } catch (err) {
+    }
+  }
+
+  async checkInit(): Promise<boolean> {
+    const data = await pool.query(
+      `SELECT tablename FROM pg_tables WHERE tablename='users';`
+    );
+    if (!data.rows || data.rows.length == 0) {
       return false;
+    } else {
+      return true;
     }
   }
 

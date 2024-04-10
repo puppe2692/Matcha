@@ -12,7 +12,7 @@ export const WebSocketProvider = ({
   children: React.ReactNode;
 }) => {
   const socket = io("http://localhost:5000", {
-    query: { id: Math.floor(Math.random() * 100) },
+    query: { id: 1 },
   });
 
   return (

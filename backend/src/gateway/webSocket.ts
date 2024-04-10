@@ -23,9 +23,9 @@ export class WebSocket {
 
   startListeners = (socket: Socket) => {
     const userId: string = (socket.handshake.query?.id || "") as string;
-    console.log("connection");
-    console.log("socket id: " + socket.id);
-    console.log("user id: " + userId);
+    // console.log("connection");
+    // console.log("socket id: " + socket.id);
+    // console.log("user id: " + userId);
     if (activeUsers.has(userId)) {
       const curUser: User = activeUsers.get(userId)!;
       curUser.addSocket(socket.id);
@@ -36,8 +36,8 @@ export class WebSocket {
         const curUser: User = activeUsers.get(userId)!;
         curUser.removeSocket(socket.id);
       }
-      console.log("disconnection " + socket.id);
-      console.log("disconneced user " + userId);
+      // console.log("disconnection " + socket.id);
+      // console.log("disconneced user " + userId);
     });
 
     socket.on("chat message", (message: Message) => {
