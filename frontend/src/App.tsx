@@ -6,13 +6,14 @@ import Page404 from "./pages/Page404";
 import Page1 from "./pages/Page1";
 import Page2 from "./pages/Page2";
 import ChatPage from "./pages/ChatPage";
+import { WebSocketProvider } from "./context/WebSocketContext";
 import SigninPage from "./pages/SigninPage";
 import SignupPage from "./pages/SignupPage";
 
 function App(): JSX.Element {
   // boilerplate for a route
   return (
-    <>
+    <WebSocketProvider>
       <NavBar />
       <Routes>
         <Route path="/" Component={HomePage} />
@@ -23,7 +24,7 @@ function App(): JSX.Element {
         <Route path="/chat" Component={ChatPage} />
         <Route path="*" Component={Page404} />
       </Routes>
-    </>
+    </WebSocketProvider>
   );
 }
 
