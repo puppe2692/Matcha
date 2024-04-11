@@ -4,6 +4,7 @@ import axios from 'axios';
 
 interface Prop {
     user: User | null;
+    online: boolean;
     loginUser: (userData: User | null) => void;
     logoutUser: () => void;
     updateUser: (userData: Partial<User>) => void;
@@ -11,6 +12,7 @@ interface Prop {
 
 export const UserContext = React.createContext<Prop>({
     user: null,
+    online: false,
     loginUser: () => {},
     logoutUser: () => {},
     updateUser: () => {},
@@ -18,11 +20,12 @@ export const UserContext = React.createContext<Prop>({
 
 export const UserProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
+    const [online, setOnline] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get('/users/me', {
+                const response = await axios.get(`http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/me`, {
                     withCredentials: true,
                 });
                 setUser(response.data);
@@ -35,10 +38,12 @@ export const UserProvider = ({ children }: any) => {
 
     const loginUser = (userData: User | null) => {
         setUser(userData);
+        setOnline(true);
     };
 
     const logoutUser = () => {
         setUser(null);
+        setOnline(false);
     };
 
     const updateUser = (userData: Partial<User>) => {
@@ -52,7 +57,7 @@ export const UserProvider = ({ children }: any) => {
 
     return (
         <UserContext.Provider
-            value={{ user, loginUser, logoutUser, updateUser }}
+            value={{ user, online,  loginUser, logoutUser, updateUser }}
         >
             {children}
         </UserContext.Provider>

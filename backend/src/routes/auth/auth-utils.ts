@@ -15,7 +15,7 @@ async function signToken(userId: Number, email: String, username: String, access
 	const secret = process.env.JWT_SECRET!;
 
 	if (accessToken) {
-		const token = await jwt.sign(payload, secret , { expiresIn: "1h" });
+		const token = await jwt.sign(payload, secret , { expiresIn: "1d" });
 		return { JWTtoken: token };
 	} else {
 		const token = await jwt.sign(payload, secret , { expiresIn: "7d" });
@@ -31,6 +31,7 @@ export async function generateToken(userId: Number, email: String, username: Str
 		httpOnly: true,
 		secure: false,
 		sameSite: 'strict',
+		maxAge: 3600000,
 	});
 }
 
