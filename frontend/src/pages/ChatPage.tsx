@@ -18,7 +18,10 @@ export interface Message {
   seen: boolean;
 }
 
-const userId = 3;
+//211 px is the sum of the navbar (72), the header (64) and the footer (75)
+// need to be entered manually or else tailwind doesn't work
+
+const userId = 4;
 
 const ChatPage: React.FC = () => {
   const [message, setMessage] = React.useState("");
@@ -46,7 +49,7 @@ const ChatPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log("contact selected " + selectedContact?.connectedUserId);
+    console.log("fetching messages");
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
@@ -62,32 +65,60 @@ const ChatPage: React.FC = () => {
       }
     };
     fetchMessages();
-  }, [selectedContact]);
+  }, []);
 
   const sendMessage = () => {
     if (!message) return;
-    // socket?.emit("chat message", message);
-    // setMessages((messages) => [...messages, { content: message, senderId: userId }]);
-    // setMessage("");
+    socket?.emit("chat message", {
+      content: message,
+      sender_id: userId,
+      receiver_id: selectedContact!.connectedUserId,
+    });
+    setMessages((messages) => [
+      ...messages,
+      {
+        sender_id: userId,
+        receiver_id: selectedContact!.connectedUserId,
+        date_sent: new Date(),
+        content: message,
+        seen: false,
+      },
+    ]);
+    setContacts((prevContacts) =>
+      prevContacts
+        .map((contact) =>
+          contact.connectedUserId === selectedContact!.connectedUserId
+            ? { ...contact, date: new Date() }
+            : contact
+        )
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    );
+    setMessage("");
   };
 
-  // useEffect(() => {
-  //   const handleMessageReception = (message: string) => {
-  //     setMessages((messages) => [
-  //       ...messages,
-  //       { text: message, sender: "other" },
-  //     ]);
-  //   };
-  //   socket?.on("receive-message", handleMessageReception);
+  useEffect(() => {
+    const handleMessageReception = (message: Message) => {
+      setMessages((messages) => [...messages, message]);
+      setContacts((prevContacts) =>
+        prevContacts
+          .map((contact) =>
+            contact.connectedUserId === message.sender_id
+              ? { ...contact, date: new Date() }
+              : contact
+          )
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
+      );
+    };
+    socket?.on("receive-message", handleMessageReception);
 
-  //   return () => {
-  //     socket?.off("receive-message", handleMessageReception);
-  //   };
-  // }, [socket]);
+    return () => {
+      socket?.off("receive-message", handleMessageReception);
+    };
+  }, [socket]);
 
   return (
     <div
-      className="flex overflow-hidden"
+      className="flex"
       style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
     >
       <ChatSidebar contacts={contacts} onSelectContact={setSelectedContact} />
@@ -97,7 +128,7 @@ const ChatPage: React.FC = () => {
             {selectedContact?.connectedUser || ""}
           </h1>
         </header>
-        <div className="overflow-y-auto h-full p-4 pb-36">
+        <div className="overflow-hidden overflow-y-auto p-1 h-[calc(100vh-211px)]">
           {messages
             .filter(
               (msg) =>

@@ -1,11 +1,6 @@
 import { Server as HTTPServer } from "http";
 import { Socket, Server as SocketServer } from "socket.io";
-import { activeUsers, User } from "../users/user";
-
-interface Message {
-  content: string;
-  recipient: string;
-}
+import { Message, chatServices } from "../routes/chat/chat-service";
 
 export class WebSocket {
   io: SocketServer;
@@ -26,41 +21,49 @@ export class WebSocket {
     // console.log("connection");
     // console.log("socket id: " + socket.id);
     // console.log("user id: " + userId);
-    if (activeUsers.has(userId)) {
-      const curUser: User = activeUsers.get(userId)!;
-      curUser.addSocket(socket.id);
+    if (userId !== "") {
+      socket.join(userId);
     }
 
     socket.on("disconnect", () => {
-      if (activeUsers.has(userId)) {
-        const curUser: User = activeUsers.get(userId)!;
-        curUser.removeSocket(socket.id);
+      if (userId !== "") {
+        socket.leave(userId);
       }
       // console.log("disconnection " + socket.id);
       // console.log("disconneced user " + userId);
     });
 
-    socket.on("chat message", (message: Message) => {
-      socket.broadcast.emit("receive-message", {
-        content: message.content,
-        sender: activeUsers.get(userId)?.username,
-      });
-      console.log(message);
+    socket.on("chat message", ({ content, sender_id, receiver_id }) => {
+      const message: Message = {
+        sender_id: sender_id,
+        receiver_id: receiver_id,
+        date_sent: new Date(),
+        content: content,
+        seen: false,
+      };
+      chatServices.pushMessage(message);
+      socket
+        .to(message.receiver_id.toString())
+        .to(message.sender_id.toString())
+        .emit("receive-message", message);
     });
 
     socket.on("login", (userId: string) => {
-      if (activeUsers.has(userId)) {
-        const curUser: User = activeUsers.get(userId)!;
-        curUser.addSocket(socket.id);
-      }
+      socket.join(userId);
     });
 
     socket.on("logout", (userId: string) => {
-      if (activeUsers.has(userId)) {
-        const curUser: User = activeUsers.get(userId)!;
-        curUser.removeAllSockets();
+      if (userId !== "") {
+        socket.leave(userId);
+        const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
+        if (socketsInRoom) {
+          socketsInRoom.forEach((socketId) => {
+            const socket = this.io.sockets.sockets.get(socketId);
+            socket!.leave(userId);
+          });
+        }
       }
-      userId = "-1";
+      userId = "";
     });
   };
 }

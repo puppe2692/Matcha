@@ -36,7 +36,7 @@ const ChatSidebar: React.FC<{
       <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white shadow-md">
         <h1 className="text-2xl font-semibold">Chats</h1>
       </header>
-      <div className="overflow-y-auto h-full p-3 mb-9 pb-20">
+      <div className="overflow-y-auto h-[calc(100vh-211px)] p-3 mb-9 pb-20">
         {contacts.map((contact, index) => (
           <ChatContact
             key={index}
