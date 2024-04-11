@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import pool from "./database/db_pool";
+import cors from "cors";
 import dbInstance from "./database/database";
 import prismaFromWishInstance from "./database/prismaFromWish";
 import { WebSocket } from "./gateway/webSocket";
