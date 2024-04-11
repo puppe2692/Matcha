@@ -18,7 +18,8 @@ class PrismaFromWish {
   async selectAll(
     table: string,
     conditions?: string[],
-    values?: any[]
+    values?: any[],
+    keyword: string = "AND"
   ): Promise<PrismaReturn> {
     var data: QueryResult;
 
@@ -32,7 +33,7 @@ class PrismaFromWish {
           if (i == 1) {
             whereClause += `${key} = $${i}`;
           } else {
-            whereClause += ` AND ${key} = $${i}`;
+            whereClause += ` ${keyword} ${key} = $${i}`;
           }
           i += 1;
         }
@@ -51,7 +52,8 @@ class PrismaFromWish {
     table: string,
     limit: number,
     conditions?: string[],
-    values?: any[]
+    values?: any[],
+    keyword: string = "AND"
   ): Promise<PrismaReturn> {
     var data: QueryResult;
 
@@ -65,7 +67,7 @@ class PrismaFromWish {
           if (i == 1) {
             whereClause += `${key} = $${i}`;
           } else {
-            whereClause += ` AND ${key} = $${i}`;
+            whereClause += ` ${keyword} ${key} = $${i}`;
           }
           i += 1;
         }
@@ -174,6 +176,17 @@ class PrismaFromWish {
         `UPDATE ${table} SET ${modifyFields} WHERE ${whereClause};`,
         newValues.concat(conditionValues)
       );
+      return { data: data, error: false, errorMessage: null };
+    } catch (error: any) {
+      return { data: null, error: true, errorMessage: error.message };
+    }
+  }
+
+  async customQuery(query: string, values: any[]): Promise<PrismaReturn> {
+    var data: QueryResult;
+
+    try {
+      data = await pool.query(query, values);
       return { data: data, error: false, errorMessage: null };
     } catch (error: any) {
       return { data: null, error: true, errorMessage: error.message };

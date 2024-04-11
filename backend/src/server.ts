@@ -5,17 +5,21 @@ import dbInstance from "./database/database";
 import prismaFromWishInstance from "./database/prismaFromWish";
 import { WebSocket } from "./gateway/webSocket";
 import authRouters from "./routes/auth/auth-route";
+import chatRouter from "./routes/chat/chat-controller";
+import cors from "cors";
 
 const app: Express = express();
 app.use(express.json());
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: "http://localhost:3000",
   credentials: true, // Autoriser les informations d'identification dans les requêtes
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Ajoute les méthodes HTTP nécessaires
-  //allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'], // Ajoute les en-têtes CORS nécessaires
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Ajoute les méthodes HTTP nécessaires
+  allowedHeaders: ["Content-Type", "Authorization"], // Ajoute les en-têtes CORS nécessaires
 };
 app.use(cors(corsOptions));
+
 app.use(authRouters);
+app.use("/chat", chatRouter);
 
 const appserver = app.listen(5000, () => {
   console.log("Server is running on port 5000");
