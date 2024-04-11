@@ -1,11 +1,9 @@
-import { Router, Response, Request } from 'express';
-import { body, validationResult, matchedData } from 'express-validator';
+import { Router, Response, Request } from "express";
+import { body, validationResult, matchedData } from "express-validator";
 import prismaFromWishInstance from "../../database/prismaFromWish";
 import passport from "passport";
-import { PrismaReturn } from '../../data_structures/data';
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-
-
+import { PrismaReturn } from "../../data_structures/data";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 
 const jwtOptions: any = {
 	jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
