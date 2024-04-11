@@ -6,7 +6,21 @@ import { generateToken, generateMailToken, deleteToken, generatePasswordToken, h
 import { authJwtMiddleware } from './auth-middleware';
 
 const router = Router();	// Create a new router
+interface CustomUser {
+	id: number;
+	email: string;
+	username: string;
+	password?: string;
+	firstname: string;
+	lastname: string;
+	verify: boolean;
+	connection_status: boolean;
+	created_at: Date;
+	updated_at: Date;
+}
 
+
+// signup, signin, logout
 router.post("/auth/signup", [
 	body("email").isEmail(),
 	body("password").isLength({ min: 8, max: 32}),
@@ -30,7 +44,8 @@ router.post("/auth/signup", [
 	} else {
 		console.log(user.data);
 		await generateToken(user.data.rows[0].id, data.email, data.username, response)
-		response.json({ message: "User succesfully created, an email as been sent to you to verify your account" });
+		delete user.data.rows[0].password;
+		response.status(200).json({ message: "User succesfully created, an email as been sent to you to verify your account", user: user.data.rows[0] });
 		}
 		await generateMailToken(user.data.rows[0].id, data.email);
 	}
@@ -39,7 +54,7 @@ router.post("/auth/signup", [
 router.post("/auth/signin", [
 	body("username").isLength({ min: 3, max: 32}),
 	body("password").isLength({ min: 8, max: 32}),
-	], authJwtMiddleware, async (request: Request, response: Response) => {
+	], async (request: Request, response: Response) => {
 	const errors = validationResult(request);	// Check for validation errors
 	if (!errors.isEmpty()) {
 		return response.status(400).json({ errors: errors.array() });
@@ -56,25 +71,54 @@ router.post("/auth/signin", [
 		!await comparePassword(data.password, user.data!.rows[0].password)) {
 			return response.status(400).json({ error: "Invalid credentials" });
 	} else {
-		if (!user.data.rows[0].verified) {
-			const token = await prismaFromWishInstance.selectAll(
-				"tokens",
-				["user_id"],
-				[user.data.rows[0].id]
-			)	;
-			const currentTimestamp = new Date().getTime();	// Get the current timestamp
-			if (!token.data || token.data.rows[0].expires_at.getTime() > currentTimestamp) {
-				if (token.data && token.data.rows[0].expires_at.getTime() > currentTimestamp)
-					await deleteToken(user.data.rows[0].id, token.data.rows[0].token);
-				await generateMailToken(user.data.rows[0].id, user.data.rows[0].email);
-			}
-			return response.status(400).json({ error: "User not verified" });
-		}
+		// if (!user.data.rows[0].verified) {
+		// 	const token = await prismaFromWishInstance.selectAll(
+		// 		"tokens",
+		// 		["user_id"],
+		// 		[user.data.rows[0].id]
+		// 	);
+		// 	const currentTimestamp = new Date().getTime();	// Get the current timestamp
+		// 	if (!token.data || token.data.rows[0].expires_at.getTime() > currentTimestamp) {
+		// 		if (token.data && token.data.rows[0].expires_at.getTime() > currentTimestamp)
+		// 			await deleteToken(user.data.rows[0].id, token.data.rows[0].token);
+		// 		await generateMailToken(user.data.rows[0].id, user.data.rows[0].email);
+		// 	}
+		// 	return response.status(400).json({ error: "User not verified" });
+		// }
+
 		await generateToken(user.data.rows[0].id, user.data.rows[0].email, user.data.rows[0].username, response)
-		response.json({ message: "User succesfully signed in" });
+		await prismaFromWishInstance.update(
+			"users",
+			["connection_status"],
+			[true],
+			["id"],
+			[user.data.rows[0].id],
+		);
+		delete user.data.rows[0].password;
+		response.status(200).json({ message: "User succesfully signed in", user: user.data.rows[0] });
 		}
 	}
 )
+
+router.get("/auth/logout", authJwtMiddleware, async (request: Request, response: Response) => {
+	try {
+			await prismaFromWishInstance.update(
+				"users",
+				["connection_status"],
+				[false],
+				["id"],
+				[(request.user! as CustomUser).id],
+			);
+			response.clearCookie(process.env.JWT_ACCESS_TOKEN_COOKIE!, {
+				httpOnly: true,
+				secure: false,
+				sameSite: "strict",
+			});
+		response.status(200).json({ message: "User succesfully signed out" });
+	} catch (error) {
+		response.status(500).json({ error: "Logout: Internal Server Error" });
+	}
+});
 
 // Verify user
 router.get("/auth/:id/verify/:token", async (request: Request, response: Response) => {
@@ -95,13 +139,15 @@ router.get("/auth/:id/verify/:token", async (request: Request, response: Respons
 		if (!token.data || token.data.rows.length == 0) {
 			return response.status(400).json({ error: "Invalid link" });
 		}
+		// ici
 		await prismaFromWishInstance.update(
-			"users",
-			["verified"],
-			[true],
-			["id"],
-			[request.params.id],
+				"users",
+				["verified"],
+				[true],
+				["id"],
+				[request.params.id],
 		);
+
 		await prismaFromWishInstance.delete(
 			"tokens",
 			["token", "user_id"],
@@ -119,7 +165,6 @@ router.post("/auth/forgotpassword", [
 	], async (request: Request, response: Response) => {
 	const errors = validationResult(request);	// Check for validation errors
 	if (!errors.isEmpty()) {
-		console.log("BONJOUR");
 		return response.status(400).json({ errors: errors.array() });
 	}
 	const data = matchedData(request);	// Sanitize the data

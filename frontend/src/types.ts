@@ -1,11 +1,11 @@
 export type User = {
-    id: number;
-    nickname: string;
-    createdAt: Date;
-    email: string;
-    elo: number;
-    loginNb: number;
-    twoFactorAuthentication: boolean;
-    achievements: string[];
-    updateAvatar: undefined | boolean;
+	id: number;
+	email: string;
+	username: string;
+	firstname: string;
+	lastname: string;
+	verify: boolean;
+	connection_status: boolean;
+	created_at: Date;
+	updated_at: Date;
 };

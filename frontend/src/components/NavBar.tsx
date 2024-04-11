@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NAVBAR_HEIGHT, NAVBAR_BREAKPOINT, CORNERS_WIDTH } from "../data/const";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useWindowSize } from "usehooks-ts";
 import NavLink from "./NavLink";
 import { ChatIcon } from "../utils/icons";
 import { NavBarButton } from "./Buttons";
+import { useUserContext } from '../context/UserContext';
 import UserMenu from "./UserMenu";
 
 const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
@@ -46,6 +47,17 @@ const NavBar: React.FC = () => {
   const { width } = useWindowSize();
   const wideView: boolean = !!(width && width >= NAVBAR_BREAKPOINT);
   const [user, setUser] = useState(false);
+  const { user: currentUser } = useUserContext();
+
+  useEffect(() => {
+    // Update user state when currentUser changes
+    console.log("currentUser: ", currentUser);
+    setUser(!!currentUser);
+  }, [currentUser]);
+
+  const isSignIn = location.pathname === "/signin";
+  const isSignUp = location.pathname === "/signup";
+
 
   return (
     <nav
@@ -76,28 +88,33 @@ const NavBar: React.FC = () => {
             <span className="text-m italic">Plus tu paies, plus t'es beau</span>
           </div>
         </Link>
-        <NavLinks current={location.pathname} wideView={wideView} />
-        <div
-          className="flex items-center justify-end space-x-4"
-          style={wideView ? { width: CORNERS_WIDTH } : {}}
-        >
-          <button
-            onClick={() => navigate("/chat")}
-            className="w-6 h-6 hover:scale-110"
-          >
-            <ChatIcon />
-          </button>
-          {user ? (
-            <UserMenu wideView={wideView} updateUserStatus={setUser} />
-          ) : (
-            <NavBarButton
-              text="Sign In"
-              onClick={() => {
-                setUser((prevUser) => !prevUser);
-              }}
-            />
-          )}
-        </div>
+        {!isSignIn && !isSignUp && (
+          <>
+            <NavLinks current={location.pathname} wideView={wideView} />
+            <div
+              className="flex items-center justify-end space-x-4"
+              style={wideView ? { width: CORNERS_WIDTH } : {}}
+            >
+              <button
+                onClick={() => navigate("/chat")}
+                className="w-6 h-6 hover:scale-110"
+              >
+                <ChatIcon />
+              </button>
+              {user ? (
+                <UserMenu wideView={wideView} updateUserStatus={setUser} />
+              ) : (
+                <NavBarButton
+                  text="Sign In"
+                  onClick={() => {
+                    setUser((prevUser) => !prevUser);
+                    navigate("/signin");
+                  }}
+                />
+              )}
+            </div>
+          </>
+        )}
       </div>
     </nav>
   );

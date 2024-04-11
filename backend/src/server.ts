@@ -5,6 +5,7 @@ import dbInstance from "./database/database";
 import prismaFromWishInstance from "./database/prismaFromWish";
 import { WebSocket } from "./gateway/webSocket";
 import authRouters from "./routes/auth/auth-route";
+import userRouters from "./routes/user/user-route";
 
 const app: Express = express();
 app.use(express.json());
@@ -16,6 +17,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(authRouters);
+app.use(userRouters);
 
 const appserver = app.listen(5000, () => {
   console.log("Server is running on port 5000");
