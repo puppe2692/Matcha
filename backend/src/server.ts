@@ -8,11 +8,10 @@ import authRouters from "./routes/auth/auth-route";
 import userRouters from "./routes/user/user-route";
 import chatRouter from "./routes/chat/chat-controller";
 
-
 const app: Express = express();
 app.use(express.json());
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: `http://${process.env.REACT_APP_SERVER_ADDRESS}:3000`,
   credentials: true, // Autoriser les informations d'identification dans les requêtes
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Ajoute les méthodes HTTP nécessaires
   allowedHeaders: ["Content-Type", "Authorization"], // Ajoute les en-têtes CORS nécessaires
