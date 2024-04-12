@@ -11,22 +11,10 @@ import {
   comparePassword,
 } from "./auth-utils";
 import { authJwtMiddleware } from "./auth-middleware";
+import { CustomUser } from "../../interfaces";
 import { activeUsers, User } from "../../users/user";
 
 const router = Router();	// Create a new router
-interface CustomUser {
-	id: number;
-	email: string;
-	username: string;
-	password?: string;
-	firstname: string;
-	lastname: string;
-	verify: boolean;
-	connection_status: boolean;
-	created_at: Date;
-	updated_at: Date;
-}
-
 
 // signup, signin, logout
 router.post("/auth/signup", [
