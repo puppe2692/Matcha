@@ -219,7 +219,7 @@ const ChatPage: React.FC = () => {
                       </div>
                     )}
                     <div
-                      className={`flex max-w-[calc(1/2*100vw)] rounded-lg p-3 gap-3 break-all ${
+                      className={`flex max-w-[calc(1/2*100vw)] rounded-lg p-3 gap-3 [overflow-wrap:anywhere] ${
                         msg.sender_id === user?.id
                           ? "bg-blue-500 text-white"
                           : "bg-gray-200 text-gray-700"

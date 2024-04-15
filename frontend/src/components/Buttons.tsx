@@ -26,23 +26,22 @@ export const ChatButton: React.FC<{
     <button
       type="button"
       onClick={onClick}
-      className="relative inline-flex items-center p-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      className="relative flex items-center text-sm font-medium text-center text-white rounded-lg hover:text-gray-300 hover:scale-110 mx-auto"
     >
       <svg
-        className="w-4 h-4"
+        className="w-6 h-6"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
-        fill="currentColor"
-        viewBox="0 0 20 16"
+        fill="white"
+        viewBox="0 0 512 512"
       >
-        <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z" />
-        <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z" />
+        <path d="M256 352c-16.53 0-33.06-5.422-47.16-16.41L0 173.2V400C0 426.5 21.49 448 48 448h416c26.51 0 48-21.49 48-48V173.2l-208.8 162.5C289.1 346.6 272.5 352 256 352zM16.29 145.3l212.2 165.1c16.19 12.6 38.87 12.6 55.06 0l212.2-165.1C505.1 137.3 512 125 512 112C512 85.49 490.5 64 464 64h-416C21.49 64 0 85.49 0 112C0 125 6.01 137.3 16.29 145.3z" />
       </svg>
-      <span className="sr-only">Notifications</span>
+      <span className="sr-only">Messages</span>
       {unread > 0 && (
         <div
-          className={`absolute inline-flex items-center justify-center w-6 h-6 ${
-            unread >= 100 ? "text-[10px]" : "text-xs"
+          className={`absolute inline-flex items-center justify-center w-5 h-5 ${
+            unread >= 100 ? "text-[7px]" : "text-[10px]"
           } font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900`}
         >
           {unread >= 100 ? "99+" : unread}

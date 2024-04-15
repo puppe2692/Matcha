@@ -128,7 +128,10 @@ export class chatServices {
     );
   }
 
-  static async readMessages(senderId: number, receiverId: number) {
+  static async readMessages(
+    senderId: number,
+    receiverId: number
+  ): Promise<string> {
     try {
       const readCount = await prismaFromWishInstance.selectAll(
         "messages",

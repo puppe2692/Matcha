@@ -8,6 +8,7 @@ import { useUserContext } from "../context/UserContext";
 import UserMenu from "./UserMenu";
 import axios from "axios";
 import { useWebSocketContext } from "../context/WebSocketContext";
+import NotificationMenu from "./NotificationMenu";
 
 const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
   current,
@@ -126,12 +127,13 @@ const NavBar: React.FC = () => {
               className="flex items-center justify-end space-x-4"
               style={wideView ? { width: CORNERS_WIDTH } : {}}
             >
+              <NotificationMenu />
               <ChatButton
                 onClick={() => navigate("/chat")}
                 unread={unreadCount}
               />
               {user ? (
-                <UserMenu wideView={wideView} />
+                <UserMenu />
               ) : (
                 <NavBarButton
                   text="Sign In"

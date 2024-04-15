@@ -33,20 +33,31 @@ export class WebSocket {
       console.log("disconnected user " + userId);
     });
 
-    socket.on("chat message", ({ content, sender_id, receiver_id }) => {
-      const message: Message = {
-        sender_id: sender_id,
-        receiver_id: receiver_id,
-        date_sent: new Date(),
-        content: content,
-        seen: false,
-      };
-      chatServices.pushMessage(message);
-      socket
-        .to(message.receiver_id.toString())
-        .to(message.sender_id.toString())
-        .emit("receive-message", message);
-    });
+    socket.on(
+      "chat message",
+      ({
+        content,
+        sender_id,
+        receiver_id,
+      }: {
+        content: string;
+        sender_id: number;
+        receiver_id: number;
+      }) => {
+        const message: Message = {
+          sender_id: sender_id,
+          receiver_id: receiver_id,
+          date_sent: new Date(),
+          content: content,
+          seen: false,
+        };
+        chatServices.pushMessage(message);
+        socket
+          .to(message.receiver_id.toString())
+          .to(message.sender_id.toString())
+          .emit("receive-message", message);
+      }
+    );
 
     socket.on("login", (userId: string) => {
       if (userId && userId !== "") {
@@ -70,8 +81,16 @@ export class WebSocket {
   };
 
   readMessages = (userId: string, readCount: number) => {
-    console.log("userid " + userId);
-    console.log("readcount " + readCount);
     this.io.in(userId).emit("notify-read", readCount);
+  };
+
+  sendNotification = (userId: string, notification: string) => {
+    this.io
+      .in(userId)
+      .emit("notification", {
+        content: notification,
+        date: new Date(),
+        seen: false,
+      });
   };
 }
