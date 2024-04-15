@@ -8,7 +8,7 @@ export class WebSocket {
   constructor(appserver: HTTPServer) {
     this.io = new SocketServer(appserver, {
       cors: {
-        origin: ["http://localhost:3000"],
+        origin: [`http://${process.env.REACT_APP_SERVER_ADDRESS}:3000`],
         methods: ["GET", "POST", "DELETE", "PUT"],
       },
     });
@@ -18,19 +18,19 @@ export class WebSocket {
 
   startListeners = (socket: Socket) => {
     const userId: string = (socket.handshake.query?.id || "") as string;
-    // console.log("connection");
-    // console.log("socket id: " + socket.id);
-    // console.log("user id: " + userId);
-    if (userId !== "") {
+    console.log("--------\nconnection");
+    console.log("socket id: " + socket.id);
+    console.log("user id: " + userId);
+    if (userId && userId !== "") {
       socket.join(userId);
     }
 
     socket.on("disconnect", () => {
-      if (userId !== "") {
+      if (userId && userId !== "") {
         socket.leave(userId);
       }
-      // console.log("disconnection " + socket.id);
-      // console.log("disconneced user " + userId);
+      console.log("--------\ndisconnection " + socket.id);
+      console.log("disconnected user " + userId);
     });
 
     socket.on("chat message", ({ content, sender_id, receiver_id }) => {
@@ -49,11 +49,13 @@ export class WebSocket {
     });
 
     socket.on("login", (userId: string) => {
-      socket.join(userId);
+      if (userId && userId !== "") {
+        socket.join(userId);
+      }
     });
 
     socket.on("logout", (userId: string) => {
-      if (userId !== "") {
+      if (userId && userId !== "") {
         socket.leave(userId);
         const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
         if (socketsInRoom) {
@@ -65,5 +67,11 @@ export class WebSocket {
       }
       userId = "";
     });
+  };
+
+  readMessages = (userId: string, readCount: number) => {
+    console.log("userid " + userId);
+    console.log("readcount " + readCount);
+    this.io.in(userId).emit("notify-read", readCount);
   };
 }

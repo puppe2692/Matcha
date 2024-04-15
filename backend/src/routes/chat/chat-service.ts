@@ -1,11 +1,13 @@
 import { Request } from "express";
 import { PrismaReturn } from "../../data_structures/data";
 import prismaFromWishInstance from "../../database/prismaFromWish";
+import { webSocket } from "../../server";
 
 export interface Contact {
   connectedUser: string;
   connectedUserId: number;
   date: Date;
+  unreadMessages: number;
 }
 
 export interface Message {
@@ -21,20 +23,21 @@ export class chatServices {
     const userId = parseInt(request.query.id as string);
     const connections = await prismaFromWishInstance.customQuery(
       `SELECT
-		connection.id,
-		origin_user_id,
-		destination_user_id,
-		date,
-		u1.username AS origin_user_username,
-		u2.username AS destination_user_username
-	FROM
-		connection
-	JOIN
-		users u1 ON connection.origin_user_id = u1.id
-	JOIN
-		users u2 ON connection.destination_user_id = u2.id
-	WHERE
-		connection.origin_user_id = $1 OR connection.destination_user_id = $1;`,
+      connection.id,
+      origin_user_id,
+      destination_user_id,
+      date,
+      u1.username AS origin_user_username,
+      u2.username AS destination_user_username,
+      ( SELECT COUNT(*) from messages where receiver_id = $1 and seen = false and (sender_id = origin_user_id or sender_id = destination_user_id) ) as unread_messages
+    FROM
+      connection
+    JOIN
+      users u1 ON connection.origin_user_id = u1.id
+    JOIN
+      users u2 ON connection.destination_user_id = u2.id
+    WHERE
+      connection.origin_user_id = $1 OR connection.destination_user_id = $1;`,
       [userId]
     );
     if (!connections.data?.rows) {
@@ -48,12 +51,14 @@ export class chatServices {
             connectedUser: row.destination_user_username,
             connectedUserId: row.destination_user_id,
             date: row.date,
+            unreadMessages: row.unread_messages,
           });
         } else {
           data.push({
             connectedUser: row.origin_user_username,
             connectedUserId: row.origin_user_id,
             date: row.date,
+            unreadMessages: row.unread_messages,
           });
         }
       }
@@ -77,6 +82,20 @@ export class chatServices {
         ({ id, ...rest }) => rest
       );
       return messages.data.rows;
+    }
+  }
+
+  static async getUnreadCount(request: Request): Promise<Number> {
+    const userId = parseInt(request.query.id as string);
+    const messages = await prismaFromWishInstance.selectAll(
+      "messages",
+      ["receiver_id", "seen"],
+      [userId, false]
+    );
+    if (!messages.data?.rows) {
+      return 0;
+    } else {
+      return messages.data.rows.length;
     }
   }
 
@@ -107,5 +126,31 @@ export class chatServices {
       ["origin_user_id", "destination_user_id"],
       [origin_user_id, destination_user_id]
     );
+  }
+
+  static async readMessages(senderId: number, receiverId: number) {
+    try {
+      const readCount = await prismaFromWishInstance.selectAll(
+        "messages",
+        ["seen", "sender_id", "receiver_id"],
+        [false, senderId, receiverId]
+      );
+      if (readCount.data?.rows.length !== 0) {
+        webSocket.readMessages(
+          receiverId.toString(),
+          readCount.data!.rows!.length
+        );
+        await prismaFromWishInstance.update(
+          "messages",
+          ["seen"],
+          [true],
+          ["sender_id", "receiver_id"],
+          [senderId, receiverId]
+        );
+      }
+      return "Messages successfully read";
+    } catch (error) {
+      return "Failed to update messages status";
+    }
   }
 }

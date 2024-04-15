@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Link } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
 
 const MenuLink: React.FC<{
   text: string;
@@ -22,10 +23,10 @@ const MenuLink: React.FC<{
 
 const UserMenu: React.FC<{
   wideView: boolean;
-  updateUserStatus: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ wideView, updateUserStatus }) => {
+}> = ({ wideView }) => {
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
   const [showInfo, setShowInfo] = useState<boolean>(true);
+  const { logoutUser } = useUserContext();
   const size = 8;
 
   return (
@@ -78,7 +79,7 @@ const UserMenu: React.FC<{
                   href="/signout"
                   onClick={() => {
                     setUserMenuOpen((prevval) => !prevval);
-                    updateUserStatus(false);
+                    logoutUser();
                   }}
                 />
               </ul>
