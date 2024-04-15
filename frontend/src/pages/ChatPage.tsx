@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { useWebSocketContext } from "../context/WebSocketContext";
 import { NAVBAR_HEIGHT } from "../data/const";
 import ChatSidebar from "../components/ChatSidebar";
@@ -9,6 +9,7 @@ export interface Contact {
   connectedUser: string;
   connectedUserId: number;
   date: Date;
+  unreadMessages: number;
 }
 
 export interface Message {
@@ -31,7 +32,7 @@ const ChatPage: React.FC = () => {
   const socket = useWebSocketContext();
   const { user } = useUserContext();
 
-  const readMessages = async () => {
+  const readMessages = useCallback(async () => {
     if (!user || !selectedContact) return;
     try {
       await axios.put(
@@ -45,7 +46,7 @@ const ChatPage: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [user, selectedContact]);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -112,7 +113,7 @@ const ChatPage: React.FC = () => {
       prevContacts
         .map((contact) =>
           contact.connectedUserId === selectedContact!.connectedUserId
-            ? { ...contact, date: new Date() }
+            ? { ...contact, date: new Date(), unreadMessages: 0 }
             : contact
         )
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -123,7 +124,14 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
     readMessages();
-  }, [selectedContact]);
+    setContacts((prevContacts) =>
+      prevContacts.map((contact) =>
+        contact.connectedUserId === selectedContact!.connectedUserId
+          ? { ...contact, date: new Date(), unreadMessages: 0 }
+          : contact
+      )
+    );
+  }, [selectedContact, readMessages]);
 
   useEffect(() => {
     const handleMessageReception = (message: Message) => {
@@ -132,7 +140,11 @@ const ChatPage: React.FC = () => {
         prevContacts
           .map((contact) =>
             contact.connectedUserId === message.sender_id
-              ? { ...contact, date: new Date() }
+              ? {
+                  ...contact,
+                  date: new Date(),
+                  unreadMessages: contact.unreadMessages + 1,
+                }
               : contact
           )
           .sort(

@@ -7,6 +7,7 @@ export interface Contact {
   connectedUser: string;
   connectedUserId: number;
   date: Date;
+  unreadMessages: number;
 }
 
 export interface Message {
@@ -17,43 +18,26 @@ export interface Message {
   seen: boolean;
 }
 
-// this command would allow to get unread messages per contact
-// SELECT
-// 		connection.id,
-// 		origin_user_id,
-// 		destination_user_id,
-// 		date,
-// 		u1.username AS origin_user_username,
-// 		u2.username AS destination_user_username,
-// 		( SELECT COUNT(*) from messages where receiver_id = $1 and seen = false and (sender_id = origin_user_id or sender_id = destination_user_id) ) as unread_messages
-// 	FROM
-// 		connection
-// 	JOIN
-// 		users u1 ON connection.origin_user_id = u1.id
-// 	JOIN
-// 		users u2 ON connection.destination_user_id = u2.id
-// 	WHERE
-// 		connection.origin_user_id = $1 OR connection.destination_user_id = $1;
-
 export class chatServices {
   static async getContacts(request: Request): Promise<Contact[]> {
     const userId = parseInt(request.query.id as string);
     const connections = await prismaFromWishInstance.customQuery(
       `SELECT
-		connection.id,
-		origin_user_id,
-		destination_user_id,
-		date,
-		u1.username AS origin_user_username,
-		u2.username AS destination_user_username
-	FROM
-		connection
-	JOIN
-		users u1 ON connection.origin_user_id = u1.id
-	JOIN
-		users u2 ON connection.destination_user_id = u2.id
-	WHERE
-		connection.origin_user_id = $1 OR connection.destination_user_id = $1;`,
+      connection.id,
+      origin_user_id,
+      destination_user_id,
+      date,
+      u1.username AS origin_user_username,
+      u2.username AS destination_user_username,
+      ( SELECT COUNT(*) from messages where receiver_id = $1 and seen = false and (sender_id = origin_user_id or sender_id = destination_user_id) ) as unread_messages
+    FROM
+      connection
+    JOIN
+      users u1 ON connection.origin_user_id = u1.id
+    JOIN
+      users u2 ON connection.destination_user_id = u2.id
+    WHERE
+      connection.origin_user_id = $1 OR connection.destination_user_id = $1;`,
       [userId]
     );
     if (!connections.data?.rows) {
@@ -67,12 +51,14 @@ export class chatServices {
             connectedUser: row.destination_user_username,
             connectedUserId: row.destination_user_id,
             date: row.date,
+            unreadMessages: row.unread_messages,
           });
         } else {
           data.push({
             connectedUser: row.origin_user_username,
             connectedUserId: row.origin_user_id,
             date: row.date,
+            unreadMessages: row.unread_messages,
           });
         }
       }

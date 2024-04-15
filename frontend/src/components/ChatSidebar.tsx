@@ -9,7 +9,6 @@ const ChatContact: React.FC<{
   image: string;
   onSelectContact: (contact: Contact) => void;
 }> = ({ contact, image, onSelectContact }) => {
-  const unread = 7;
   return (
     <div
       className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
@@ -21,13 +20,15 @@ const ChatContact: React.FC<{
           alt="User Avatar"
           className="w-12 h-12 rounded-full"
         ></img>
-        <div
-          className={`absolute inline-flex items-center justify-center w-6 h-6 ${
-            unread >= 100 ? "text-[10px]" : "text-xs"
-          } font-bold text-white bg-blue-800 border-2 border-white rounded-full -top-2 -right-1.5 dark:border-white`}
-        >
-          {unread >= 100 ? "99+" : unread}
-        </div>
+        {contact.unreadMessages > 0 && (
+          <div
+            className={`absolute inline-flex items-center justify-center w-6 h-6 ${
+              contact.unreadMessages >= 100 ? "text-[10px]" : "text-xs"
+            } font-bold text-white bg-blue-800 border-2 border-white rounded-full -top-2 -right-1.5 dark:border-white`}
+          >
+            {contact.unreadMessages >= 100 ? "99+" : contact.unreadMessages}
+          </div>
+        )}
       </div>
       <h2 className="text-lg font-semibold">{contact.connectedUser}</h2>
     </div>
