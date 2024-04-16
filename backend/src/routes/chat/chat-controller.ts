@@ -12,7 +12,6 @@ chatRouter.get(
   async (request: Request, response: Response) => {
     const errors = validationResult(request); // Check for validation errors
     if (!errors.isEmpty()) {
-      console.log("here");
       return response.status(400).json({ errors: errors.array() });
     }
 
@@ -48,8 +47,9 @@ chatRouter.get(
 
 chatRouter.put(
   "/readMessages",
+  authJwtMiddleware,
   [body("senderId").isNumeric(), body("receiverId").isNumeric()],
-  (request: Request, response: Response) => {
+  async (request: Request, response: Response) => {
     const errors = validationResult(request); // Check for validation errors
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() });
@@ -57,7 +57,7 @@ chatRouter.put(
     const data = matchedData(request);
     return response
       .status(200)
-      .json(chatServices.readMessages(data.senderId, data.receiverId));
+      .json(await chatServices.readMessages(data.senderId, data.receiverId));
   }
 );
 

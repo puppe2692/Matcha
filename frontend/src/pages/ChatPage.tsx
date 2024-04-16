@@ -32,6 +32,8 @@ const ChatPage: React.FC = () => {
   const socket = useWebSocketContext();
   const { user } = useUserContext();
 
+  console.log(user);
+
   const readMessages = useCallback(async () => {
     if (!user || !selectedContact) return;
     try {
@@ -40,8 +42,8 @@ const ChatPage: React.FC = () => {
         {
           senderId: selectedContact.connectedUserId,
           receiverId: user.id,
-          withCredentials: true,
-        }
+        },
+        { withCredentials: true }
       );
     } catch (error) {
       console.error(error);

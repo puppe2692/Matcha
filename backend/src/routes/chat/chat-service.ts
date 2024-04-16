@@ -45,7 +45,6 @@ export class chatServices {
     } else {
       let data: Contact[] = [];
       for (const row of connections.data?.rows) {
-        console.log(row.date.getTime());
         if (row.origin_user_id === userId) {
           data.push({
             connectedUser: row.destination_user_username,

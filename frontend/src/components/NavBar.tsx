@@ -63,8 +63,6 @@ const NavBar: React.FC = () => {
             withCredentials: true,
           }
         );
-        console.log("unread");
-        console.log(response.data);
         setUnreadCount(response.data);
       } catch (error) {
         console.error(error);

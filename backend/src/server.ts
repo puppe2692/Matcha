@@ -7,6 +7,7 @@ import { WebSocket } from "./gateway/webSocket";
 import authRouters from "./routes/auth/auth-route";
 import userRouters from "./routes/user/user-route";
 import chatRouter from "./routes/chat/chat-controller";
+import actionRouter from "./routes/action/action-controller";
 import notificationRouter from "./routes/notification/notification-controller";
 
 const app: Express = express();
@@ -23,6 +24,7 @@ app.use(authRouters);
 app.use(userRouters);
 app.use("/chat", chatRouter);
 app.use("/notification", notificationRouter);
+app.use("/action", actionRouter);
 
 const appserver = app.listen(5000, () => {
   console.log("Server is running on port 5000");

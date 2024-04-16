@@ -18,9 +18,6 @@ export class WebSocket {
 
   startListeners = (socket: Socket) => {
     const userId: string = (socket.handshake.query?.id || "") as string;
-    console.log("--------\nconnection");
-    console.log("socket id: " + socket.id);
-    console.log("user id: " + userId);
     if (userId && userId !== "") {
       socket.join(userId);
     }
@@ -29,8 +26,6 @@ export class WebSocket {
       if (userId && userId !== "") {
         socket.leave(userId);
       }
-      console.log("--------\ndisconnection " + socket.id);
-      console.log("disconnected user " + userId);
     });
 
     socket.on(
@@ -84,13 +79,7 @@ export class WebSocket {
     this.io.in(userId).emit("notify-read", readCount);
   };
 
-  sendNotification = (userId: string, notification: string) => {
-    this.io
-      .in(userId)
-      .emit("notification", {
-        content: notification,
-        date: new Date(),
-        seen: false,
-      });
+  sendNotification = (userId: string) => {
+    this.io.in(userId).emit("notification");
   };
 }
