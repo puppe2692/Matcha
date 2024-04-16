@@ -5,10 +5,13 @@ import prismaFromWishInstance from "./prismaFromWish";
 // here is to define the db initialization
 
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email)";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), gender VARCHAR(32), sex_pref VARCHAR(32), bio VARCHAR(500), hashtags VARCHAR(500), age INTEGER, verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email)";
 
 const tokenField: string =
   "id SERIAL PRIMARY KEY, token VARCHAR(255) NOT NULL, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 hour'";
+
+// const imagesField: string =
+//   "id SERIAL PRIMARY KEY, image VARCHAR(255) NOT NULL, index INTEGER, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP";
 
 const statusField: string =
   "id SERIAL PRIMARY KEY, origin_user_id INTEGER REFERENCES users(id), destination_user_id INTEGER, status VARCHAR(10), last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CHECK (status IN ('viewed', 'liked', 'blocked'))";
@@ -18,6 +21,8 @@ const connectionField: string =
 
 const messageField: string =
   "id SERIAL PRIMARY KEY, sender_id INTEGER REFERENCES users(id), receiver_id INTEGER, date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT";
+
+
 
 class Database {
   pool: Pool;
@@ -35,6 +40,7 @@ class Database {
         await this.initTable("status", statusField);
         await this.initTable("connection", connectionField);
         await this.initTable("messages", messageField);
+        //await this.initTable("images", imagesField);
         await this.populateExample();
         return true;
       } catch (err) {

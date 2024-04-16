@@ -40,7 +40,7 @@ const jwtOptions: any = {
 
 export function authJwtMiddleware(request: Request, response: Response, next: any) {
 	passport.authenticate('jwt', { session: false }, (error: Error, user: PrismaReturn) => {
-		if (error || !user) {
+		if (error || !user || !user.data || !user.data.rows || user.data.rows.length === 0) {
 			return response.status(401).json({ error: "Unauthorized ma couille" });
 		}
 		request.user = user.data!.rows[0];

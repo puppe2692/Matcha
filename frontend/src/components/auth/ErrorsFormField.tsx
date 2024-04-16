@@ -1,6 +1,7 @@
 import React from 'react';
 import { Control, Controller, FieldErrors, FieldValues } from 'react-hook-form';
 import InputField from './InputField';
+import SelectField from './SelectField';    
 import { ErrorMessage } from '@hookform/error-message';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
     placeholder: string;
     rules: object;
     type?: string;
+    options?: { value: string; label: string }[];
 }
 
 const ErrorsFormField: React.FC<Props> = ({
@@ -24,6 +26,8 @@ const ErrorsFormField: React.FC<Props> = ({
     placeholder,
     rules,
     type = 'text',
+    input, // Add input prop
+    options, // Add options prop
 }) => (
     <Controller
         name={controllerName}
@@ -37,14 +41,25 @@ const ErrorsFormField: React.FC<Props> = ({
                 >
                     {label}
                 </label>
-                <InputField
-                    {...field}
-                    id={controllerName}
-                    placeholder={placeholder}
-                    type={type}
-                    hasError={hasError}
-                    onBlur={field.onBlur}
-                />
+                {input === 'select' ? (
+                    <SelectField
+                        {...field}
+                        id={controllerName}
+                        options={options || []} // Pass options to SelectField
+                        placeholder={placeholder}
+                        hasError={hasError}
+                        onBlur={field.onBlur}
+                    />
+                ) : (
+                    <InputField
+                        {...field}
+                        id={controllerName}
+                        placeholder={placeholder}
+                        type={type}
+                        hasError={hasError}
+                        onBlur={field.onBlur}
+                    />
+                )}
                 <ErrorMessage
                     errors={errors}
                     name={controllerName}

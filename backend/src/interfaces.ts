@@ -13,6 +13,6 @@
 	sexual_preference: string;
 	bio: string;
 	age: number;
-	hastags: string[];
+	hastags: string;
 	profile_picture: string[5];
 }
