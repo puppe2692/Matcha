@@ -14,5 +14,5 @@ export type User = {
 	bio: string;
 	age: number;
 	hastags: string;
-	profile_picture: string[5];
+	profile_picture: string[];
 };

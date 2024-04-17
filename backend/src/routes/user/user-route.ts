@@ -2,7 +2,7 @@ import { Router, Response, Request } from 'express';
 import { body, validationResult, matchedData } from 'express-validator';
 import prismaFromWishInstance from "../../database/prismaFromWish";
 import { CustomUser } from '../../interfaces';
-import { upload_images } from './user-middleware';
+import { upload } from './user-middleware';
 import { authJwtMiddleware } from '../auth/auth-middleware';
 
 const router = Router();	// Create a new router
@@ -44,21 +44,32 @@ router.post("/users/firstco", authJwtMiddleware, [
 
 });
 
-router.post("/users/upload_images", authJwtMiddleware, upload_images.single('image'), async (request: Request, response: Response) => {
+router.post("/users/upload_images", authJwtMiddleware, upload.single('image'), async (request: Request, response: Response) => {
 	try {
+		console.log("REQUEST FILE = ", request.file);
 		const user = request.user as CustomUser;
-		console.log("REQUEST FILES = " + request.files);
+		console.log("USER = ", user);
 		const file = request.file as Express.Multer.File;
-		console.log("FILES = " + file);
-		const imageBase64 = file.buffer.toString("base64");
-		console.log("IMAGES = " + imageBase64);
-		await prismaFromWishInstance.create(
-			"images",
-			["token", "user_id", "index"],
-			[imageBase64, user.id, request.body.index],
+		console.log("FILES = ", file);
+		// const imageBase64 = file.buffer.toString("base64");
+		// console.log("IMAGES = " + imageBase64);
+		console.log("URL = ", request.url);
+		const url = request.body.url;
+		console.log("URL 2 = ", url);
+		const index = request.body.index;
+		console.log("INDEX = ", index);
+		const usertosend = await prismaFromWishInstance.update(
+			"users",
+			["profile_picture[" + index + "]"],
+			[url],
+			["id"],
+			[user.id],
 		);
-		response.status(200).json({ message: "Images uploaded" });
+		console.log("USER TO SEND = ", user);
+		// console.log("USER TO SEND DATA = ", user.data);
+		response.status(200).json({ message: "Images uploaded", user: user});
 	} catch (error) {
+		console.error("MA GROSSE QUEUE");
 		response.status(500).json({ error: "IMAGE server error" });
 	}
 });

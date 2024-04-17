@@ -28,6 +28,7 @@ export const UserProvider = ({ children }: any) => {
                 const response = await axios.get(`http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/me`, {
                     withCredentials: true,
                 });
+                console.log("USER FROM USER CONTEXT", response.data);
                 setUser(response.data);
             } catch (error: any) {
                 setUser(null);

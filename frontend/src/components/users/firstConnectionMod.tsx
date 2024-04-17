@@ -50,9 +50,7 @@ const FirstConnectionMod: React.FC<Props> = ({
                 },
                 { withCredentials: true },
             );
-            console.log("RESPONSE DATA", response.data);
-            console.log(updateUser(response.data.user));
-            console.log("USER", user?.gender);
+            updateUser(response.data.user);
             closeModal(); // a verifier ici
         } catch (error: any) {
             setError(error.response.data.error);
@@ -159,7 +157,7 @@ const FirstConnectionMod: React.FC<Props> = ({
                           },
                         }}
                     />
-                    {/* <UserImage/> */}
+                    <UserImage/>
                     <NavBarButton
                         disabled={Object.keys(errors).length > 0}
                         text="Submit"
