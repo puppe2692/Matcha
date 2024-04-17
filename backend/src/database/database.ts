@@ -19,6 +19,9 @@ const connectionField: string =
 const messageField: string =
   "id SERIAL PRIMARY KEY, sender_id INTEGER REFERENCES users(id), receiver_id INTEGER, date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT";
 
+const notificationField: string =
+  "id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES users(id), date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT";
+
 class Database {
   pool: Pool;
 
@@ -35,7 +38,8 @@ class Database {
         await this.initTable("status", statusField);
         await this.initTable("connection", connectionField);
         await this.initTable("messages", messageField);
-        await this.populateExample();
+        await this.initTable("notifications", notificationField);
+        // await this.populateExample();
         return true;
       } catch (err) {
         return false;

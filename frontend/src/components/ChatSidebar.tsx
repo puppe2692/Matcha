@@ -39,7 +39,6 @@ const ChatSidebar: React.FC<{
   contacts: Contact[];
   onSelectContact: (contact: Contact) => void;
 }> = ({ contacts, onSelectContact }) => {
-  console.log(contacts);
   return (
     <div className="w-1/4 bg-white border-r border-gray-300">
       <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-blue-800 text-white shadow-md">

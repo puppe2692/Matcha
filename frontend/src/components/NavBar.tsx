@@ -8,6 +8,16 @@ import { useUserContext } from "../context/UserContext";
 import UserMenu from "./UserMenu";
 import axios from "axios";
 import { useWebSocketContext } from "../context/WebSocketContext";
+import NotificationMenu from "./NotificationMenu";
+
+export interface notification {
+  id: number;
+  user_id: number;
+  date: Date;
+  seen: boolean;
+  new?: boolean;
+  content: string;
+}
 
 const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
   current,
@@ -49,6 +59,8 @@ const NavBar: React.FC = () => {
   const wideView: boolean = !!(width && width >= NAVBAR_BREAKPOINT);
   const { user } = useUserContext();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [notifications, setNotifications] = useState<notification[]>([]);
   const socket = useWebSocketContext();
 
   useEffect(() => {
@@ -62,8 +74,6 @@ const NavBar: React.FC = () => {
             withCredentials: true,
           }
         );
-        console.log("unread");
-        console.log(response.data);
         setUnreadCount(response.data);
       } catch (error) {
         console.error(error);
@@ -79,11 +89,18 @@ const NavBar: React.FC = () => {
     const handleReadMessages = (readcount: number) => {
       setUnreadCount((prev) => prev - readcount);
     };
+    const handleNotification = (notif: notification) => {
+      setNotifications((prev) => [notif, ...prev]);
+      setUnreadNotifications((prev) => prev + 1);
+    };
     socket?.on("receive-message", handleMessageNotification);
     socket?.on("notify-read", handleReadMessages);
+    socket?.on("notification", handleNotification);
 
     return () => {
       socket?.off("receive-message", handleMessageNotification);
+      socket?.off("notify-read", handleReadMessages);
+      socket?.off("notification", handleNotification);
     };
   }, [socket]);
 
@@ -126,12 +143,18 @@ const NavBar: React.FC = () => {
               className="flex items-center justify-end space-x-4"
               style={wideView ? { width: CORNERS_WIDTH } : {}}
             >
+              <NotificationMenu
+                unread={unreadNotifications}
+                setUnreadCount={setUnreadNotifications}
+                notifications={notifications}
+                setNotifications={setNotifications}
+              />
               <ChatButton
                 onClick={() => navigate("/chat")}
                 unread={unreadCount}
               />
               {user ? (
-                <UserMenu wideView={wideView} />
+                <UserMenu />
               ) : (
                 <NavBarButton
                   text="Sign In"
