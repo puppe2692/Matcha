@@ -4,9 +4,11 @@ import prismaFromWishInstance from "../../database/prismaFromWish";
 import { webSocket } from "../../server";
 
 export interface notification {
+  id: number;
   user_id: number;
   date: Date;
   seen: boolean;
+  new?: boolean;
   content: string;
 }
 
@@ -32,6 +34,7 @@ export class notificationServices {
   static async readNotifications(request: Request): Promise<string> {
     try {
       const userId = parseInt(request.query.id as string);
+      console.log(request.query);
       await prismaFromWishInstance.update(
         "notifications",
         ["seen"],
@@ -75,13 +78,13 @@ export class notificationServices {
 
   static generateContent(username: string, type: notificationType) {
     if (type === "viewed") {
-      return `${username} has viewed your profile`;
+      return `${username} has viewed your profile.`;
     } else if (type === "like") {
-      return `${username} liked your profile`;
+      return `${username} liked your profile.`;
     } else if (type === "unlike") {
-      return `${username} no longer likes your profile`;
+      return `${username} no longer likes your profile.`;
     } else {
-      return `${username} liked your profile back. It's a match`;
+      return `${username} liked your profile back. It's a match!`;
     }
   }
 
@@ -112,12 +115,20 @@ export class notificationServices {
     ) {
       return;
     } else {
-      await prismaFromWishInstance.create(
+      const notifId = await prismaFromWishInstance.create(
         "notifications",
         ["user_id", "content"],
         [destinationId, content]
       );
-      webSocket.sendNotification(destinationId.toString());
+      const notif: notification = {
+        id: notifId.data?.rows[0].id,
+        user_id: destinationId,
+        date: new Date(),
+        seen: false,
+        new: true,
+        content: content,
+      };
+      webSocket.sendNotification(destinationId.toString(), notif);
     }
   }
 }

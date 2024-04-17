@@ -1,4 +1,5 @@
 import prismaFromWishInstance from "../../database/prismaFromWish";
+import { webSocket } from "../../server";
 
 export interface notification {
   user_id: number;
@@ -14,6 +15,9 @@ export class actionServices {
     originId: number,
     destinationId: number
   ): Promise<string> {
+    if (originId === destinationId) {
+      return "Both users are the same, no status created";
+    }
     const status = await prismaFromWishInstance.selectAll(
       "status",
       ["origin_user_id", "destination_user_id"],
@@ -43,6 +47,12 @@ export class actionServices {
     destinationId: number,
     type: statusUpdate
   ): Promise<{ message: string; newConnection: boolean }> {
+    if (originId === destinationId) {
+      return {
+        message: "Both users are the same, no status created",
+        newConnection: false,
+      };
+    }
     const newStatus =
       type === "unlike" ? "viewed" : type === "like" ? "liked" : "blocked";
     await prismaFromWishInstance.update(
@@ -61,13 +71,20 @@ export class actionServices {
     return { message: "Status was successfully updated", newConnection };
   }
 
-  // we are not sure that a connection exists but it is not an issue if we try to delete a non-existing row, the sql request will still be successful and do nothing
   static async deleteConnection(originId: number, destinationId: number) {
-    await prismaFromWishInstance.delete(
+    const existingConnection = await prismaFromWishInstance.selectAll(
       "connection",
       ["origin_user_id", "destination_user_id"],
       [Math.min(originId, destinationId), Math.max(originId, destinationId)]
     );
+    if (existingConnection.data?.rows.length !== 0) {
+      await prismaFromWishInstance.delete(
+        "connection",
+        ["origin_user_id", "destination_user_id"],
+        [Math.min(originId, destinationId), Math.max(originId, destinationId)]
+      );
+      webSocket.notifyUnmatchBlock(destinationId, originId);
+    }
   }
 
   static async checkCreateConnection(
@@ -80,7 +97,12 @@ export class actionServices {
       ["origin_user_id", "destination_user_id"],
       [destinationId, originId]
     );
-    if (status.data?.rows.length == 0) {
+    const connection = await prismaFromWishInstance.selectAll(
+      "connection",
+      ["origin_user_id", "destination_user_id"],
+      [Math.min(originId, destinationId), Math.max(originId, destinationId)]
+    );
+    if (status.data?.rows.length === 0 || connection.data?.rows.length !== 0) {
       return false;
     } else {
       const reverseStatus = status.data!.rows[0].status;
@@ -89,6 +111,16 @@ export class actionServices {
           "connection",
           ["origin_user_id", "destination_user_id"],
           [Math.min(originId, destinationId), Math.max(originId, destinationId)]
+        );
+        const newMatchUser = await prismaFromWishInstance.selectAll(
+          "users",
+          ["id"],
+          [originId]
+        );
+        webSocket.notifyMatch(
+          destinationId,
+          originId,
+          newMatchUser.data!.rows[0].username
         );
         return true;
       } else {

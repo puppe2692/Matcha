@@ -1,36 +1,123 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
+import { notification } from "./NavBar";
+import axios from "axios";
+import { useUserContext } from "../context/UserContext";
 
-const NotificationLine: React.FC<{ text: string }> = ({ text }) => {
+const NotificationLine: React.FC<{
+  notification: notification;
+  setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
+  setNotifications: React.Dispatch<React.SetStateAction<notification[]>>;
+}> = ({ notification, setUnreadCount, setNotifications }) => {
+  const notifDate = new Date(notification.date);
+  const formattedDate =
+    notifDate.toLocaleDateString(undefined, {
+      month: "long",
+      day: "numeric",
+    }) +
+    ", " +
+    notifDate.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (notification.new) setUnreadCount((prev) => prev - 1);
+    setIsDeleting(true);
+    try {
+      await axios.delete(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/notification/one`,
+        {
+          params: { notificationId: notification.id },
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+    setTimeout(() => {
+      console.log("deleting" + notification.id);
+      setNotifications((prev) =>
+        prev.filter((notif) => notif.id !== notification.id)
+      );
+    }, 500);
+  };
   return (
-    <div className="flex items-center px-4 py-3 border-b hover:bg-gray-100 -mx-2">
+    <div
+      className={`relative flex items-center px-4 py-3 border-b ${
+        notification.seen
+          ? "hover:bg-gray-100"
+          : "bg-blue-100 hover:bg-blue-200"
+      } -mx-2 ${
+        isDeleting ? "opacity-0 -translate-x-full" : ""
+      } transition-all duration-500 ease-in-out`}
+    >
       <img
         className="h-8 w-8 rounded-full object-cover mx-1"
         src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
         alt="avatar"
       />
-      <p className="text-gray-600 max-w-44 text-sm mx-2 [overflow-wrap:anywhere]">
-        {text}
-      </p>
+      <div className="flex flex-col">
+        <p className="text-gray-600 max-w-40 text-sm mx-2 [overflow-wrap:anywhere]">
+          {notification.content}
+        </p>
+        <p className="text-gray-400 text-xs mx-2 mt-1">{formattedDate}</p>
+      </div>
+      <button
+        onClick={handleDelete}
+        className="absolute top-[17px] right-3 text-gray-400 hover:text-gray-500 focus:outline-none"
+      >
+        <svg
+          className="h-3 w-3"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
     </div>
   );
 };
 
-const NotificationMenu: React.FC = () => {
-  const notifications = [
-    "Untel liked you",
-    "Quelquun viewed your profile",
-    "UnePersonne liked you back. Start chatting now!",
-    "Machin unliked you, what a jerk!",
-    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "Machin liked you",
-    "Truc liked you",
-    "Chose liked you",
-    "Bidule liked you",
-    "Chouette liked you",
-  ];
+const NotificationMenu: React.FC<{
+  unread: number;
+  setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
+  notifications: notification[];
+  setNotifications: React.Dispatch<React.SetStateAction<notification[]>>;
+}> = ({ unread, setUnreadCount, notifications, setNotifications }) => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const unread = notifications.length;
+  const { user } = useUserContext();
+
+  const handleClick = async () => {
+    if (!user) return;
+
+    try {
+      const notifications = await axios.get(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/notification/`,
+        { params: { id: user.id }, withCredentials: true }
+      );
+      setNotifications(notifications.data);
+      setShowNotifications((prevval) => !prevval);
+      setUnreadCount(0);
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/notification/read`,
+        {},
+        { params: { id: user.id }, withCredentials: true }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <OutsideClickHandler
       onOutsideClick={() => {
@@ -39,9 +126,7 @@ const NotificationMenu: React.FC = () => {
     >
       <div className="flex items-center relative">
         <button
-          onClick={() => {
-            setShowNotifications((prevval) => !prevval);
-          }}
+          onClick={handleClick}
           className="relative inline-flex items-center text-sm font-medium text-center text-white rounded-lg hover:text-gray-300 hover:scale-110"
         >
           <svg
@@ -65,12 +150,28 @@ const NotificationMenu: React.FC = () => {
             </div>
           )}
         </button>
-        <div className="absolute right-0 top-full mt-2 bg-white rounded-md shadow-lg overflow-y-auto overflow-hidden z-20 w-64 max-h-64 ">
-          {showNotifications &&
-            notifications.map((notification, index) => (
-              <NotificationLine text={notification} />
-            ))}
-        </div>
+        {showNotifications && (
+          <div
+            className={`absolute right-0 top-full mt-2 bg-white rounded-md shadow-lg overflow-y-auto overflow-hidden z-20 w-64 h-64 ${
+              notifications.length === 0 ? "flex items-center" : ""
+            }`}
+          >
+            {notifications.length === 0 ? (
+              <p className="text-center text-gray-400 align-middle text-xl italic">
+                You don't have any notification
+              </p>
+            ) : (
+              notifications.map((notification, _) => (
+                <NotificationLine
+                  notification={notification}
+                  setUnreadCount={setUnreadCount}
+                  setNotifications={setNotifications}
+                  key={notification.id}
+                />
+              ))
+            )}
+          </div>
+        )}
       </div>
     </OutsideClickHandler>
   );

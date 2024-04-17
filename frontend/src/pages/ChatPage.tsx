@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useWebSocketContext } from "../context/WebSocketContext";
 import { NAVBAR_HEIGHT } from "../data/const";
 import ChatSidebar from "../components/ChatSidebar";
@@ -24,9 +24,9 @@ export interface Message {
 // need to be entered manually or else tailwind doesn't work
 
 const ChatPage: React.FC = () => {
-  const [message, setMessage] = React.useState("");
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const [contacts, setContacts] = React.useState<Contact[]>([]);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const lastMessageRef = useRef<null | HTMLDivElement>(null);
   const [selectedContact, setSelectedContact] = React.useState<Contact>();
   const socket = useWebSocketContext();
@@ -154,10 +154,37 @@ const ChatPage: React.FC = () => {
           )
       );
     };
+    const handleNewContact = ({
+      userId,
+      username,
+    }: {
+      userId: number;
+      username: string;
+    }) => {
+      setContacts((prevContacts) => [
+        {
+          connectedUser: username,
+          connectedUserId: userId,
+          date: new Date(),
+          unreadMessages: 0,
+        },
+        ...prevContacts,
+      ]);
+    };
+
+    const handleDeleteContact = (contactId: number) => {
+      setContacts((prevContacts) =>
+        prevContacts.filter((contact) => contact.connectedUserId !== contactId)
+      );
+    };
     socket?.on("receive-message", handleMessageReception);
+    socket?.on("notify-match", handleNewContact);
+    socket?.on("notify-unmatch-block", handleDeleteContact);
 
     return () => {
       socket?.off("receive-message", handleMessageReception);
+      socket?.off("notify-match", handleNewContact);
+      socket?.off("notify-unmatch-block", handleDeleteContact);
     };
   }, [socket]);
 

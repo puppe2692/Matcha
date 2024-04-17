@@ -1,6 +1,7 @@
 import { Server as HTTPServer } from "http";
 import { Socket, Server as SocketServer } from "socket.io";
 import { Message, chatServices } from "../routes/chat/chat-service";
+import { notification } from "../routes/action/action-service";
 
 export class WebSocket {
   io: SocketServer;
@@ -79,7 +80,23 @@ export class WebSocket {
     this.io.in(userId).emit("notify-read", readCount);
   };
 
-  sendNotification = (userId: string) => {
-    this.io.in(userId).emit("notification");
+  sendNotification = (userId: string, notif: notification) => {
+    this.io.in(userId).emit("notification", notif);
+  };
+
+  notifyMatch = (
+    destinationId: number,
+    originId: number,
+    originUsername: string
+  ) => {
+    console.log("username", originUsername);
+    this.io.in(destinationId.toString()).emit("notify-match", {
+      userId: originId,
+      username: originUsername,
+    });
+  };
+
+  notifyUnmatchBlock = (destinationId: number, originId: number) => {
+    this.io.in(destinationId.toString()).emit("notify-unmatch-block", originId);
   };
 }
