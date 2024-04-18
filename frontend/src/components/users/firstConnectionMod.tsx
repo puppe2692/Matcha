@@ -30,6 +30,7 @@ const FirstConnectionMod: React.FC<Props> = ({
 }) => {
 	const [error, setError] = useState<string>();
   const { user, updateUser } = useUserContext();
+  const [imageUpload, setImageUpload] = useState<boolean>(false);
 
   const {
       handleSubmit,
@@ -38,7 +39,11 @@ const FirstConnectionMod: React.FC<Props> = ({
   } = useForm<ModalInputs>({ mode: 'onTouched', criteriaMode: 'all' });
 
 	const onSubmit = async (data: ModalInputs) => {
-        try {
+    if (!imageUpload) {
+      setError('You must upload at least one profile picture');
+      return;
+    }    
+    try {
             const response = await axios.post(
                 `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/firstco`,
                 {
@@ -100,8 +105,8 @@ const FirstConnectionMod: React.FC<Props> = ({
                         errors={errors}
                         hasError={!!errors.sex_pref}
                         controllerName="sex_pref"
-                        label="Sexual Preferance"
-                        placeholder="Sexual Preferance"
+                        label="Sexual Preference"
+                        placeholder="Sexual Preference"
                         options={['Male', 'Female', 'Both'].map((value) => ({ value, label: value }))}
                         rules={{
                           required: 'sexual preferance is required',
@@ -141,7 +146,7 @@ const FirstConnectionMod: React.FC<Props> = ({
                           required: 'Age is required',
                         }}
                     />
-                    <ErrorsFormField
+              <ErrorsFormField
                         control={control}
                         errors={errors}
                         hasError={!!errors.hashtag}
@@ -157,8 +162,12 @@ const FirstConnectionMod: React.FC<Props> = ({
                           },
                         }}
                     />
-                    <UserImage/>
-                    <NavBarButton
+                <UserImage
+                    controllerName="Profil Pictures"
+                    label="Profil Pictures"
+                    setImageUpload={setImageUpload}
+                  />
+              <NavBarButton
                         disabled={Object.keys(errors).length > 0}
                         text="Submit"
                         type="submit"

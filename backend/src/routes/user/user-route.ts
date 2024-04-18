@@ -46,32 +46,53 @@ router.post("/users/firstco", authJwtMiddleware, [
 
 router.post("/users/upload_images", authJwtMiddleware, upload.single('image'), async (request: Request, response: Response) => {
 	try {
-		console.log("REQUEST FILE = ", request.file);
 		const user = request.user as CustomUser;
-		console.log("USER = ", user);
-		const file = request.file as Express.Multer.File;
-		console.log("FILES = ", file);
+		// const file = request.file as Express.Multer.File;
 		// const imageBase64 = file.buffer.toString("base64");
-		// console.log("IMAGES = " + imageBase64);
-		console.log("URL = ", request.url);
+		// console.log("IMAGES = " + imageBase64);;
 		const url = request.body.url;
-		console.log("URL 2 = ", url);
 		const index = request.body.index;
-		console.log("INDEX = ", index);
-		const usertosend = await prismaFromWishInstance.update(
+		await prismaFromWishInstance.update(
 			"users",
 			["profile_picture[" + index + "]"],
 			[url],
 			["id"],
 			[user.id],
 		);
-		console.log("USER TO SEND = ", user);
-		// console.log("USER TO SEND DATA = ", user.data);
-		response.status(200).json({ message: "Images uploaded", user: user});
+		const updatedUser = await prismaFromWishInstance.selectAll(
+			"users",
+			["id"],
+			[user.id],
+		);
+		response.status(200).json({ message: "Images uploaded", user: updatedUser.data?.rows[0]});
 	} catch (error) {
-		console.error("MA GROSSE QUEUE");
 		response.status(500).json({ error: "IMAGE server error" });
 	}
 });
+
+router.post("/users/clear_image", authJwtMiddleware, async (request: Request, response: Response) => {
+	try {
+		const user = request.user as CustomUser;
+		console.log("INDEX", request.body.index);
+		const index = request.body.index;
+		await prismaFromWishInstance.update(
+			"users",
+			["profile_picture[" + index + "]"],
+			[null],
+			["id"],
+			[user.id],
+		);
+		const updatedUser = await prismaFromWishInstance.selectAll(
+			"users",
+			["id"],
+			[user.id],
+		);
+		response.status(200).json({ message: "Image clear", user: updatedUser.data?.rows[0]});
+	} catch (error) {
+		response.status(500).json({ error: "IMAGE server error: enable to delete" });
+	}
+});
+
+
 
 export default router;
