@@ -8,7 +8,6 @@ import authRouters from "./routes/auth/auth-route";
 import userRouters from "./routes/user/user-route";
 import chatRouter from "./routes/chat/chat-controller";
 
-
 const app: Express = express();
 app.use(express.json());
 const corsOptions = {

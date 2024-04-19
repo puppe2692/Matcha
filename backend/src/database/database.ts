@@ -19,8 +19,6 @@ const connectionField: string =
 const messageField: string =
   "id SERIAL PRIMARY KEY, sender_id INTEGER REFERENCES users(id), receiver_id INTEGER, date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT";
 
-
-
 class Database {
   pool: Pool;
 

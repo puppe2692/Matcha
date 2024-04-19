@@ -5,7 +5,7 @@ import { useWindowSize } from "usehooks-ts";
 import NavLink from "./NavLink";
 import { ChatIcon } from "../utils/icons";
 import { NavBarButton } from "./Buttons";
-import { useUserContext } from '../context/UserContext';
+import { useUserContext } from "../context/UserContext";
 import UserMenu from "./UserMenu";
 
 const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
@@ -57,7 +57,6 @@ const NavBar: React.FC = () => {
 
   const isSignIn = location.pathname === "/signin";
   const isSignUp = location.pathname === "/signup";
-
 
   return (
     <nav
