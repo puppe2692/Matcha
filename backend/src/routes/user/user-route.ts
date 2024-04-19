@@ -68,6 +68,7 @@ router.post(
       // console.log("IMAGES = " + imageBase64);;
       const url = request.body.url;
       const index = request.body.index;
+      console.log("INDEX", index);
       await prismaFromWishInstance.update(
         "users",
         ["profile_picture[" + index + "]"],
@@ -80,6 +81,7 @@ router.post(
         ["id"],
         [user.id]
       );
+      console.log("UPDATED USER", updatedUser.data?.rows[0]);
       response
         .status(200)
         .json({ message: "Images uploaded", user: updatedUser.data?.rows[0] });
@@ -95,8 +97,9 @@ router.post(
   async (request: Request, response: Response) => {
     try {
       const user = request.user as CustomUser;
-      console.log("INDEX", request.body.index);
+      console.log("INDEX BACKEND", request.body.index);
       const index = request.body.index;
+
       await prismaFromWishInstance.update(
         "users",
         ["profile_picture[" + index + "]"],
@@ -109,6 +112,7 @@ router.post(
         ["id"],
         [user.id]
       );
+      console.log("UPDATED USER", updatedUser.data?.rows[0]);
       response
         .status(200)
         .json({ message: "Image clear", user: updatedUser.data?.rows[0] });

@@ -2,6 +2,7 @@ import React from "react";
 import { Control, Controller, FieldErrors, FieldValues } from "react-hook-form";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
+import MultipleSelectCheckmarks from "./MultipleSelectField";
 import { ErrorMessage } from "@hookform/error-message";
 
 interface Props {
@@ -50,6 +51,8 @@ const ErrorsFormField: React.FC<Props> = ({
             hasError={hasError}
             onBlur={field.onBlur}
           />
+        ) : input === "multiple" ? (
+          <MultipleSelectCheckmarks />
         ) : (
           <InputField
             {...field}

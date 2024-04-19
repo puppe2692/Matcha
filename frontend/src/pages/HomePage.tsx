@@ -10,7 +10,7 @@ const HomePage: React.FC = () => {
   console.log("GENDER", user?.gender);
   return (
     <div>
-      {user?.gender === undefined ? (
+      {user?.gender === undefined || user?.gender === null ? (
         <FirstConnectionMod
           title="FIRST CONNECTION"
           modalId={"First Connection"}

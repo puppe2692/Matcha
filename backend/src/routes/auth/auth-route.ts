@@ -41,6 +41,14 @@ router.post(
     if (!user.data) {
       return response.status(400).json({ error: user.errorMessage });
     } else {
+      const initialProfilePicture = Array.from({ length: 5 }, () => null);
+      await prismaFromWishInstance.update(
+        "users",
+        ["profile_picture"],
+        [initialProfilePicture],
+        ["id"],
+        [user.data.rows[0].id]
+      );
       await generateToken(
         user.data.rows[0].id,
         data.email,
