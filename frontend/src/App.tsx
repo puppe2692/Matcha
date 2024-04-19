@@ -11,6 +11,7 @@ import { UserProvider } from "./context/UserContext";
 import SigninPage from "./pages/SigninPage";
 import SignupPage from "./pages/SignupPage";
 import SignOutPage from "./pages/SignOutPage";
+import LoadingPage from "./pages/LoadingPage";
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -20,6 +21,7 @@ function App(): JSX.Element {
         <NavBar />
         <Routes>
           <Route path="/" Component={HomePage} />
+          <Route path="/loading" Component={LoadingPage} />
           <Route path="/signin" Component={SigninPage} />
           <Route path="/signup" Component={SignupPage} />
           <Route path="/signout" Component={SignOutPage} />
