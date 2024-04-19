@@ -40,8 +40,6 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
       loginUser(response.data.user);
       navigate("/");
     } catch (error: any) {
-      console.log(error);
-      console.log(error.response);
       setError(error.response.data.error);
     }
   };

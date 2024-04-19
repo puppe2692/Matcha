@@ -3,10 +3,21 @@ import { NAVBAR_HEIGHT, NAVBAR_BREAKPOINT, CORNERS_WIDTH } from "../data/const";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useWindowSize } from "usehooks-ts";
 import NavLink from "./NavLink";
-import { ChatIcon } from "../utils/icons";
-import { NavBarButton } from "./Buttons";
+import { NavBarButton, ChatButton } from "./Buttons";
 import { useUserContext } from "../context/UserContext";
 import UserMenu from "./UserMenu";
+import axios from "axios";
+import { useWebSocketContext } from "../context/WebSocketContext";
+import NotificationMenu from "./NotificationMenu";
+
+export interface notification {
+  id: number;
+  user_id: number;
+  date: Date;
+  seen: boolean;
+  new?: boolean;
+  content: string;
+}
 
 const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
   current,
@@ -46,14 +57,52 @@ const NavBar: React.FC = () => {
   const navigate = useNavigate();
   const { width } = useWindowSize();
   const wideView: boolean = !!(width && width >= NAVBAR_BREAKPOINT);
-  const [user, setUser] = useState(false);
-  const { user: currentUser } = useUserContext();
+  const { user } = useUserContext();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [notifications, setNotifications] = useState<notification[]>([]);
+  const socket = useWebSocketContext();
 
   useEffect(() => {
-    // Update user state when currentUser changes
-    console.log("currentUser: ", currentUser);
-    setUser(!!currentUser);
-  }, [currentUser]);
+    const getUnreadMessages = async () => {
+      if (!user) return;
+      try {
+        const response = await axios.get(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/chat/unreadMessages`,
+          {
+            params: { id: user.id },
+            withCredentials: true,
+          }
+        );
+        setUnreadCount(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUnreadMessages();
+  }, [user]);
+
+  useEffect(() => {
+    const handleMessageNotification = () => {
+      setUnreadCount((prev) => prev + 1);
+    };
+    const handleReadMessages = (readcount: number) => {
+      setUnreadCount((prev) => prev - readcount);
+    };
+    const handleNotification = (notif: notification) => {
+      setNotifications((prev) => [notif, ...prev]);
+      setUnreadNotifications((prev) => prev + 1);
+    };
+    socket?.on("receive-message", handleMessageNotification);
+    socket?.on("notify-read", handleReadMessages);
+    socket?.on("notification", handleNotification);
+
+    return () => {
+      socket?.off("receive-message", handleMessageNotification);
+      socket?.off("notify-read", handleReadMessages);
+      socket?.off("notification", handleNotification);
+    };
+  }, [socket]);
 
   const isSignIn = location.pathname === "/signin";
   const isSignUp = location.pathname === "/signup";
@@ -94,19 +143,22 @@ const NavBar: React.FC = () => {
               className="flex items-center justify-end space-x-4"
               style={wideView ? { width: CORNERS_WIDTH } : {}}
             >
-              <button
+              <NotificationMenu
+                unread={unreadNotifications}
+                setUnreadCount={setUnreadNotifications}
+                notifications={notifications}
+                setNotifications={setNotifications}
+              />
+              <ChatButton
                 onClick={() => navigate("/chat")}
-                className="w-6 h-6 hover:scale-110"
-              >
-                <ChatIcon />
-              </button>
+                unread={unreadCount}
+              />
               {user ? (
-                <UserMenu wideView={wideView} updateUserStatus={setUser} />
+                <UserMenu />
               ) : (
                 <NavBarButton
                   text="Sign In"
                   onClick={() => {
-                    setUser((prevUser) => !prevUser);
                     navigate("/signin");
                   }}
                 />

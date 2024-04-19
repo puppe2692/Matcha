@@ -41,7 +41,6 @@ router.post(
     if (!user.data) {
       return response.status(400).json({ error: user.errorMessage });
     } else {
-      console.log(user.data);
       await generateToken(
         user.data.rows[0].id,
         data.email,
@@ -49,13 +48,11 @@ router.post(
         response
       );
       delete user.data.rows[0].password;
-      response
-        .status(200)
-        .json({
-          message:
-            "User succesfully created, an email as been sent to you to verify your account",
-          user: user.data.rows[0],
-        });
+      response.status(200).json({
+        message:
+          "User succesfully created, an email as been sent to you to verify your account",
+        user: user.data.rows[0],
+      });
     }
     await generateMailToken(user.data.rows[0].id, data.email);
   }
@@ -116,12 +113,10 @@ router.post(
         [user.data.rows[0].id]
       );
       delete user.data.rows[0].password;
-      response
-        .status(200)
-        .json({
-          message: "User succesfully signed in",
-          user: user.data.rows[0],
-        });
+      response.status(200).json({
+        message: "User succesfully signed in",
+        user: user.data.rows[0],
+      });
     }
   }
 );

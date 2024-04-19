@@ -88,10 +88,8 @@ export async function sendVerificationMail(
       subject: subject,
       text: text,
     });
-    console.log("Email sent successfully");
   } catch (error) {
-    console.log("Error sending email");
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -114,7 +112,6 @@ export async function generatePasswordToken(user: PrismaReturn, email: string) {
     [user.data!.rows[0].id]
   );
   const currentTimestamp = new Date().getTime(); // Get the current timestamp
-  console.log(token);
   if (
     token.data &&
     token.data.rows.length != 0 &&
@@ -130,7 +127,9 @@ export async function generatePasswordToken(user: PrismaReturn, email: string) {
   if (!userToken.data) {
     return { error: userToken.errorMessage };
   } else {
-    const url = `${process.env.BASE_URL}/auth/resetpassword/${user.data!.rows[0].id}/${passToken}`;
+    const url = `${process.env.BASE_URL}/auth/resetpassword/${
+      user.data!.rows[0].id
+    }/${passToken}`;
     await sendVerificationMail(
       email,
       "MATCHA: Reset your password",
