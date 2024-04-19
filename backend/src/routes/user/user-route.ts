@@ -1,15 +1,8 @@
 import { Router, Response, Request } from "express";
 import { body, validationResult, matchedData } from "express-validator";
 import prismaFromWishInstance from "../../database/prismaFromWish";
-import passport from "passport";
-import {
-  generateToken,
-  generateMailToken,
-  deleteToken,
-  generatePasswordToken,
-  hashPassword,
-  comparePassword,
-} from "../auth/auth-utils";
+import { CustomUser } from "../../interfaces";
+import { upload } from "./user-middleware";
 import { authJwtMiddleware } from "../auth/auth-middleware";
 
 const router = Router(); // Create a new router
