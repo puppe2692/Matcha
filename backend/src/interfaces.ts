@@ -1,4 +1,4 @@
-export type User = {
+export interface CustomUser {
   id: number;
   email: string;
   username: string;
@@ -14,5 +14,5 @@ export type User = {
   bio: string;
   age: number;
   hastags: string;
-  profile_picture: string[];
-};
+  profile_picture: string[5];
+}

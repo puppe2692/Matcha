@@ -5,7 +5,7 @@ import prismaFromWishInstance from "./prismaFromWish";
 // here is to define the db initialization
 
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email)";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), gender VARCHAR(32), sex_pref VARCHAR(32), bio VARCHAR(500), hashtags VARCHAR(500), age INTEGER, verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, profile_picture VARCHAR(255)[5] , created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email), CONSTRAINT profile_picture_length CHECK (array_length(profile_picture, 1) <= 5)";
 
 const tokenField: string =
   "id SERIAL PRIMARY KEY, token VARCHAR(255) NOT NULL, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 hour'";

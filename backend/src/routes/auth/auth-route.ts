@@ -11,21 +11,10 @@ import {
   comparePassword,
 } from "./auth-utils";
 import { authJwtMiddleware } from "./auth-middleware";
+import { CustomUser } from "../../interfaces";
 import { activeUsers, User } from "../../users/user";
 
 const router = Router(); // Create a new router
-interface CustomUser {
-  id: number;
-  email: string;
-  username: string;
-  password?: string;
-  firstname: string;
-  lastname: string;
-  verify: boolean;
-  connection_status: boolean;
-  created_at: Date;
-  updated_at: Date;
-}
 
 // signup, signin, logout
 router.post(
@@ -59,13 +48,11 @@ router.post(
         response
       );
       delete user.data.rows[0].password;
-      response
-        .status(200)
-        .json({
-          message:
-            "User succesfully created, an email as been sent to you to verify your account",
-          user: user.data.rows[0],
-        });
+      response.status(200).json({
+        message:
+          "User succesfully created, an email as been sent to you to verify your account",
+        user: user.data.rows[0],
+      });
     }
     await generateMailToken(user.data.rows[0].id, data.email);
   }
@@ -126,12 +113,10 @@ router.post(
         [user.data.rows[0].id]
       );
       delete user.data.rows[0].password;
-      response
-        .status(200)
-        .json({
-          message: "User succesfully signed in",
-          user: user.data.rows[0],
-        });
+      response.status(200).json({
+        message: "User succesfully signed in",
+        user: user.data.rows[0],
+      });
     }
   }
 );

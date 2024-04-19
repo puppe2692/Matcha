@@ -9,3 +9,5 @@ export const FIRSTNAME_MAX_LENGTH = 50;
 export const LASTNAME_MIN_LENGTH = 3;
 export const LASTNAME_MAX_LENGTH = 50;
 export const NEARLY_BLACK = '#0f0f0f';
+export const BIO_MIN_LENGTH = 30;
+export const BIO_MAX_LENGTH = 500;
