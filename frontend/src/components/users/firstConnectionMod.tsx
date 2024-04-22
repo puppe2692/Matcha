@@ -19,7 +19,7 @@ interface ModalInputs {
   sex_pref: string;
   bio: string;
   age: number;
-  hashtag: string[];
+  hashtags: string[];
   picture: string[];
 }
 
@@ -43,18 +43,23 @@ const FirstConnectionMod: React.FC<Props> = ({
       setError("You must upload at least one profile picture");
       return;
     }
+    console.log("DATA.gender", data.gender);
+    console.log("DATA.hashtags", data.hashtags);
+    console.log("DATA.age", data.age);
+    console.log("DATA.sex_pref", data.sex_pref);
     try {
       const response = await axios.post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/firstco`,
         {
           gender: data.gender,
-          sexual_preference: data.sex_pref,
+          sex_pref: data.sex_pref,
           bio: data.bio,
           age: data.age,
-          hashtags: data.hashtag,
+          hashtags: data.hashtags,
         },
         { withCredentials: true }
       );
+      console.log("RESPONSE", response.data.user);
       updateUser(response.data.user);
       closeModal(); // a verifier ici
     } catch (error: any) {
@@ -152,20 +157,22 @@ const FirstConnectionMod: React.FC<Props> = ({
             }}
           />
           <ErrorsFormField
+            input="multiple"
             control={control}
             errors={errors}
-            hasError={!!errors.hashtag}
-            controllerName="hashtag"
+            hasError={!!errors.hashtags}
+            controllerName="hashtags"
             label="Hashtags"
             placeholder="Hashtags"
-            type="hashtag"
+            type="hashtags"
+            options={["#music", "#cinema", "#voyage", "#art", "#sex"].map(
+              (value) => ({
+                value,
+                label: value,
+              })
+            )}
             rules={{
               required: "Hashtags are required",
-              pattern: {
-                value: /^#[a-zA-Z0-9_]+$/, // Regular expression to match hashtags starting with #
-                message:
-                  "Hashtags must start with # and can only contain letters, numbers, and underscores",
-              },
             }}
           />
           <UserImage

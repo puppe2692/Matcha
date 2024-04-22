@@ -13,7 +13,7 @@ interface Props {
   options: { value: string; label: string }[];
   placeholder: string;
   required?: boolean;
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (event: SelectChangeEvent<string[]>) => void;
   onBlur?: React.FocusEventHandler<HTMLSelectElement>;
 }
 
@@ -67,34 +67,69 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
         // On autofill we get a stringified value.
         typeof value === "string" ? value.split(",") : value
       );
+      // Execute onChange callback if provided
+      if (onChange) {
+        onChange(event);
+      }
     };
 
     return (
       <div>
-        <FormControl sx={{ m: 1, width: 300 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
+        <FormControl
+          fullWidth
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderColor: "#4b5563", // Change outline color
+              borderRadius: 2, // Rounder corners
+              borderWidth: 1, // Add border width
+            },
+            "&:hover": {
+              backgroundColor: "transparent", // Suppress hover effect
+            },
+            // "& .MuiOutlinedInput-root.Mui-focused": {
+            //   borderColor: "#ccc", // Change outline color when focused
+            // },
+          }}
+        >
+          <InputLabel id={`${id}-label`}></InputLabel>
           <Select
             ref={ref as React.RefObject<HTMLSelectElement>} //ici
             className={`bg-gray-50 border ${
               hasError ? "border-red-500" : "border-gray-300"
-            } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-600 dark:focus:border-blue-600`}
-            labelId="demo-multiple-checkbox-label" //ici
+            } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-600 dark:focus:border-blue-600`}
+            labelId={`${id}-label`} //ici
             id={id} //ici
             required={required} //ici
             multiple
             value={personName}
             onChange={handleChange}
-            input={<OutlinedInput label="Tag" />}
-            renderValue={(selected) => selected.join(", ")}
+            //input={<OutlinedInput label="tag" />}
+            renderValue={(selected) => (
+              <div style={{ color: "white" }}>
+                {selected
+                  .map((value) => {
+                    const option = options.find((opt) => opt.value === value);
+                    return option ? option.label : null;
+                  })
+                  .join(", ")}
+              </div>
+            )}
             MenuProps={MenuProps}
           >
-            <option value="" disabled>
+            <MenuItem disabled value="">
               {placeholder}
-            </option>
+            </MenuItem>
             {options.map((options) => (
-              <MenuItem key={options.value} value={options.value}>
+              <MenuItem
+                key={options.value}
+                value={options.value}
+                style={{ color: "white", backgroundColor: "#374151" }}
+              >
                 <Checkbox checked={personName.indexOf(options.value) > -1} />
-                <ListItemText primary={options.value} />
+                <ListItemText
+                  primary={options.value}
+                  style={{ backgroundColor: "#374151" }}
+                />
               </MenuItem>
             ))}
           </Select>

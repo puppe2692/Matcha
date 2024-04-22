@@ -13,7 +13,7 @@ interface Props {
   input?: string;
   label: string;
   placeholder: string;
-  rules: object;
+  rules?: object;
   type?: string;
   options?: { value: string; label: string }[];
 }
@@ -52,7 +52,14 @@ const ErrorsFormField: React.FC<Props> = ({
             onBlur={field.onBlur}
           />
         ) : input === "multiple" ? (
-          <MultipleSelectCheckmarks />
+          <MultipleSelectCheckmarks
+            {...field}
+            id={controllerName}
+            options={options || []} // Pass options to SelectField
+            placeholder={placeholder}
+            hasError={hasError}
+            onBlur={field.onBlur}
+          />
         ) : (
           <InputField
             {...field}

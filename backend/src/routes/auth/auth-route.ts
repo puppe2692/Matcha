@@ -22,7 +22,7 @@ router.post(
   [
     body("email").isEmail(),
     body("password").isLength({ min: 8, max: 32 }),
-    body("username").isLength({ min: 3, max: 32 }),
+    body("username").isLength({ min: 3, max: 16 }),
     body("lastname").isLength({ min: 3, max: 32 }),
     body("firstname").isLength({ min: 3, max: 32 }),
   ],
@@ -69,7 +69,7 @@ router.post(
 router.post(
   "/auth/signin",
   [
-    body("username").isLength({ min: 3, max: 32 }),
+    body("username").isLength({ min: 3, max: 16 }),
     body("password").isLength({ min: 8, max: 32 }),
   ],
   async (request: Request, response: Response) => {

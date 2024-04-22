@@ -27,12 +27,12 @@ router.post(
   authJwtMiddleware,
   [
     body("gender").isString(),
-    body("sexual_preference").isString(),
+    body("sex_pref").isString(),
     body("bio").isString(),
     body("age")
       .isInt({ min: 18 })
       .withMessage("You must be at least 18 years old to use this app"),
-    body("hashtags").isString(),
+    body("hashtags").isArray(),
   ],
   async (request: Request, response: Response) => {
     console.log("REQUEST", request.body);
@@ -45,14 +45,19 @@ router.post(
     await prismaFromWishInstance.update(
       "users",
       ["gender", "sex_pref", "bio", "age", "hashtags"],
-      [data.gender, data.sexual_preference, data.bio, data.age, data.hashtags],
+      [data.gender, data.sex_pref, data.bio, data.age, data.hashtags],
       ["id"],
       [(request.user! as CustomUser).id]
     );
-
-    response
-      .status(200)
-      .json({ message: "User profile updated", user: request.user });
+    const updatedUser = await prismaFromWishInstance.selectAll(
+      "users",
+      ["id"],
+      [(request.user! as CustomUser).id]
+    );
+    response.status(200).json({
+      message: "User profile updated",
+      user: updatedUser.data?.rows[0],
+    });
   }
 );
 
