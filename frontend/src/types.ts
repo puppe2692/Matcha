@@ -10,9 +10,9 @@ export type User = {
   created_at: Date;
   updated_at: Date;
   gender: string;
-  sexual_preference: string;
+  sex_pref: string;
   bio: string;
   age: number;
-  hastags: string;
+  hashtags: string;
   profile_picture: string[];
 };

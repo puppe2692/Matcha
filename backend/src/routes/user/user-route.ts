@@ -4,6 +4,7 @@ import prismaFromWishInstance from "../../database/prismaFromWish";
 import { CustomUser } from "../../interfaces";
 import { upload } from "./user-middleware";
 import { authJwtMiddleware } from "../auth/auth-middleware";
+import { PrismaReturn } from "../../data_structures/data";
 
 const router = Router(); // Create a new router
 
@@ -19,6 +20,61 @@ router.get(
     delete user.password;
     console.log(user);
     response.status(200).json(user);
+  }
+);
+
+router.get(
+  "/users/all_interesting",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const user = request.user as CustomUser;
+    let relevantUsers: PrismaReturn;
+    if (user.sexual_preference === "Man") {
+      relevantUsers = await prismaFromWishInstance.customQuery(
+        `select users.*
+      FROM users 
+      LEFT JOIN status 
+        on users.id = status.destination_user_id 
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1 
+        AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
+        AND users.gender = $2;`,
+        [user.id, "male"]
+      );
+    } else if (user.sexual_preference === "Woman") {
+      relevantUsers = await prismaFromWishInstance.customQuery(
+        `select users.*
+      FROM users 
+      LEFT JOIN status 
+        on users.id = status.destination_user_id 
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1 
+        AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
+        AND users.gender = $2;`,
+        [user.id, "female"]
+      );
+    } else {
+      relevantUsers = await prismaFromWishInstance.customQuery(
+        `select users.*
+      FROM users 
+      LEFT JOIN status 
+        on users.id = status.destination_user_id 
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1 
+        AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))`,
+        [user.id]
+      );
+    }
+    response
+      .status(200)
+      .json({
+        message: "Found relevant users",
+        users: relevantUsers.data?.rows,
+      });
   }
 );
 
