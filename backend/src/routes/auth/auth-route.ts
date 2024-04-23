@@ -42,10 +42,11 @@ router.post(
       return response.status(400).json({ error: user.errorMessage });
     } else {
       const initialProfilePicture = Array.from({ length: 5 }, () => null);
+      const initialHashtags = Array.from({ length: 10 }, () => null);
       await prismaFromWishInstance.update(
         "users",
-        ["profile_picture"],
-        [initialProfilePicture],
+        ["profile_picture", "hashtags"],
+        [initialProfilePicture, initialHashtags],
         ["id"],
         [user.data.rows[0].id]
       );
@@ -55,11 +56,19 @@ router.post(
         data.username,
         response
       );
-      delete user.data.rows[0].password;
+      const updatedUser = await prismaFromWishInstance.selectAll(
+        "users",
+        ["id"],
+        [user.data.rows[0].id]
+      );
+      if (!updatedUser.data || updatedUser.data.rows.length == 0) {
+        return response.status(400).json({ error: updatedUser.errorMessage });
+      }
+      delete updatedUser.data.rows[0].password;
       response.status(200).json({
         message:
           "User succesfully created, an email as been sent to you to verify your account",
-        user: user.data.rows[0],
+        user: updatedUser.data.rows[0],
       });
     }
     await generateMailToken(user.data.rows[0].id, data.email);
@@ -292,6 +301,34 @@ router.post(
       );
       await deleteToken(request.params.token, user.data.rows[0].id);
       response.status(200).json({ message: "Password succesfully reset" });
+    } catch (error) {
+      response.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
+// Reset password
+router.post(
+  "/auth/updatepassword",
+  authJwtMiddleware,
+  [body("password").isLength({ min: 8, max: 32 })],
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request); // Check for validation errors
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const data = matchedData(request);
+    const user = request.user as CustomUser;
+    try {
+      const hashedPassword = await hashPassword(data.password);
+      await prismaFromWishInstance.update(
+        "users",
+        ["password"],
+        [hashedPassword],
+        ["id"],
+        [user.id]
+      );
+      response.status(200).json({ message: "Password succesfully updated" });
     } catch (error) {
       response.status(500).json({ error: "Internal Server Error" });
     }

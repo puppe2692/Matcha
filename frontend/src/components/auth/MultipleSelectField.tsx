@@ -6,6 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import ListItemText from "@mui/material/ListItemText";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Checkbox from "@mui/material/Checkbox";
+import { useUserContext } from "../../context/UserContext";
 
 interface Props {
   hasError?: boolean;
@@ -57,7 +58,18 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
     },
     ref
   ) => {
+    const { user } = useUserContext();
     const [personName, setPersonName] = React.useState<string[]>([]);
+
+    React.useEffect(() => {
+      if (user) {
+        setPersonName(
+          options
+            .filter((option) => user?.hashtags.includes(option.value))
+            .map((option) => option.value)
+        );
+      }
+    }, [user]);
 
     const handleChange = (event: SelectChangeEvent<typeof personName>) => {
       const {
@@ -86,9 +98,6 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
             "&:hover": {
               backgroundColor: "transparent", // Suppress hover effect
             },
-            // "& .MuiOutlinedInput-root.Mui-focused": {
-            //   borderColor: "#ccc", // Change outline color when focused
-            // },
           }}
         >
           <InputLabel id={`${id}-label`}></InputLabel>
@@ -103,7 +112,6 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
             multiple
             value={personName}
             onChange={handleChange}
-            //input={<OutlinedInput label="tag" />}
             renderValue={(selected) => (
               <div style={{ color: "white" }}>
                 {selected
@@ -116,7 +124,11 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
             )}
             MenuProps={MenuProps}
           >
-            <MenuItem disabled value="">
+            <MenuItem
+              disabled
+              value=""
+              style={{ color: "white", backgroundColor: "#374151" }}
+            >
               {placeholder}
             </MenuItem>
             {options.map((options) => (

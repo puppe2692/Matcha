@@ -12,6 +12,7 @@ import SigninPage from "./pages/SigninPage";
 import SignupPage from "./pages/SignupPage";
 import SignOutPage from "./pages/SignOutPage";
 import LoadingPage from "./pages/LoadingPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -25,6 +26,7 @@ function App(): JSX.Element {
           <Route path="/signin" Component={SigninPage} />
           <Route path="/signup" Component={SignupPage} />
           <Route path="/signout" Component={SignOutPage} />
+          <Route path="/settings" Component={SettingsPage} />
           <Route path="/page1" Component={Page1} />
           <Route path="/page2" Component={Page2} />
           <Route path="/chat" Component={ChatPage} />

@@ -129,4 +129,53 @@ router.post(
   }
 );
 
+router.post(
+  "/users/update_profile",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const allowedFields = ["gender", "sex_pref", "bio", "age", "hashtags"];
+    const updateFields: { [key: string]: any } = {};
+
+    // Iterate through allowed fields and add them to updateFields object if present in request body
+    allowedFields.forEach((field) => {
+      if (request.body[field] !== undefined) {
+        updateFields[field] = request.body[field];
+      }
+    });
+
+    // Check if any fields were provided in the request body
+    if (Object.keys(updateFields).length === 0) {
+      return response
+        .status(400)
+        .json({ error: "No fields to update provided" });
+    }
+
+    // Execute update query with the provided fields
+    try {
+      await prismaFromWishInstance.update(
+        "users",
+        Object.keys(updateFields), // Use Object.keys to get an array of field names
+        Object.values(updateFields), // Use Object.values to get an array of field values
+        ["id"],
+        [(request.user! as CustomUser).id]
+      );
+
+      const updatedUser = await prismaFromWishInstance.selectAll(
+        "users",
+        ["id"],
+        [(request.user! as CustomUser).id]
+      );
+
+      console.log("UPDATED USER", updatedUser.data?.rows[0]);
+      response.status(200).json({
+        message: "User profile updated",
+        user: updatedUser.data?.rows[0],
+      });
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      response.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
 export default router;

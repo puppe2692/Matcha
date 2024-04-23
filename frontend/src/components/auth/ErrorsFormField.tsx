@@ -13,6 +13,7 @@ interface Props {
   input?: string;
   label: string;
   placeholder: string;
+  user?: any;
   rules?: object;
   type?: string;
   options?: { value: string; label: string }[];

@@ -8,6 +8,8 @@ const HomePage: React.FC = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
   console.log("GENDER", user?.gender);
+  console.log("HASTAGS", user?.hashtags);
+  console.log("PIC", user?.profile_picture);
   return (
     <div>
       {user?.gender === undefined || user?.gender === null ? (
