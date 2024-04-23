@@ -4,9 +4,8 @@ import prismaFromWishInstance from "./prismaFromWish";
 import * as data from "../../data/fake_profiles.json";
 import { hashPassword } from "../routes/auth/auth-utils";
 
-
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), gender VARCHAR(32), sex_pref VARCHAR(32), bio VARCHAR(500), hashtags VARCHAR(500), age INTEGER, verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, profile_picture VARCHAR(255)[5] , created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email), CONSTRAINT profile_picture_length CHECK (array_length(profile_picture, 1) <= 5)";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), gender VARCHAR(32), sex_pref VARCHAR(32), bio VARCHAR(500), hashtags VARCHAR(255)[5], age INTEGER, verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, profile_picture VARCHAR(255)[5], latitude FLOAT DEFAULT 48, longitude FLOAT DEFAULT 2, fame_rating INTEGER DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email), CONSTRAINT profile_picture_length CHECK (array_length(profile_picture, 1) <= 5)";
 
 const tokenField: string =
   "id SERIAL PRIMARY KEY, token VARCHAR(255) NOT NULL, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 hour'";
@@ -68,21 +67,53 @@ class Database {
   }
 
   async populateExample(data: any): Promise<void> {
-    console.log("-------------------------------------------")
-    console.log("Starting db population")
-    console.log(data.default)
+    console.log("-------------------------------------------");
+    console.log("Starting db population");
+    console.log(data.default);
     for (const user of data.default) {
-      console.log("creating user")
-      console.log(user)
+      console.log("creating user");
+      console.log(user);
       user.password = await hashPassword(user.password);
       await prismaFromWishInstance.create(
         "users",
-        ["username", "email", "password", "firstname", "lastname", "gender", "sex_pref", "bio", "hashtags", "age", "verified", "profile_picture"],
-        [user.username, user.email, user.password, user.firstname, user.lastname, user.gender, user.sex_pref, user.bio, user.hashtags, user.age, user.verified, user.profile_picture]
+        [
+          "username",
+          "email",
+          "password",
+          "firstname",
+          "lastname",
+          "gender",
+          "sex_pref",
+          "bio",
+          "hashtags",
+          "age",
+          "verified",
+          "profile_picture",
+          "latitude",
+          "longitude",
+          "fame_rating",
+        ],
+        [
+          user.username,
+          user.email,
+          user.password,
+          user.firstname,
+          user.lastname,
+          user.gender,
+          user.sex_pref,
+          user.bio,
+          user.hashtags,
+          user.age,
+          user.verified,
+          user.profile_picture,
+          user.latitude,
+          user.longitude,
+          user.fame_rating,
+        ]
       );
     }
-    console.log("-------------------------------------------")
-    console.log("Ending db population")
+    console.log("-------------------------------------------");
+    console.log("Ending db population");
   }
 }
 

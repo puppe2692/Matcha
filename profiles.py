@@ -6,6 +6,8 @@ import json
 
 fake = Faker()
 
+hashtags = ["#hiking", "#cooking", "#movies", "#nature", "#sport", "#foodie", "#well-being", "#cat", "#dog", "#livelaughlove", "#gaming", "#kids"]
+
 def fetch_random_user():
 	try:
 		response = requests.get('https://randomuser.me/api/')
@@ -26,10 +28,13 @@ def convert_data(data):
 	res["gender"] = data["gender"]
 	res["sex_pref"] = random.choice(['Man', 'Woman', 'Both'])
 	res["bio"] = fake.text(max_nb_chars=200)
-	res["hashtags"] = ",".join([f'#{fake.word()}' for _ in range(random.randint(1, 5))])
+	res["hashtags"] = random.sample(hashtags, random.randint(1, 5))
 	res["age"] = data["dob"]["age"]
 	res["verified"] = True
 	res["profile_picture"] = [data["picture"]["medium"]]
+	res["latitude"] = random.uniform(44.0, 50.0)
+	res["longitude"] = random.uniform(0.0, 5.0)
+	res["fame_rating"] = random.randint(0, 20)
 	return res
 
 

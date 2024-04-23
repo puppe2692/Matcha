@@ -33,7 +33,8 @@ router.get(
     }
     const user = request.user as CustomUser;
     let relevantUsers: PrismaReturn;
-    if (user.sexual_preference === "Man") {
+    console.log(user.sex_pref);
+    if (user.sex_pref === "Male") {
       relevantUsers = await prismaFromWishInstance.customQuery(
         `select users.*
       FROM users 
@@ -45,7 +46,7 @@ router.get(
         AND users.gender = $2;`,
         [user.id, "male"]
       );
-    } else if (user.sexual_preference === "Woman") {
+    } else if (user.sex_pref === "Female") {
       relevantUsers = await prismaFromWishInstance.customQuery(
         `select users.*
       FROM users 
@@ -69,12 +70,10 @@ router.get(
         [user.id]
       );
     }
-    response
-      .status(200)
-      .json({
-        message: "Found relevant users",
-        users: relevantUsers.data?.rows,
-      });
+    response.status(200).json({
+      message: "Found relevant users",
+      users: relevantUsers.data?.rows,
+    });
   }
 );
 

@@ -10,9 +10,12 @@ export interface CustomUser {
   created_at: Date;
   updated_at: Date;
   gender: string;
-  sexual_preference: string;
+  sex_pref: string;
   bio: string;
   age: number;
-  hastags: string;
+  hastags: string[5];
   profile_picture: string[5];
+  latitude: number;
+  longitude: number;
+  fame_rating: number;
 }
