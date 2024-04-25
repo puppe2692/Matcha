@@ -13,6 +13,7 @@ import SignupPage from "./pages/SignupPage";
 import SignOutPage from "./pages/SignOutPage";
 import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
+import UserProfile from "./pages/UserProfilPage";
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -30,6 +31,7 @@ function App(): JSX.Element {
           <Route path="/page1" Component={Page1} />
           <Route path="/page2" Component={Page2} />
           <Route path="/chat" Component={ChatPage} />
+          <Route path="/profile/:username" Component={UserProfile} />
           <Route path="*" Component={Page404} />
         </Routes>
       </WebSocketProvider>

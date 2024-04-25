@@ -233,4 +233,26 @@ router.post(
   }
 );
 
+router.get(
+  "/users/profile/:username",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request); // Check for validation errors
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const username = request.params.username;
+    const user = await prismaFromWishInstance.selectAll(
+      "users",
+      ["username"],
+      [username]
+    );
+    if (user.data?.rows.length === 0) {
+      return response.status(404).json({ error: "User not found" });
+    }
+    delete user.data?.rows[0].password;
+    response.status(200).json(user.data?.rows[0]);
+  }
+);
+
 export default router;
