@@ -20,4 +20,5 @@ export type User = {
   fame_rating: number;
   distance: number;
   commonInterests: number;
+  matchingScore: number;
 };
