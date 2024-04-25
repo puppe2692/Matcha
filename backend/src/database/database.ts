@@ -1,11 +1,11 @@
 import pool from "./db_pool";
 import { Pool, QueryResult } from "pg";
 import prismaFromWishInstance from "./prismaFromWish";
-
-// here is to define the db initialization
+import * as data from "../../data/fake_profiles.json";
+import { hashPassword } from "../routes/auth/auth-utils";
 
 const usersField: string =
-  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), gender VARCHAR(32), sex_pref VARCHAR(32), bio VARCHAR(500), hashtags VARCHAR(500), age INTEGER, verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, profile_picture VARCHAR(255)[5] , created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email), CONSTRAINT profile_picture_length CHECK (array_length(profile_picture, 1) <= 5)";
+  "id SERIAL PRIMARY KEY, username VARCHAR(32), email VARCHAR(32), password VARCHAR(255), firstname VARCHAR(32), lastname VARCHAR(32), gender VARCHAR(32), sex_pref VARCHAR(32), bio VARCHAR(500), hashtags VARCHAR(255)[5], age INTEGER, verified BOOLEAN DEFAULT FALSE, connection_status BOOLEAN DEFAULT FALSE, profile_picture VARCHAR(255)[5], latitude FLOAT DEFAULT 48, longitude FLOAT DEFAULT 2, fame_rating INTEGER DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_name UNIQUE(username), CONSTRAINT unique_email UNIQUE(email), CONSTRAINT profile_picture_length CHECK (array_length(profile_picture, 1) <= 5)";
 
 const tokenField: string =
   "id SERIAL PRIMARY KEY, token VARCHAR(255) NOT NULL, user_id INTEGER REFERENCES users(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 hour'";
@@ -39,7 +39,7 @@ class Database {
         await this.initTable("connection", connectionField);
         await this.initTable("messages", messageField);
         await this.initTable("notifications", notificationField);
-        // await this.populateExample();
+        await this.populateExample(data);
         return true;
       } catch (err) {
         return false;
@@ -66,60 +66,54 @@ class Database {
     );
   }
 
-  async populateExample(): Promise<void> {
-    const usersValues = [
-      ["user1", "user1@example.com", "password1", "John", "Doe", true],
-      ["user2", "user2@example.com", "password2", "Jane", "Smith", true],
-      ["user3", "user3@example.com", "password3", "Alice", "Johnson", true],
-      ["user4", "user4@example.com", "password4", "Bob", "Brown", true],
-      ["user5", "user5@example.com", "password5", "Carol", "Davis", true],
-    ];
-
-    for (const user of usersValues) {
+  async populateExample(data: any): Promise<void> {
+    console.log("-------------------------------------------");
+    console.log("Starting db population");
+    console.log(data.default);
+    for (const user of data.default) {
+      console.log("creating user");
+      console.log(user);
+      user.password = await hashPassword(user.password);
       await prismaFromWishInstance.create(
         "users",
-        ["username", "email", "password", "firstname", "lastname", "verified"],
-        user
+        [
+          "username",
+          "email",
+          "password",
+          "firstname",
+          "lastname",
+          "gender",
+          "sex_pref",
+          "bio",
+          "hashtags",
+          "age",
+          "verified",
+          "profile_picture",
+          "latitude",
+          "longitude",
+          "fame_rating",
+        ],
+        [
+          user.username,
+          user.email,
+          user.password,
+          user.firstname,
+          user.lastname,
+          user.gender,
+          user.sex_pref,
+          user.bio,
+          user.hashtags,
+          user.age,
+          user.verified,
+          user.profile_picture,
+          user.latitude,
+          user.longitude,
+          user.fame_rating,
+        ]
       );
     }
-
-    const connectionsValues = [
-      [1, 2, "2024-04-09 08:00:00"],
-      [1, 3, "2024-04-09 08:05:00"],
-      [1, 4, "2024-04-09 08:10:00"],
-      [2, 3, "2024-04-09 08:15:00"],
-      [3, 4, "2024-04-09 08:20:00"],
-      [4, 5, "2024-04-09 08:25:00"],
-    ];
-
-    for (const connection of connectionsValues) {
-      await prismaFromWishInstance.create(
-        "connection",
-        ["origin_user_id", "destination_user_id", "date"],
-        connection
-      );
-    }
-
-    const messagesValues = [
-      [1, 2, "2024-04-09 08:00:00", "Hello, Jane!", true],
-      [2, 1, "2024-04-09 08:05:00", "Hi, John!", true],
-      [3, 1, "2024-04-09 08:10:00", "How are you, Alice?", true],
-      [3, 2, "2024-04-09 08:15:00", "I'm doing well, John. Thanks!", true],
-      [4, 3, "2024-04-09 08:20:00", "Hey, Bob!", true],
-      [3, 4, "2024-04-09 08:22:00", "Hey, how are you!", false],
-      [3, 4, "2024-04-09 08:22:00", "Long time no see", false],
-      [3, 4, "2024-04-09 08:22:17", "Because I was at sea", false],
-      [3, 4, "2024-04-09 08:22:44", "Hahaha I am so funny", false],
-      [5, 4, "2024-04-09 08:25:00", "Hi, Carol!", false],
-    ];
-
-    for (const message of messagesValues) {
-      await prismaFromWishInstance.create(
-        "messages",
-        ["sender_id", "receiver_id", "date_sent", "content", "seen"],
-        message
-      );
-    }
+    console.log("-------------------------------------------");
+    console.log("Ending db population");
   }
 }
 

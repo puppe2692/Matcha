@@ -1,142 +1,186 @@
-import React, { useState } from "react";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Slider,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { User } from "../types";
+import axios from "axios";
+import { useUserContext } from "../context/UserContext";
+import ProfileGrid from "../components/ProfileGrid";
+import SearchFilterSection from "../components/SearchFilterSection";
+import { useSearchParams } from "react-router-dom";
 
-type SortType = "" | "Age" | "Common interests" | "Distance" | "Fame rating";
-
-// Sample user data
-const users = [
-  { name: "Alice", age: 25, gender: "Female" },
-  { name: "Bob", age: 30, gender: "Male" },
-  { name: "Charlie", age: 22, gender: "Male" },
-  { name: "Diana", age: 28, gender: "Female" },
-];
+export type SortType =
+  | ""
+  | "Age"
+  | "Common interests"
+  | "Distance"
+  | "Fame rating";
 
 const Page2: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [minAge, setMinAge] = useState<number>(18);
-  const [maxAge, setMaxAge] = useState<number>(99);
-  const [genderFilter, setGenderFilter] = useState<string | null>(null);
-  const [sortType, setSortType] = useState<SortType>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const { user } = useUserContext();
+  const searchParams = useSearchParams({
+    sortType: "",
+    ascending: "true",
+  })[0];
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.age >= minAge &&
-      user.age <= maxAge &&
-      (genderFilter ? user.gender === genderFilter : true) &&
-      (searchTerm
-        ? user.name.toLowerCase().includes(searchTerm.toLowerCase())
-        : true)
-  );
+  const sortType = (searchParams.get("sortType") as SortType) || "";
+  const ascending = searchParams.get("ascending") === "true";
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleMinAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMinAge(parseInt(event.target.value));
-  };
-
-  const handleMaxAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMaxAge(parseInt(event.target.value));
-  };
-
-  const handleGenderFilterChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+  const findDistanceUser = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
   ) => {
-    setGenderFilter(event.target.value === "All" ? null : event.target.value);
+    const r = 6371;
+    const p = Math.PI / 180;
+    const a =
+      0.5 -
+      Math.cos((lat2 - lat1) * p) / 2 +
+      (Math.cos(lat1 * p) *
+        Math.cos(lat2 * p) *
+        (1 - Math.cos((lon2 - lon1) * p))) /
+        2;
+
+    return 2 * r * Math.asin(Math.sqrt(a));
   };
+
+  const findCommonInterests = (user1: User, user2: User) => {
+    var i = 0;
+    for (const interest in user1.hashtags) {
+      if (user2.hashtags.includes(interest)) {
+        i++;
+      }
+    }
+    return i;
+  };
+
+  const calculateScore = (user1: User, user2: User) => {
+    // we calculate a compund score based on distance, age gap, common interests and fame rating
+    // for each score we calculate a value between 0 and 1
+
+    // for distance we use an exponential decay function in order to give more weight to closer users
+    // here for instance a user 1km away will have a score of 0.99, a user 10km away a score of 0.9 and a user 100km away will have a score of 0.37
+    const distanceScore = 1 / Math.exp(user2.distance / 100);
+
+    //same for age gap with a lower scale factor
+    const ageScore = 1 / Math.exp(Math.abs(user1.age - user2.age) / 5);
+
+    // for common interests we use a defined value that gives more value to the first common interests
+    let commonInterestsScore = 0;
+    if (user2.commonInterests >= 5) {
+      commonInterestsScore = 1;
+    } else if (user2.commonInterests === 4) {
+      commonInterestsScore = 0.9;
+    } else if (user2.commonInterests === 3) {
+      commonInterestsScore = 0.75;
+    } else if (user2.commonInterests === 2) {
+      commonInterestsScore = 0.55;
+    } else if (user2.commonInterests === 1) {
+      commonInterestsScore = 0.3;
+    }
+
+    // for fame rating we use a linear scale based on the maximum fame rating of 100
+    const fameRatingScore = user2.fame_rating / 100;
+
+    // and then we use different weights, age is the most important then distance then common interests and fame rating
+    return (
+      3 * distanceScore +
+      5 * ageScore +
+      2 * commonInterestsScore +
+      fameRatingScore
+    );
+  };
+
+  const sortUsers = (
+    sortingMode: SortType,
+    sortedAscending: boolean = true
+  ) => {
+    if (sortingMode === "") {
+      // in default mode we don't sort by ascending or descending we just show the most relevant users
+      setUsers((prevUsers) =>
+        [...prevUsers].sort((a, b) => b.matchingScore - a.matchingScore)
+      );
+      return;
+    } else if (sortingMode === "Age") {
+      setUsers((prevUsers) =>
+        [...prevUsers].sort((a, b) =>
+          sortedAscending ? a.age - b.age : b.age - a.age
+        )
+      );
+    } else if (sortingMode === "Distance") {
+      setUsers((prevUsers) =>
+        [...prevUsers].sort((a, b) =>
+          sortedAscending ? a.distance - b.distance : b.distance - a.distance
+        )
+      );
+    } else if (sortingMode === "Fame rating") {
+      setUsers((prevUsers) =>
+        [...prevUsers].sort((a, b) =>
+          sortedAscending
+            ? a.fame_rating - b.fame_rating
+            : b.fame_rating - a.fame_rating
+        )
+      );
+    } else if (sortingMode === "Common interests") {
+      setUsers((prevUsers) =>
+        [...prevUsers].sort((a, b) =>
+          sortedAscending
+            ? a.commonInterests - b.commonInterests
+            : b.commonInterests - a.commonInterests
+        )
+      );
+    }
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
+          { withCredentials: true }
+        );
+        setUsers(response.data.users);
+        setUsers((prevUsers) =>
+          prevUsers.map((curUser) => {
+            curUser.distance = findDistanceUser(
+              user.latitude,
+              user.longitude,
+              curUser.latitude,
+              curUser.longitude
+            );
+            curUser.commonInterests = findCommonInterests(user, curUser);
+            curUser.matchingScore = calculateScore(user, curUser);
+            return curUser;
+          })
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUsers();
+  }, [user]);
+
+  useEffect(() => {
+    sortUsers(sortType, ascending);
+  }, [sortType, ascending, users]);
 
   return (
     <div className="max-w-screen mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <input
-          type="text"
-          placeholder="Search by name..."
-          className="w-1/3 px-4 py-2 border border-gray-300 rounded-md"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        <div className="w-1/3 mx-4 flex flex-col items-center">
-          <label className="block mb-2 text-sm font-semibold" htmlFor="minAge">
-            Filter by age:
-          </label>
-          <Slider
-            getAriaLabel={() => "Age choice range"}
-            value={[minAge, maxAge]}
-            step={1}
-            min={18}
-            max={99}
-            onChange={(_, newValue) => {
-              console.log(newValue);
-              if (Array.isArray(newValue)) {
-                setMinAge(newValue[0]);
-                setMaxAge(newValue[1]);
-              }
-            }}
-            valueLabelDisplay="auto"
-            getAriaValueText={(value) => value.toString()}
-          />
-          <p>
-            {minAge} - {maxAge} year old
-          </p>
-        </div>
-        <div className="w-1/3 mx-4">
-          <label
-            className="block mb-2 text-sm font-semibold"
-            htmlFor="genderFilter"
-          >
-            Gender:
-          </label>
-          <select
-            id="genderFilter"
-            onChange={handleGenderFilterChange}
-            value={genderFilter || "All"}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
-          >
-            <option value="All">All</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-        <FormControl fullWidth>
-          <InputLabel id="sort-by">Sort by</InputLabel>
-          <Select
-            labelId="sort-by"
-            id="sort-by"
-            value={sortType}
-            label="Sort by"
-            onChange={(e) => setSortType(e.target.value as SortType)}
-          >
-            {["", "Age", "Common interests", "Distance", "Fame rating"].map(
-              (sortType) => (
-                <MenuItem value={sortType}>
-                  {sortType === "" ? <em>Default</em> : sortType}
-                </MenuItem>
-              )
-            )}
-          </Select>
-        </FormControl>
-      </div>
-      <ul>
-        {filteredUsers.map((user, index) => (
-          <li
-            key={index}
-            className="flex items-center justify-between p-4 border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            <div>
-              <p className="text-lg font-semibold">{user.name}</p>
-              <p>Age: {user.age}</p>
-              <p>Gender: {user.gender}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <SearchFilterSection
+        users={users}
+        setUsers={setUsers}
+        setFilteredUsers={setFilteredUsers}
+        sortUsers={sortUsers}
+      />
+
+      {user ? (
+        <ProfileGrid users={filteredUsers} />
+      ) : (
+        <p>Waiting for authentication...</p>
+      )}
     </div>
   );
 };

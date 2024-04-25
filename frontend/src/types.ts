@@ -10,9 +10,15 @@ export type User = {
   created_at: Date;
   updated_at: Date;
   gender: string;
-  sexual_preference: string;
+  sex_pref: string;
   bio: string;
   age: number;
-  hastags: string;
+  hashtags: string[];
   profile_picture: string[];
+  latitude: number;
+  longitude: number;
+  fame_rating: number;
+  distance: number;
+  commonInterests: number;
+  matchingScore: number;
 };
