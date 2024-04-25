@@ -2,6 +2,7 @@ import React from "react";
 import { Control, Controller, FieldErrors, FieldValues } from "react-hook-form";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
+import MultipleSelectCheckmarks from "./MultipleSelectField";
 import { ErrorMessage } from "@hookform/error-message";
 
 interface Props {
@@ -12,7 +13,8 @@ interface Props {
   input?: string;
   label: string;
   placeholder: string;
-  rules: object;
+  user?: any;
+  rules?: object;
   type?: string;
   options?: { value: string; label: string }[];
 }
@@ -43,6 +45,15 @@ const ErrorsFormField: React.FC<Props> = ({
         </label>
         {input === "select" ? (
           <SelectField
+            {...field}
+            id={controllerName}
+            options={options || []} // Pass options to SelectField
+            placeholder={placeholder}
+            hasError={hasError}
+            onBlur={field.onBlur}
+          />
+        ) : input === "multiple" ? (
+          <MultipleSelectCheckmarks
             {...field}
             id={controllerName}
             options={options || []} // Pass options to SelectField

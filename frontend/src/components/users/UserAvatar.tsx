@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { CCloseButton } from "@coreui/react";
+import CloseButton from "react-bootstrap/CloseButton";
 import { useUserContext } from "../../context/UserContext";
 import axios from "axios";
 
@@ -15,6 +15,7 @@ const Avatar = ({
   const [image, setImage] = useState<boolean>(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Changing image");
     const selectedFile = e.target.files?.[0];
     if (
       selectedFile &&
@@ -26,7 +27,7 @@ const Avatar = ({
       const formData = new FormData();
       formData.append("image", selectedFile);
       formData.append("url", newImageUrl);
-      formData.append("index", String(index));
+      formData.append("index", String(index + 1));
       axios
         .post(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/upload_images`,
@@ -57,15 +58,16 @@ const Avatar = ({
 
   const clearImage = () => {
     const formData = new FormData();
-    console.log("INDEX", index);
-    console.log("INDEX STRING", String(index));
+    console.log("INDEX F", index);
+    console.log("INDEX +1 F", index);
+    console.log("INDEX STRING F", String(index));
     formData.append("index", String(index));
-    console.log("FORMDATA", formData);
+    //console.log("FORMDATA", formData);
     axios
       .post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/clear_image`,
         {
-          index: index,
+          index: index + 1,
         },
         { withCredentials: true }
       )
@@ -109,7 +111,7 @@ const Avatar = ({
       {image && (
         <button
           type="button"
-          className="text-white bg-gray-500 border border-gray-500 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
+          className="text-gray-400 bg-gray-700 border border-gray-600 rounded-lg text-sm w-6 h-6 ml-auto inline-flex justify-center items-center absolute -bottom-1 -right-1"
           onClick={clearImage}
         >
           X<span className="sr-only">Close modal</span>
