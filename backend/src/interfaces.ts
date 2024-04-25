@@ -13,7 +13,7 @@ export interface CustomUser {
   sex_pref: string;
   bio: string;
   age: number;
-  hashtags: string;
+  hashtags: string[];
   profile_picture: string[5];
   latitude: number;
   longitude: number;

@@ -151,7 +151,7 @@ const SettingsPage: React.FC = () => {
               hasError={!!errors.hashtags}
               controllerName="hashtags"
               label="Hashtags"
-              placeholder={user?.hashtags || ""}
+              placeholder={user?.hashtags.join(",") || ""}
               type="hashtags"
               options={["#music", "#cinema", "#voyage", "#art", "#sex"].map(
                 (value) => ({
