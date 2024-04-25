@@ -15,4 +15,7 @@ export interface CustomUser {
   age: number;
   hashtags: string;
   profile_picture: string[5];
+  latitude: number;
+  longitude: number;
+  fame_rating: number;
 }

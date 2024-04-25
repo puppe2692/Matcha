@@ -13,6 +13,12 @@ export type User = {
   sex_pref: string;
   bio: string;
   age: number;
-  hashtags: string;
+  hashtags: string[];
   profile_picture: string[];
+  latitude: number;
+  longitude: number;
+  fame_rating: number;
+  distance: number;
+  commonInterests: number;
+  matchingScore: number;
 };
