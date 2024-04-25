@@ -18,7 +18,7 @@ router.get(
     }
     const user = request.user as CustomUser;
     delete user.password;
-    console.log(user);
+    console.log("USER", user);
     response.status(200).json(user);
   }
 );
@@ -33,7 +33,6 @@ router.get(
     }
     const user = request.user as CustomUser;
     let relevantUsers: PrismaReturn;
-    console.log(user.sex_pref);
     if (user.sex_pref === "Male") {
       relevantUsers = await prismaFromWishInstance.customQuery(
         `select users.*
@@ -77,6 +76,29 @@ router.get(
   }
 );
 
+router.put(
+  "/users/update_location",
+  authJwtMiddleware,
+  [body("latitude").isNumeric(), body("longitude").isNumeric()],
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request); // Check for validation errors
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const data = matchedData(request);
+    await prismaFromWishInstance.update(
+      "users",
+      ["latitude", "longitude"],
+      [data.latitude, data.longitude],
+      ["id"],
+      [(request.user! as CustomUser).id]
+    );
+    response.status(200).json({
+      message: "Updated user location",
+    });
+  }
+);
+
 router.post(
   "/users/firstco",
   authJwtMiddleware,
@@ -90,13 +112,11 @@ router.post(
     body("hashtags").isArray(),
   ],
   async (request: Request, response: Response) => {
-    console.log("REQUEST", request.body);
     const errors = validationResult(request);
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() });
     }
     const data = matchedData(request);
-    console.log((request.user! as CustomUser).id);
     await prismaFromWishInstance.update(
       "users",
       ["gender", "sex_pref", "bio", "age", "hashtags"],

@@ -16,7 +16,6 @@ const storage = multer.diskStorage({
     callback(null, destinationDir);
   },
   filename: (request, file, callback) => {
-    console.log("FILE MDDLWARE", file);
     callback(null, Date.now() + "_" + file.originalname);
   },
 });
