@@ -89,7 +89,6 @@ export class WebSocket {
     originId: number,
     originUsername: string
   ) => {
-    console.log("username", originUsername);
     this.io.in(destinationId.toString()).emit("notify-match", {
       userId: originId,
       username: originUsername,

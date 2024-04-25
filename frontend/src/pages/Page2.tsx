@@ -16,7 +16,11 @@ export type SortType =
 const Page2: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const { user } = useUserContext();
+  const { user, updateUser } = useUserContext();
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const searchParams = useSearchParams({
     sortType: "",
     ascending: "true",
@@ -132,12 +136,64 @@ const Page2: React.FC = () => {
     }
   };
 
+  const updateUserLocation = async () => {
+    if (!location || !user) {
+      return;
+    }
+    try {
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
+        {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+        { withCredentials: true }
+      );
+      updateUser({
+        ...user,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchIPLocation = async () => {
+    const response = await axios.get("https://ipapi.co/json/");
+    setLocation({
+      latitude: response.data.latitude,
+      longitude: response.data.longitude,
+    });
+    updateUserLocation();
+  };
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          updateUserLocation();
+        },
+        () => {
+          fetchIPLocation();
+        }
+      );
+    } else {
+      fetchIPLocation();
+    }
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       if (!user) {
         return;
       }
       try {
+        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
           { withCredentials: true }
@@ -156,30 +212,43 @@ const Page2: React.FC = () => {
             return curUser;
           })
         );
+        sortUsers(sortType, ascending);
       } catch (error) {
         console.error(error);
       }
     };
     fetchUsers();
+  }, [user, setUsers, user?.latitude, user?.longitude, user?.hashtags]);
+
+  useEffect(() => {
+    if (!user) return;
+    getLocation();
   }, [user]);
 
   useEffect(() => {
+    if (!user || !users) return;
     sortUsers(sortType, ascending);
-  }, [sortType, ascending, users]);
+  }, [sortType, ascending, user]);
 
   return (
     <div className="max-w-screen mx-auto p-4">
-      <SearchFilterSection
-        users={users}
-        setUsers={setUsers}
-        setFilteredUsers={setFilteredUsers}
-        sortUsers={sortUsers}
-      />
-
       {user ? (
-        <ProfileGrid users={filteredUsers} />
+        location ? (
+          <>
+            <SearchFilterSection
+              users={users}
+              setUsers={setUsers}
+              setFilteredUsers={setFilteredUsers}
+              sortUsers={sortUsers}
+            />
+
+            <ProfileGrid users={filteredUsers} />
+          </>
+        ) : (
+          <p>Please select geolocation option</p>
+        )
       ) : (
-        <p>Waiting for authentication...</p>
+        <p>Please sign in</p>
       )}
     </div>
   );
