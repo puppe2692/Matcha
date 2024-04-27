@@ -18,7 +18,7 @@ router.get(
     }
     const user = request.user as CustomUser;
     delete user.password;
-    console.log("USER", user);
+    // console.log("USER", user);
     response.status(200).json(user);
   }
 );
