@@ -72,17 +72,17 @@ export class WebSocket {
     });
 
     //TODO: update last seen in the db
-    socket.on("logout", (deconnectionId: string) => {
-      if (deconnectionId && deconnectionId !== "") {
-        socket.leave(deconnectionId);
-        const socketsInRoom = this.io.sockets.adapter.rooms.get(deconnectionId);
+    socket.on("logout", () => {
+      if (userId && userId !== "") {
+        socket.leave(userId);
+        const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
         if (socketsInRoom) {
           socketsInRoom.forEach((socketId) => {
             const socket = this.io.sockets.sockets.get(socketId);
-            socket!.leave(deconnectionId);
+            socket!.leave(userId);
           });
         }
-        socket.broadcast.emit("user left", deconnectionId);
+        socket.broadcast.emit("user left", userId);
       }
       userId = "";
     });
