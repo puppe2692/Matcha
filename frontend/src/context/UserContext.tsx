@@ -5,6 +5,7 @@ import axios from "axios";
 interface Prop {
   user: User | null;
   online: boolean;
+  loading: boolean;
   loginUser: (userData: User | null) => void;
   logoutUser: () => void;
   updateUser: (userData: Partial<User>) => void;
@@ -13,6 +14,7 @@ interface Prop {
 export const UserContext = React.createContext<Prop>({
   user: null,
   online: false,
+  loading: true,
   loginUser: () => {},
   logoutUser: () => {},
   updateUser: () => {},
@@ -21,6 +23,7 @@ export const UserContext = React.createContext<Prop>({
 export const UserProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [online, setOnline] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,8 +36,10 @@ export const UserProvider = ({ children }: any) => {
         );
         console.log("USER FROM USER CONTEXT", response.data);
         setUser(response.data);
+        setLoading(false);
       } catch (error: any) {
         setUser(null);
+        setLoading(false);
       }
     };
     fetchUser();
@@ -43,11 +48,13 @@ export const UserProvider = ({ children }: any) => {
   const loginUser = (userData: User | null) => {
     setUser(userData);
     setOnline(true);
+    setLoading(false);
   };
 
   const logoutUser = () => {
     setUser(null);
     setOnline(false);
+    setLoading(false);
   };
 
   const updateUser = (userData: Partial<User>) => {
@@ -61,7 +68,7 @@ export const UserProvider = ({ children }: any) => {
 
   return (
     <UserContext.Provider
-      value={{ user, online, loginUser, logoutUser, updateUser }}
+      value={{ user, online, loading, loginUser, logoutUser, updateUser }}
     >
       {children}
     </UserContext.Provider>

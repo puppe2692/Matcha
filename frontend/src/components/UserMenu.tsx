@@ -23,7 +23,7 @@ const MenuLink: React.FC<{
 
 const UserMenu: React.FC = () => {
   const [showInfo, setShowInfo] = useState<boolean>(false);
-  const { logoutUser } = useUserContext();
+  const { user } = useUserContext();
   const size = 8;
 
   return (
@@ -38,6 +38,7 @@ const UserMenu: React.FC = () => {
           className="flex mr-3 text-sm bg-gray-800 rounded-full lg:mr-0 active:ring-4 active:ring-gray-600"
           onClick={() => setShowInfo((prevval) => !prevval)}
         >
+          {/* TODO: user user profile picture */}
           <img
             className={`w-${size} h-${size} rounded-full`}
             src="/norminet.jpeg"
@@ -48,7 +49,7 @@ const UserMenu: React.FC = () => {
         {showInfo && (
           <div className="z-50 absolute top-full right-0 mt-2 w-48 py-2 rounded-md shadow-xl bg-gray-800 block">
             <div className="px-4 py-3">
-              <span className="block text-sm text-white">Norminet</span>
+              <span className="block text-sm text-white">{user?.username}</span>
             </div>
             <ul className="py-2">
               <MenuLink
@@ -61,7 +62,6 @@ const UserMenu: React.FC = () => {
                 href="/signout"
                 onClick={() => {
                   setShowInfo((prevval) => !prevval);
-                  logoutUser();
                 }}
               />
             </ul>
