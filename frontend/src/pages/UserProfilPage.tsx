@@ -4,7 +4,14 @@ import { useUserContext } from "../context/UserContext";
 import NotConnected from "../components/NotConnected";
 import NotFound from "../components/NotFound";
 import Carousel from "../components/Carousel";
+import ImageSlider from "../components/Caroussel";
 import { useParams } from "react-router-dom";
+
+const Yassine = require("./Imagetest/Yassine.jpeg");
+const deux = require("./Imagetest/2.png");
+const trois = require("./Imagetest/3.jpeg");
+
+const images = [Yassine, deux, trois];
 
 interface userProfils {
   username: string;
@@ -50,15 +57,15 @@ const UserProfile: React.FC = () => {
   if (!userProfile) return <NotFound />;
 
   return (
-    <div>
-      <h1>{userProfile.username}</h1>
-      <p>{userProfile.bio}</p>
-      <p>{userProfile.profile_picture[0]}</p>
-      <p>{userProfile.profile_picture[1]}</p>
-      <p>{userProfile.profile_picture[2]}</p>
-      <p>{userProfile.profile_picture[3]}</p>
-      <p>{userProfile.profile_picture[4]}</p>
-      <Carousel images={userProfile.profile_picture} />
+    <div
+      style={{
+        maxWidth: "1200px",
+        width: "100%",
+        aspectRatio: "16/9",
+        margin: "0 auto",
+      }}
+    >
+      <ImageSlider images={images} />
     </div>
   );
 };
