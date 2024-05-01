@@ -13,20 +13,60 @@ const Avatar = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, updateUser } = useUserContext();
   const [image, setImage] = useState<boolean>(false);
+  const [imageUpdate, setImageUpdate] = useState<string | null>(null);
+  const [img, setImg] = useState<string | null>();
+
+  useEffect(() => {
+    const fetchImg = async () => {
+      if (!user) return;
+      try {
+        const response = await axios.get(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${user?.id}`,
+          {
+            params: { id: user?.id, index: index },
+            responseType: "arraybuffer",
+            withCredentials: true,
+          }
+        );
+        console.log("RESPONSE", response.data);
+        const base64Image = btoa(
+          new Uint8Array(response.data).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ""
+          )
+        );
+        //console.log("BEFORE BASE64 IMAGE", base64Image, "INDEX", index);
+        setImg(base64Image);
+        setImageUpdate(`data:image/jpeg;base64,${base64Image}`);
+        setImage(true);
+        //console.log("AFTER IMAGE img", img, "INDEX", index);
+      } catch {}
+    };
+    fetchImg();
+  }, [user]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("Changing image");
     const selectedFile = e.target.files?.[0];
+
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageUpdate(reader.result as string);
+      };
+      //console.log("IMAGE UPDATE---------------------", imageUpdate);
+      reader.readAsDataURL(selectedFile);
+    }
     if (
       selectedFile &&
       (selectedFile.type === "image/jpeg" ||
         selectedFile.type === "image/png" ||
         selectedFile.type === "image/jpg")
     ) {
-      const newImageUrl = URL.createObjectURL(selectedFile);
+      // const newImageUrl = URL.createObjectURL(selectedFile);
       const formData = new FormData();
       formData.append("image", selectedFile);
-      formData.append("url", newImageUrl);
+      //formData.append("url", newImageUrl);
       formData.append("index", String(index + 1));
       axios
         .post(
@@ -58,9 +98,7 @@ const Avatar = ({
 
   const clearImage = () => {
     const formData = new FormData();
-    console.log("INDEX F", index);
-    console.log("INDEX +1 F", index);
-    console.log("INDEX STRING F", String(index));
+    console.log("SUPPRESSION IMANGE");
     formData.append("index", String(index));
     //console.log("FORMDATA", formData);
     axios
@@ -77,6 +115,8 @@ const Avatar = ({
           profile_picture: response.data.user.profile_picture,
         });
         setImage(false);
+        if (setImageUpdate) setImageUpdate(null);
+        console.log("IMAGEUPADTE", imageUpdate);
         if (setImageUpload) setImageUpload(false);
       })
       .catch((error) => {
@@ -93,12 +133,8 @@ const Avatar = ({
   return (
     <div className="avatar-container relative">
       <img
-        src={
-          user && user.profile_picture && user.profile_picture[index]
-            ? user.profile_picture[index]
-            : "/avatar-default.jpg"
-        }
-        alt="User Avatar"
+        src={imageUpdate ? imageUpdate : "/avatar-default.jpg"}
+        alt="User Avatar ta mere"
         className="w-[70px] h-[70px] object-cover rounded-full cursor-pointer mb-2"
         onClick={handleImageClick}
       />

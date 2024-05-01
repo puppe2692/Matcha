@@ -123,16 +123,17 @@ router.post(
   async (request: Request, response: Response) => {
     try {
       const user = request.user as CustomUser;
-      // const file = request.file as Express.Multer.File;
+      const file = request.file as Express.Multer.File;
       // const imageBase64 = file.buffer.toString("base64");
       // console.log("IMAGES = " + imageBase64);;
       const url = request.body.url;
       const index = request.body.index;
       console.log("INDEX", index);
+      console.log("FILE", file);
       await prismaFromWishInstance.update(
         "users",
         ["profile_picture[" + index + "]"],
-        [url],
+        [file.filename],
         ["id"],
         [user.id]
       );
@@ -150,6 +151,65 @@ router.post(
     }
   }
 );
+
+router.get(
+  "/users/get_img/:id",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    // console.log("--------GET IMAGE--------");
+    // console.log("PARAMS ID", request.params.id);
+    // console.log("INDEX", request.query.index);
+    const index = Number(request.query.index);
+    const userImg = await prismaFromWishInstance.selectAll(
+      "users",
+      ["id"],
+      [request.params.id]
+    );
+    console.log(
+      "GET USER IMG",
+      userImg.data?.rows[0].profile_picture[index],
+      " INDEX ",
+      index
+    );
+    if (!userImg.data?.rows[0].profile_picture[index]) {
+      // console.log("GET IMAGE NOT FOUND");
+      return response.status(404).json({ error: "Image not found" });
+    }
+    console.log("GET IMAGE FOUND");
+    return response.sendFile(userImg.data?.rows[0].profile_picture[index], {
+      root: "./images",
+    });
+  }
+);
+
+// router.get(
+//   "/users/get_all_img/:id",
+//   authJwtMiddleware,
+//   async (request: Request, response: Response) => {
+//     // console.log("--------GET IMAGE--------");
+//     // console.log("PARAMS ID", request.params.id);
+//     // console.log("INDEX", request.query.index);
+//     const userImg = await prismaFromWishInstance.selectAll(
+//       "users",
+//       ["id"],
+//       [request.params.id]
+//     );
+//     console.log("GET USER IMG", userImg.data?.rows[0].profile_picture);
+//     if (!userImg.data?.rows[0].profile_picture) {
+//       // console.log("GET IMAGE NOT FOUND");
+//       return response.status(404).json({ error: "Images not found" });
+//     }
+//     console.log("GET IMAGE FOUND");
+//     userImg.data?.rows[0].profile_picture.forEach(
+//       async (image: string, index: number) => {
+//         response.sendFile(image, {
+//           root: "./images",
+//         });
+//       }
+//     );
+//     return response.status(200).json({ message: "Images found" });
+//   }
+// );
 
 router.post(
   "/users/clear_image",
