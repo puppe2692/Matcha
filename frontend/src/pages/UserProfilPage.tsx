@@ -57,11 +57,11 @@ const UserProfile: React.FC = () => {
     fetchUserData();
   }, [username]);
 
-  // useEffect(() => {
-  //   fetchImg();
-  //   console.log("CAROUSEL IMAGE 1", carouImage);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    fetchImg();
+    console.log("CAROUSEL IMAGE 1", carouImage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetchImg();

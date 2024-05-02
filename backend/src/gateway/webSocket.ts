@@ -18,14 +18,22 @@ export class WebSocket {
   }
 
   startListeners = (socket: Socket) => {
-    const userId: string = (socket.handshake.query?.id || "") as string;
+    let userId: string = (socket.handshake.query?.id || "") as string;
+    console.log("connection", socket.id, userId);
     if (userId && userId !== "") {
       socket.join(userId);
+      socket.broadcast.emit("user-connected", userId);
     }
 
+    //TODO: update last seen in the db if its a deconnection
     socket.on("disconnect", () => {
       if (userId && userId !== "") {
         socket.leave(userId);
+        const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
+        console.log("sockets in room / userId:", socketsInRoom, userId);
+        if (!socketsInRoom) {
+          socket.broadcast.emit("user-left", userId);
+        }
       }
     });
 
@@ -55,13 +63,16 @@ export class WebSocket {
       }
     );
 
-    socket.on("login", (userId: string) => {
-      if (userId && userId !== "") {
-        socket.join(userId);
+    socket.on("login", (connectionId: string) => {
+      if (connectionId && connectionId !== "") {
+        socket.join(connectionId);
+        socket.broadcast.emit("user-connected", connectionId);
       }
+      userId = connectionId;
     });
 
-    socket.on("logout", (userId: string) => {
+    //TODO: update last seen in the db
+    socket.on("logout", () => {
       if (userId && userId !== "") {
         socket.leave(userId);
         const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
@@ -71,8 +82,18 @@ export class WebSocket {
             socket!.leave(userId);
           });
         }
+        socket.broadcast.emit("user left", userId);
       }
       userId = "";
+    });
+
+    socket.on("check-connection", (checkId: string) => {
+      const socketsInRoom = this.io.sockets.adapter.rooms.get(checkId);
+      if (socketsInRoom) {
+        return true;
+      } else {
+        return false;
+      }
     });
   };
 
@@ -89,7 +110,6 @@ export class WebSocket {
     originId: number,
     originUsername: string
   ) => {
-    console.log("username", originUsername);
     this.io.in(destinationId.toString()).emit("notify-match", {
       userId: originId,
       username: originUsername,

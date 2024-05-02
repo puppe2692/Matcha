@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import ErrorsFormField from "./ErrorsFormField";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
+import { useWebSocketContext } from "../../context/WebSocketContext";
 
 interface LoginInputs {
   username: string;
@@ -25,6 +26,7 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
     formState: { errors },
   } = useForm<LoginInputs>({ mode: "onTouched", criteriaMode: "all" });
   const navigate = useNavigate();
+  const socket = useWebSocketContext();
 
   const onSubmit = async (data: LoginInputs) => {
     setError(undefined);
@@ -38,6 +40,7 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
         { withCredentials: true }
       );
       loginUser(response.data.user);
+      socket?.emit("login", response.data.user.id);
       navigate("/");
     } catch (error: any) {
       setError(error.response.data.error);

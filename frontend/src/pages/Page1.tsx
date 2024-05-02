@@ -4,7 +4,7 @@ import { useUserContext } from "../context/UserContext";
 
 const Page1: React.FC = () => {
   const { user } = useUserContext();
-  const targetId = 5;
+  const targetId = 1;
   const handleLike = async () => {
     if (!user) return;
     try {

@@ -34,7 +34,6 @@ export class notificationServices {
   static async readNotifications(request: Request): Promise<string> {
     try {
       const userId = parseInt(request.query.id as string);
-      console.log(request.query);
       await prismaFromWishInstance.update(
         "notifications",
         ["seen"],

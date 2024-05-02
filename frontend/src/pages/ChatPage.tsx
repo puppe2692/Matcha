@@ -5,6 +5,7 @@ import ChatSidebar from "../components/ChatSidebar";
 import axios from "axios";
 import { useUserContext } from "../context/UserContext";
 
+// TODO: add handling of profile picture
 export interface Contact {
   connectedUser: string;
   connectedUserId: number;
