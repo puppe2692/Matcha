@@ -14,7 +14,10 @@ import SignOutPage from "./pages/SignOutPage";
 import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import UserProfile from "./pages/UserProfilPage";
+import MyPage from "./pages/MyPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
+
+// pas bien compris la diff element vs compenent, tu peux m'expliquer?
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -34,6 +37,7 @@ function App(): JSX.Element {
               <Route path="/page2" element={<Page2 />} />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/profile/:username" Component={UserProfile} />
+              <Route path="/profile/me" Component={MyPage} />
               <Route path="*" element={<Page404 />} />
             </Route>
           </Routes>

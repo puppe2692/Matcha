@@ -28,7 +28,7 @@ const Avatar = ({
             withCredentials: true,
           }
         );
-        console.log("RESPONSE", response.data);
+        //console.log("RESPONSE", response.data);
         const base64Image = btoa(
           new Uint8Array(response.data).reduce(
             (data, byte) => data + String.fromCharCode(byte),
@@ -48,7 +48,7 @@ const Avatar = ({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("Changing image");
     const selectedFile = e.target.files?.[0];
-
+    console.log("SELECTED FILE", selectedFile);
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = () => {

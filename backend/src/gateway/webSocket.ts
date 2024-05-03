@@ -19,7 +19,7 @@ export class WebSocket {
 
   startListeners = (socket: Socket) => {
     let userId: string = (socket.handshake.query?.id || "") as string;
-    console.log("connection", socket.id, userId);
+    // console.log("connection", socket.id, userId);
     if (userId && userId !== "") {
       socket.join(userId);
       socket.broadcast.emit("user-connected", userId);
@@ -30,7 +30,7 @@ export class WebSocket {
       if (userId && userId !== "") {
         socket.leave(userId);
         const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
-        console.log("sockets in room / userId:", socketsInRoom, userId);
+        // console.log("sockets in room / userId:", socketsInRoom, userId);
         if (!socketsInRoom) {
           socket.broadcast.emit("user-left", userId);
         }

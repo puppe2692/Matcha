@@ -31,10 +31,10 @@ const ImageSlider: React.FC<CarouselProps> = ({ images }) => {
           overflow: "hidden",
         }}
       >
-        {images.map((url) => (
+        {images.map((image, index) => (
           <img
-            key={url}
-            src={url}
+            key={index}
+            src={image}
             className="img-slider-img"
             style={{ translate: `${-100 * activeIndex}%` }}
           />
