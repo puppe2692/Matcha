@@ -8,7 +8,7 @@ export interface notification {
   content: string;
 }
 
-export type statusUpdate = "like" | "unlike" | "block";
+export type statusUpdate = "like" | "unlike" | "block" | "unblock";
 
 export class actionServices {
   static async viewProfile(
@@ -54,7 +54,13 @@ export class actionServices {
       };
     }
     const newStatus =
-      type === "unlike" ? "viewed" : type === "like" ? "liked" : "blocked";
+      type === "unlike"
+        ? "viewed"
+        : type === "like"
+          ? "liked"
+          : type === "block"
+            ? "blocked"
+            : "viewed";
     await prismaFromWishInstance.update(
       "status",
       ["last_update", "status"],

@@ -1,43 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Paper, Avatar, Typography, Divider, Grid } from "@mui/material";
 import { User } from "../types";
-import StarIcon from "@mui/icons-material/Star";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import NotFound from "../components/NotFound";
-import ImageSlider from "../components/Caroussel";
 import { useParams } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import UserCard from "../components/UserCard";
-
-// const Yassine = require("./Imagetest/Yassine.jpeg");
-// const deux = require("./Imagetest/2.png");
-// const trois = require("./Imagetest/3.jpeg");
-
-// const images = [Yassine, deux, trois];
-
-// interface userProfils {
-//   username: string;
-//   gender: string;
-//   sex_pref: string;
-//   bio: string;
-//   age: number;
-//   hashtags: string[];
-//   profile_picture: string[];
-//   latitude: number;
-//   longitude: number;
-//   fame_rating: number;
-//   distance: number;
-//   commonInterests: number;
-//   matchingScore: number;
-// }
+import {
+  LikeButton,
+  UnlikeButton,
+  BanButton,
+  UnBanButton,
+} from "../components/Buttons";
+import { get, set } from "react-hook-form";
+import { Prev } from "react-bootstrap/esm/PageItem";
 
 const UserProfile: React.FC = () => {
-  //const { user } = useUserContext();
   const { username } = useParams();
-
   const [userProfile, setUserProfile] = useState<User>({} as User);
   const [userId, setUserId] = useState<number | null>(null);
+  const [updateUserRelation, setUpdateUserRelation] = useState<Boolean>(false);
+  const [userRelation, setUserRelation] = useState<string>("view");
   const [userImage, setUserImage] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, updateUser } = useUserContext();
@@ -46,6 +27,7 @@ const UserProfile: React.FC = () => {
     longitude: number;
   } | null>(null);
 
+  /////// Location //////
   const findDistanceUser = (
     lat1: number,
     lon1: number,
@@ -121,6 +103,36 @@ const UserProfile: React.FC = () => {
     getLocation();
   }, [user]);
 
+  /////// User data //////
+
+  useEffect(() => {
+    // Call getRelation only if userId is set
+    if (userId) {
+      getRelation();
+      console.log("USER REELATION", userRelation);
+    }
+  }, [userId, updateUserRelation]);
+
+  const getRelation = async () => {
+    console.log("GET RELATION 1");
+    if (!user || !userId) return;
+    console.log("GET RELATION 2 user", user.id, "userId", userId);
+    try {
+      const response = await axios.get(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_relations`,
+        {
+          params: { originId: user.id, destinationId: userId },
+          withCredentials: true,
+        }
+      );
+      console.log("GET RELATION 3");
+      console.log("RELATION", response.data);
+      setUserRelation(response.data.status);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -138,7 +150,7 @@ const UserProfile: React.FC = () => {
         }));
         setUserId(userResponse.data.id);
         console.log("USER NOT ME", userResponse.data);
-        setUserImage(userResponse.data.profile_picture);
+        // setUserImage(userResponse.data.profile_picture);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -147,8 +159,8 @@ const UserProfile: React.FC = () => {
     };
 
     fetchUserData();
-    console.log("USER NOT ME STATE", userProfile);
-    console.log("USER NOT ME STATE ID", userId);
+    // console.log("USER NOT ME STATE", userProfile);
+    // console.log("USER NOT ME STATE ID", userId);
   }, [username, user, user?.latitude, user?.longitude, user?.hashtags]);
 
   useEffect(() => {
@@ -156,25 +168,32 @@ const UserProfile: React.FC = () => {
       try {
         setUserImage([]); // Clear images before fetching new ones
         for (let i = 0; i < userProfile!.profile_picture.length; i++) {
-          const response = await axios.get(
-            `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${userId}`,
-            {
-              params: { id: userId, index: i },
-              responseType: "arraybuffer",
-              withCredentials: true,
+          try {
+            const response = await axios.get(
+              `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${userId}`,
+              {
+                params: { id: userId, index: i },
+                responseType: "arraybuffer",
+                withCredentials: true,
+              }
+            );
+            //console.log("RESPONSE ALL IMAGE", response.data);
+            if (response.status !== 404) {
+              const base64Image = btoa(
+                new Uint8Array(response.data).reduce(
+                  (data, byte) => data + String.fromCharCode(byte),
+                  ""
+                )
+              );
+              setUserImage((prev) => [
+                ...prev,
+                `data:image/jpeg;base64,${base64Image}`,
+              ]);
             }
-          );
-          //console.log("RESPONSE ALL IMAGE", response.data);
-          const base64Image = btoa(
-            new Uint8Array(response.data).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              ""
-            )
-          );
-          setUserImage((prev) => [
-            ...prev,
-            `data:image/jpeg;base64,${base64Image}`,
-          ]);
+          } catch (error) {
+            // Log the error for the specific image request and continue to the next iteration
+            console.error(`Error fetching user image ${i}:`, error);
+          }
         }
       } catch (error) {
         console.error("Error fetching user data Image:", error);
@@ -186,26 +205,119 @@ const UserProfile: React.FC = () => {
     }
   }, [userProfile]); // Run this effect whenever user data changes
 
+  /////// Like/Dislike/Block //////
+
+  useEffect(() => {
+    // Call getRelation only if userId is set
+    if (userId) {
+      handleView();
+    }
+  }, [userId]);
+
+  const handleLike = async () => {
+    if (!user) return;
+    try {
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/action/like`,
+        {
+          originId: user.id,
+          destinationId: userId,
+        },
+        { withCredentials: true }
+      );
+      setUpdateUserRelation((prev) => !prev);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUnlike = async () => {
+    if (!user) return;
+    try {
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/action/unlike`,
+        {
+          originId: user.id,
+          destinationId: userId,
+        },
+        { withCredentials: true }
+      );
+      setUpdateUserRelation((prev) => !prev);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleBlock = async () => {
+    if (!user) return;
+    try {
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/action/block`,
+        {
+          originId: user.id,
+          destinationId: userId,
+        },
+        { withCredentials: true }
+      );
+      setUpdateUserRelation((prev) => !prev);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUnBlock = async () => {
+    if (!user) return;
+    try {
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/action/unblock`,
+        {
+          originId: user.id,
+          destinationId: userId,
+        },
+        { withCredentials: true }
+      );
+      setUpdateUserRelation((prev) => !prev);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleView = async () => {
+    if (!user) return;
+    try {
+      await axios.post(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/action/view`,
+        {
+          originId: user.id,
+          destinationId: userId,
+        },
+        { withCredentials: true }
+      );
+      setUpdateUserRelation((prev) => !prev);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       {userProfile && userImage ? (
         <UserCard profile={userProfile} userImage={userImage} />
       ) : null}
+      <div className="flex justify-center gap-4">
+        {userRelation === "blocked" ? null : userRelation === "liked" ? (
+          <UnlikeButton onClick={handleUnlike} />
+        ) : (
+          <LikeButton onClick={handleLike} />
+        )}
+        {userRelation === "blocked" ? (
+          <UnBanButton onClick={handleUnBlock} />
+        ) : (
+          <BanButton onClick={handleBlock} />
+        )}
+      </div>
     </div>
   );
 };
 
 export default UserProfile;
-
-{
-  /* <div
-style={{
-  maxWidth: "1200px",
-  width: "100%",
-  aspectRatio: "16/9",
-  margin: "0 auto",
-}}
->
-<ImageSlider images={userImage} />
-</div> */
-}

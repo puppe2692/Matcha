@@ -295,4 +295,39 @@ router.get(
   }
 );
 
+router.get(
+  "/users/get_relations",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    console.log("GET RELATION 1");
+    try {
+      // console.log("request.body", request);
+      console.log("originId", request.query.originId);
+      console.log("destinationId", request.query.destinationId);
+      const originId = Number(request.query.originId);
+      const destinationId = Number(request.query.destinationId);
+      const status = await prismaFromWishInstance.selectAll(
+        "status",
+        ["origin_user_id", "destination_user_id"],
+        [originId, destinationId]
+      );
+      const connection = await prismaFromWishInstance.selectAll(
+        "connection",
+        ["origin_user_id", "destination_user_id"],
+        [Math.min(originId, destinationId), Math.max(originId, destinationId)]
+      );
+      console.log("STATUS", status.data?.rows[0].status);
+      console.log("CONNECTION", connection);
+      response.status(200).json({
+        status: status.data?.rows[0].status,
+        connection: connection.data?.rows[0],
+      });
+    } catch (error) {
+      response
+        .status(400)
+        .json({ error: " get relation: Internal server error" });
+    }
+  }
+);
+
 export default router;
