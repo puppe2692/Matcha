@@ -76,6 +76,60 @@ router.get(
   }
 );
 
+router.get(
+  "/users/viewed_users",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const user = request.user as CustomUser;
+    let viewedUsers: PrismaReturn;
+    viewedUsers = await prismaFromWishInstance.customQuery(
+      `select users.*
+      FROM users
+      LEFT JOIN status
+        on users.id = status.destination_user_id
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1
+        AND status.status = 'viewed';`,
+      [user.id]
+    );
+    response.status(200).json({
+      message: "Found relevant users",
+      users: viewedUsers.data?.rows,
+    });
+  }
+);
+
+router.get(
+  "/users/liked_users",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const user = request.user as CustomUser;
+    let likedUsers: PrismaReturn;
+    likedUsers = await prismaFromWishInstance.customQuery(
+      `select users.*
+      FROM users
+      LEFT JOIN status
+        on users.id = status.destination_user_id
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1
+        AND status.status = 'liked';`,
+      [user.id]
+    );
+    response.status(200).json({
+      message: "Found relevant users",
+      users: likedUsers.data?.rows,
+    });
+  }
+);
+
 router.put(
   "/users/update_location",
   authJwtMiddleware,
