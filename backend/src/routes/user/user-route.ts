@@ -76,6 +76,60 @@ router.get(
   }
 );
 
+router.get(
+  "/users/viewed_users",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const user = request.user as CustomUser;
+    let viewedUsers: PrismaReturn;
+    viewedUsers = await prismaFromWishInstance.customQuery(
+      `select users.*
+      FROM users
+      LEFT JOIN status
+        on users.id = status.destination_user_id
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1
+        AND status.status = 'viewed';`,
+      [user.id]
+    );
+    response.status(200).json({
+      message: "Found relevant users",
+      users: viewedUsers.data?.rows,
+    });
+  }
+);
+
+router.get(
+  "/users/liked_users",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const user = request.user as CustomUser;
+    let likedUsers: PrismaReturn;
+    likedUsers = await prismaFromWishInstance.customQuery(
+      `select users.*
+      FROM users
+      LEFT JOIN status
+        on users.id = status.destination_user_id
+        AND status.origin_user_id = $1
+      WHERE users.id <> $1
+        AND status.status = 'liked';`,
+      [user.id]
+    );
+    response.status(200).json({
+      message: "Found relevant users",
+      users: likedUsers.data?.rows,
+    });
+  }
+);
+
 router.put(
   "/users/update_location",
   authJwtMiddleware,
@@ -143,16 +197,17 @@ router.post(
   async (request: Request, response: Response) => {
     try {
       const user = request.user as CustomUser;
-      // const file = request.file as Express.Multer.File;
+      const file = request.file as Express.Multer.File;
       // const imageBase64 = file.buffer.toString("base64");
       // console.log("IMAGES = " + imageBase64);;
       const url = request.body.url;
       const index = request.body.index;
       console.log("INDEX", index);
+      console.log("FILE", file);
       await prismaFromWishInstance.update(
         "users",
         ["profile_picture[" + index + "]"],
-        [url],
+        [file.filename],
         ["id"],
         [user.id]
       );
@@ -168,6 +223,25 @@ router.post(
     } catch (error) {
       response.status(500).json({ error: "IMAGE server error" });
     }
+  }
+);
+
+router.get(
+  "/users/get_img/:id",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const index = Number(request.query.index);
+    const userImg = await prismaFromWishInstance.selectAll(
+      "users",
+      ["id"],
+      [request.params.id]
+    );
+    if (!userImg.data?.rows[0].profile_picture[index]) {
+      return response.status(404).json({ error: "Image not found" });
+    }
+    return response.sendFile(userImg.data?.rows[0].profile_picture[index], {
+      root: "./images",
+    });
   }
 );
 
@@ -249,6 +323,63 @@ router.post(
     } catch (error) {
       console.error("Error updating user profile:", error);
       response.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+router.get(
+  "/users/profile/:username",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request); // Check for validation errors
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    const username = request.params.username;
+    const user = await prismaFromWishInstance.selectAll(
+      "users",
+      ["username"],
+      [username]
+    );
+    if (user.data?.rows.length === 0) {
+      return response.status(404).json({ error: "User not found" });
+    }
+    delete user.data?.rows[0].password;
+    return response.status(200).json(user.data?.rows[0]);
+  }
+);
+
+router.get(
+  "/users/get_relations",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    console.log("GET RELATION 1");
+    try {
+      // console.log("request.body", request);
+      console.log("originId", request.query.originId);
+      console.log("destinationId", request.query.destinationId);
+      const originId = Number(request.query.originId);
+      const destinationId = Number(request.query.destinationId);
+      const status = await prismaFromWishInstance.selectAll(
+        "status",
+        ["origin_user_id", "destination_user_id"],
+        [originId, destinationId]
+      );
+      const connection = await prismaFromWishInstance.selectAll(
+        "connection",
+        ["origin_user_id", "destination_user_id"],
+        [Math.min(originId, destinationId), Math.max(originId, destinationId)]
+      );
+      console.log("STATUS", status.data?.rows[0].status);
+      console.log("CONNECTION", connection);
+      response.status(200).json({
+        status: status.data?.rows[0].status,
+        connection: connection.data?.rows[0],
+      });
+    } catch (error) {
+      response
+        .status(400)
+        .json({ error: " get relation: Internal server error" });
     }
   }
 );

@@ -133,4 +133,30 @@ actionRouter.put(
   }
 );
 
+actionRouter.put(
+  "/unblock",
+  [
+    body("originId").exists().isNumeric(),
+    body("destinationId").exists().isNumeric(),
+  ],
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request); // Check for validation errors
+    if (!errors.isEmpty()) {
+      return response.status(401).json({ errors: errors.array() });
+    }
+    const data = matchedData(request);
+    try {
+      const responseString = await actionServices.updateProfile(
+        data.originId,
+        data.destinationId,
+        "unblock"
+      );
+      return response.status(200).json(responseString);
+    } catch (error: any) {
+      return response.status(400).json(error.message);
+    }
+  }
+);
+
 export default actionRouter;

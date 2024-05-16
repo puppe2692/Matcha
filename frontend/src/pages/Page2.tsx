@@ -29,6 +29,8 @@ const Page2: React.FC = () => {
   const sortType = (searchParams.get("sortType") as SortType) || "";
   const ascending = searchParams.get("ascending") === "true";
 
+  console.log("USER PAGE 2", user);
+
   const findDistanceUser = (
     lat1: number,
     lon1: number,

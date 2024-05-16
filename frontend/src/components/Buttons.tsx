@@ -1,4 +1,6 @@
 import React from "react";
+import { Heart, HeartCrack, Ban, CircleCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const NavBarButton: React.FC<{
   disabled?: boolean;
@@ -68,3 +70,67 @@ export const BasicButton: React.FC<{
     <span>{text}</span>
   </button>
 );
+
+export const LikeButton: React.FC<{
+  onClick: (event: React.FormEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.8 }}
+      className="flex items-center justify-center w-16 h-16 text-white bg-rose-600 rounded-full"
+    >
+      <Heart size={32} />
+    </motion.button>
+  );
+};
+
+export const UnlikeButton: React.FC<{
+  onClick: (event: React.FormEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.8 }}
+      className="flex items-center justify-center w-16 h-16 text-white bg-black rounded-full"
+    >
+      <HeartCrack size={32} />
+    </motion.button>
+  );
+};
+
+export const BanButton: React.FC<{
+  onClick: (event: React.FormEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.8 }}
+      className="flex items-center justify-center w-16 h-16 text-white bg-blue-900 rounded-full"
+    >
+      <Ban size={32} />
+    </motion.button>
+  );
+};
+
+export const UnBanButton: React.FC<{
+  onClick: (event: React.FormEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.8 }}
+      className="flex items-center justify-center w-16 h-16 text-white bg-blue-900 rounded-full"
+    >
+      <CircleCheck size={32} />
+    </motion.button>
+  );
+};
