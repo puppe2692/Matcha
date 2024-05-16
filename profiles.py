@@ -25,8 +25,8 @@ def convert_data(data):
 	res["password"] = "Password1"
 	res["firstname"] = data["name"]["first"]
 	res["lastname"] = data["name"]["last"]
-	res["gender"] = data["gender"]
-	res["sex_pref"] = random.choice(['Man', 'Woman', 'Both'])
+	res["gender"] = data["gender"].capitalize()
+	res["sex_pref"] = random.choice(['Male', 'Female', 'Both'])
 	res["bio"] = fake.text(max_nb_chars=200)
 	res["hashtags"] = random.sample(hashtags, random.randint(1, 5))
 	res["age"] = data["dob"]["age"]
