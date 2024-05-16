@@ -92,9 +92,10 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
       try {
         console.log("fetching users");
         const response = await axios.get(
-          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/liked_users`,
           { withCredentials: true }
         );
+        console.log("LIKE USERS", response.data.users);
         setLikeUsers(response.data.users);
         setLikeUsers((prevLikeUsers) =>
           prevLikeUsers.map((curLikeUser) => {
@@ -119,9 +120,10 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
       try {
         console.log("fetching users");
         const response = await axios.get(
-          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/viewed_users`,
           { withCredentials: true }
         );
+        console.log("VIEW USERS", response.data.users);
         setViewUsers(response.data.users);
         setViewUsers((prevViewUsers) =>
           prevViewUsers.map((curViewUser) => {
@@ -156,17 +158,23 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
   }, [user]);
 
   return (
-    <Paper
-      className="p-3 flex flex-col h-64 mt-4"
-      elevation={4}
-      style={{
-        maxWidth: "800px",
-        width: "100%",
-      }}
-    >
-      <LightProfileGrid users={viewUsers} />
-      <LightProfileGrid users={likeUsers} />
-    </Paper>
+    <div>
+      <div className="p-3 flex flex-row">
+        <Divider className="w-1/2" sx={{ m: 1 }} />
+        <Divider className="w-1/2" sx={{ m: 1 }} />
+      </div>
+      <Paper
+        className="p-3 flex flex-row"
+        elevation={4}
+        // style={{
+        //   maxWidth: "800px",
+        //   width: "100%",
+        // }}
+      >
+        <LightProfileGrid users={viewUsers} />
+        <LightProfileGrid users={likeUsers} />
+      </Paper>
+    </div>
   );
 };
 

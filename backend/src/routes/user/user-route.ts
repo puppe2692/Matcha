@@ -90,8 +90,8 @@ router.get(
       `select users.*
       FROM users
       LEFT JOIN status
-        on users.id = status.destination_user_id
-        AND status.origin_user_id = $1
+        on users.id = status.origin_user_id
+        AND status.destination_user_id = $1
       WHERE users.id <> $1
         AND status.status = 'viewed';`,
       [user.id]
@@ -117,8 +117,8 @@ router.get(
       `select users.*
       FROM users
       LEFT JOIN status
-        on users.id = status.destination_user_id
-        AND status.origin_user_id = $1
+        on users.id = status.origin_user_id
+        AND status.destination_user_id = $1
       WHERE users.id <> $1
         AND status.status = 'liked';`,
       [user.id]
