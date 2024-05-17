@@ -21,4 +21,5 @@ export type User = {
   distance: number;
   commonInterests: number;
   matchingScore: number;
+  isfake: boolean;
 };

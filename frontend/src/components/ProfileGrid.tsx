@@ -4,6 +4,7 @@ import { User } from "../types";
 import { Link } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ProfileAvatar from "./ProfileAvatar";
 
 const ProfileCard: React.FC<{ profile: User }> = ({ profile }) => {
   const hashtagsString = profile.hashtags.join(", ");
@@ -16,11 +17,7 @@ const ProfileCard: React.FC<{ profile: User }> = ({ profile }) => {
       style={{ textDecoration: "none" }}
     >
       <div className="flex items-center mb-2">
-        <Avatar
-          src={profile.profile_picture[0]}
-          alt="Profile Picture"
-          sx={{ width: 100, height: 100 }}
-        />
+        <ProfileAvatar profile={profile} height={100} width={100} />
         <div className="flex flex-col items-left ml-4 space-y-1 w-full overflow-hidden">
           <h6 className="w-full font-semibold text-l truncate">
             {profile.username}, {profile.age}

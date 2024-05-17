@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
+import ProfileAvatar from "./ProfileAvatar";
 
 const MenuLink: React.FC<{
   text: string;
@@ -39,11 +40,7 @@ const UserMenu: React.FC = () => {
           onClick={() => setShowInfo((prevval) => !prevval)}
         >
           {/* TODO: user user profile picture */}
-          <img
-            className={`w-${size} h-${size} rounded-full`}
-            src="/norminet.jpeg"
-            alt="Default user profile"
-          />
+          <ProfileAvatar profile={user!} width={32} height={32} />
         </button>
 
         {showInfo && (

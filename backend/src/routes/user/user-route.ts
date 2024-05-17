@@ -43,7 +43,7 @@ router.get(
       WHERE users.id <> $1 
         AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
         AND users.gender = $2;`,
-        [user.id, "male"]
+        [user.id, "Male"]
       );
     } else if (user.sex_pref === "Female") {
       relevantUsers = await prismaFromWishInstance.customQuery(
@@ -55,7 +55,7 @@ router.get(
       WHERE users.id <> $1 
         AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
         AND users.gender = $2;`,
-        [user.id, "female"]
+        [user.id, "Female"]
       );
     } else {
       relevantUsers = await prismaFromWishInstance.customQuery(
