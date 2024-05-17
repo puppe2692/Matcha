@@ -1,6 +1,7 @@
 import { Paper, Avatar, Typography, Divider, Grid } from "@mui/material";
 import React from "react";
 import { User } from "../types";
+import { Link } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ProfileAvatar from "./ProfileAvatar";
@@ -8,7 +9,13 @@ import ProfileAvatar from "./ProfileAvatar";
 const ProfileCard: React.FC<{ profile: User }> = ({ profile }) => {
   const hashtagsString = profile.hashtags.join(", ");
   return (
-    <Paper className="p-3 flex flex-col h-64 mt-4" elevation={4}>
+    <Paper
+      className="p-3 flex flex-col h-64 mt-4"
+      elevation={4}
+      component={Link}
+      to={`/profile/${profile.username}`}
+      style={{ textDecoration: "none" }}
+    >
       <div className="flex items-center mb-2">
         <ProfileAvatar profile={profile} height={100} width={100} />
         <div className="flex flex-col items-left ml-4 space-y-1 w-full overflow-hidden">

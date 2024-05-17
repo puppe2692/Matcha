@@ -15,6 +15,8 @@ import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import UserProfile from "./pages/UserProfilPage";
 import MyPage from "./pages/MyPage";
+import ViewPage from "./pages/ViewPage";
+import LikePage from "./pages/LikePage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
 
@@ -40,6 +42,8 @@ function App(): JSX.Element {
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/profile/:username" Component={UserProfile} />
               <Route path="/profile/me" Component={MyPage} />
+              <Route path="/view" element={<ViewPage />} />
+              <Route path="/like" element={<LikePage />} />
               <Route path="*" element={<Page404 />} />
             </Route>
           </Routes>

@@ -4,6 +4,7 @@ import { User } from "../types";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ImageSlider from "./Caroussel";
+import LikedViewCard from "./LikedViewCard";
 
 const MeCard: React.FC<{ profile: User; userImage: string[] }> = ({
   profile,
@@ -58,6 +59,18 @@ const MeCard: React.FC<{ profile: User; userImage: string[] }> = ({
               {profile.bio}
             </Typography>
           </div>
+        </Paper>
+        <Paper
+          className="p-3 flex flex-col mt-4"
+          elevation={4}
+          style={{
+            maxWidth: "800px",
+            // width: "100%",
+            // aspectRatio: "16/9",
+            // margin: "0 auto",
+          }}
+        >
+          <LikedViewCard profile={profile} />
         </Paper>
       </div>
     </div>

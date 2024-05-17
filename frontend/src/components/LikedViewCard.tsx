@@ -1,5 +1,6 @@
 import { Paper, Typography, Divider, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { User } from "../types";
 import axios from "axios";
@@ -92,9 +93,10 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
       try {
         console.log("fetching users");
         const response = await axios.get(
-          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/liked_users`,
           { withCredentials: true }
         );
+        console.log("LIKE USERS", response.data.users);
         setLikeUsers(response.data.users);
         setLikeUsers((prevLikeUsers) =>
           prevLikeUsers.map((curLikeUser) => {
@@ -119,9 +121,10 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
       try {
         console.log("fetching users");
         const response = await axios.get(
-          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/viewed_users`,
           { withCredentials: true }
         );
+        console.log("VIEW USERS", response.data.users);
         setViewUsers(response.data.users);
         setViewUsers((prevViewUsers) =>
           prevViewUsers.map((curViewUser) => {
@@ -156,17 +159,46 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
   }, [user]);
 
   return (
-    <Paper
-      className="p-3 flex flex-col h-64 mt-4"
-      elevation={4}
-      style={{
-        maxWidth: "800px",
-        width: "100%",
-      }}
-    >
-      <LightProfileGrid users={viewUsers} />
-      <LightProfileGrid users={likeUsers} />
-    </Paper>
+    <div>
+      <div className="p-3 flex flex-row">
+        <div className="flex flex-col w-1/2 items-center">
+          <h6 className="w-full font-semibold text-l truncate text-center">
+            View
+          </h6>
+          <Divider className="w-11/12" sx={{ m: 1 }} />
+        </div>
+        <div className="flex flex-col w-1/2 items-center">
+          <h6 className="w-full font-semibold text-l truncate text-center">
+            Like
+          </h6>
+          <Divider className="w-11/12" sx={{ m: 1 }} />
+        </div>
+      </div>
+      <div className="p-3 flex flex-row">
+        <LightProfileGrid users={viewUsers.slice(0, 3)} />
+        <LightProfileGrid users={likeUsers.slice(0, 3)} />
+      </div>
+      <div className="p-3 flex flex-row">
+        {viewUsers.length > 3 ? (
+          <div className="flex flex-col w-1/2 items-center">
+            <Link to="/view" className="text-blue-500">
+              See More
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col w-1/2 items-center"></div>
+        )}
+        {likeUsers.length > 3 ? (
+          <div className="flex flex-col w-1/2 items-center">
+            <Link to="/like" className="text-blue-500">
+              See More
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col w-1/2 items-center"></div>
+        )}
+      </div>
+    </div>
   );
 };
 

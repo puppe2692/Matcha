@@ -90,10 +90,10 @@ router.get(
       `select users.*
       FROM users
       LEFT JOIN status
-        on users.id = status.destination_user_id
-        AND status.origin_user_id = $1
+        on users.id = status.origin_user_id
+        AND status.destination_user_id = $1
       WHERE users.id <> $1
-        AND status.status = 'viewed';`,
+        AND status.status = 'viewed' ORDER BY status.last_update DESC;`,
       [user.id]
     );
     response.status(200).json({
@@ -117,12 +117,13 @@ router.get(
       `select users.*
       FROM users
       LEFT JOIN status
-        on users.id = status.destination_user_id
-        AND status.origin_user_id = $1
+        on users.id = status.origin_user_id
+        AND status.destination_user_id = $1
       WHERE users.id <> $1
-        AND status.status = 'liked';`,
+        AND status.status = 'liked' ORDER BY status.last_update DESC;`,
       [user.id]
     );
+
     response.status(200).json({
       message: "Found relevant users",
       users: likedUsers.data?.rows,
