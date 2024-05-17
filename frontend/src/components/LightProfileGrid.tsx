@@ -2,12 +2,19 @@ import { Paper, Avatar, Typography, Divider, Grid } from "@mui/material";
 import React from "react";
 import { User } from "../types";
 import StarIcon from "@mui/icons-material/Star";
+import { Link } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const LightProfileCard: React.FC<{ profile: User }> = ({ profile }) => {
   const hashtagsString = profile.hashtags.join(", ");
   return (
-    <Paper className="p-3 flex flex-col m-2" elevation={4}>
+    <Paper
+      className="p-3 flex flex-col m-2"
+      elevation={4}
+      component={Link}
+      to={`/profile/${profile.username}`}
+      style={{ textDecoration: "none" }}
+    >
       <div className="flex items-center mb-2">
         <Avatar
           src={profile.profile_picture[0]}

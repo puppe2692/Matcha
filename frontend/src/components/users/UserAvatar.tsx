@@ -144,7 +144,7 @@ const Avatar = ({
         onChange={handleImageChange}
         className="hidden"
       />
-      {image && (
+      {image && index !== 0 && (
         <button
           type="button"
           className="text-gray-400 bg-gray-700 border border-gray-600 rounded-lg text-sm w-6 h-6 ml-auto inline-flex justify-center items-center absolute -bottom-1 -right-1"

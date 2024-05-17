@@ -1,5 +1,6 @@
 import { Paper, Typography, Divider, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { User } from "../types";
 import axios from "axios";
@@ -160,20 +161,43 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
   return (
     <div>
       <div className="p-3 flex flex-row">
-        <Divider className="w-1/2" sx={{ m: 1 }} />
-        <Divider className="w-1/2" sx={{ m: 1 }} />
+        <div className="flex flex-col w-1/2 items-center">
+          <h6 className="w-full font-semibold text-l truncate text-center">
+            View
+          </h6>
+          <Divider className="w-11/12" sx={{ m: 1 }} />
+        </div>
+        <div className="flex flex-col w-1/2 items-center">
+          <h6 className="w-full font-semibold text-l truncate text-center">
+            Like
+          </h6>
+          <Divider className="w-11/12" sx={{ m: 1 }} />
+        </div>
       </div>
-      <Paper
-        className="p-3 flex flex-row"
-        elevation={4}
-        // style={{
-        //   maxWidth: "800px",
-        //   width: "100%",
-        // }}
-      >
-        <LightProfileGrid users={viewUsers} />
-        <LightProfileGrid users={likeUsers} />
-      </Paper>
+      <div className="p-3 flex flex-row">
+        <LightProfileGrid users={viewUsers.slice(0, 3)} />
+        <LightProfileGrid users={likeUsers.slice(0, 3)} />
+      </div>
+      <div className="p-3 flex flex-row">
+        {viewUsers.length > 3 ? (
+          <div className="flex flex-col w-1/2 items-center">
+            <Link to="/view" className="text-blue-500">
+              See More
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col w-1/2 items-center"></div>
+        )}
+        {likeUsers.length > 3 ? (
+          <div className="flex flex-col w-1/2 items-center">
+            <Link to="/like" className="text-blue-500">
+              See More
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col w-1/2 items-center"></div>
+        )}
+      </div>
     </div>
   );
 };
