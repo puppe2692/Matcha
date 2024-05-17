@@ -11,7 +11,7 @@ const LoadingPage: React.FC = () => {
     if (user) {
       navigate("/");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <div>

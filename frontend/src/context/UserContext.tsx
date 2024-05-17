@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { User } from "../types";
 import axios from "axios";
-import { set } from "react-hook-form";
 
 interface Prop {
   user: User | null;

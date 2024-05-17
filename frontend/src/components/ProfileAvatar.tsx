@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
-import ProfileGrid from "./ProfileGrid";
 import { User } from "../types";
 import { Avatar } from "@mui/material";
 import axios from "axios";
-import { set } from "react-hook-form";
 
 const ProfileAvatar: React.FC<{
   profile: User;
@@ -37,7 +35,7 @@ const ProfileAvatar: React.FC<{
       }
     };
     fetchImg();
-  }, []);
+  }, [profile]);
   return (
     <Avatar
       src={img}

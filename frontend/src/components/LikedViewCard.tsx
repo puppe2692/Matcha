@@ -1,4 +1,4 @@
-import { Paper, Typography, Divider, Grid } from "@mui/material";
+import { Divider } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
@@ -156,7 +156,7 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
   useEffect(() => {
     if (!user) return;
     getLocation();
-  }, [user]);
+  }, [user, getLocation]);
 
   return (
     <div>

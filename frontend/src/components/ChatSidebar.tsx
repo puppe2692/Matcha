@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Contact } from "../pages/ChatPage";
 import { Badge, styled } from "@mui/material";
-import { set } from "react-hook-form";
 import { useWebSocketContext } from "../context/WebSocketContext";
 
 const image: string =
@@ -70,7 +69,7 @@ const ChatContact: React.FC<{
         setIsConnected(connected);
       }
     );
-  }, []);
+  }, [socket, contact.connectedUserId]);
 
   useEffect(() => {
     const handleConnection = (userId: string) => {
@@ -88,7 +87,7 @@ const ChatContact: React.FC<{
       socket?.off("user-connected", handleConnection);
       socket?.off("user-left", handleDisconnection);
     };
-  }, [socket]);
+  }, [socket, contact.connectedUserId]);
 
   return (
     <div
