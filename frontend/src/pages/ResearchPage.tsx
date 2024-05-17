@@ -13,7 +13,7 @@ export type SortType =
   | "Distance"
   | "Fame rating";
 
-const Page2: React.FC = () => {
+const ResearchPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const { user, updateUser } = useUserContext();
@@ -28,8 +28,6 @@ const Page2: React.FC = () => {
 
   const sortType = (searchParams.get("sortType") as SortType) || "";
   const ascending = searchParams.get("ascending") === "true";
-
-  console.log("USER PAGE 2", user);
 
   const findDistanceUser = (
     lat1: number,
@@ -200,6 +198,7 @@ const Page2: React.FC = () => {
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
           { withCredentials: true }
         );
+        console.log("response", response.data.users);
         setUsers(response.data.users);
         setUsers((prevUsers) =>
           prevUsers.map((curUser) => {
@@ -215,6 +214,7 @@ const Page2: React.FC = () => {
           })
         );
         sortUsers(sortType, ascending);
+        console.log("users", users);
       } catch (error) {
         console.error(error);
       }
@@ -256,4 +256,4 @@ const Page2: React.FC = () => {
   );
 };
 
-export default Page2;
+export default ResearchPage;

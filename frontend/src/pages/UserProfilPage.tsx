@@ -10,8 +10,6 @@ import {
   BanButton,
   UnBanButton,
 } from "../components/Buttons";
-import { get, set } from "react-hook-form";
-import { Prev } from "react-bootstrap/esm/PageItem";
 
 const UserProfile: React.FC = () => {
   const { username } = useParams();
@@ -165,9 +163,16 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     const fetchImg = async () => {
+      if (userProfile.isfake) {
+        setUserImage(userProfile.profile_picture);
+        return;
+      }
       try {
         setUserImage([]); // Clear images before fetching new ones
         for (let i = 0; i < userProfile!.profile_picture.length; i++) {
+          if (!userProfile.profile_picture[i]) {
+            continue;
+          }
           try {
             const response = await axios.get(
               `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${userId}`,

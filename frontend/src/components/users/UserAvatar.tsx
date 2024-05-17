@@ -18,7 +18,7 @@ const Avatar = ({
 
   useEffect(() => {
     const fetchImg = async () => {
-      if (!user) return;
+      if (!user || !user?.profile_picture[index]) return;
       try {
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${user?.id}`,
@@ -28,7 +28,7 @@ const Avatar = ({
             withCredentials: true,
           }
         );
-        //console.log("RESPONSE", response.data);
+        console.log("RESPONSE", response.data);
         const base64Image = btoa(
           new Uint8Array(response.data).reduce(
             (data, byte) => data + String.fromCharCode(byte),

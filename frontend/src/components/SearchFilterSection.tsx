@@ -18,7 +18,7 @@ import { HASHTAGS } from "../shared/misc";
 import Checkbox from "@mui/material/Checkbox";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { useSearchParams } from "react-router-dom";
-import { SortType } from "../pages/Page2";
+import { SortType } from "../pages/ResearchPage";
 
 const SliderFilter: React.FC<{
   labelText: string;
