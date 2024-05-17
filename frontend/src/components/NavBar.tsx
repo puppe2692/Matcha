@@ -43,8 +43,8 @@ const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
         <NavLink
           current={current}
           wideView={wideView}
-          title="Page 2"
-          link="/page2"
+          title="Find your match"
+          link="/research"
           icon="/favicon.ico"
         />
       </ul>

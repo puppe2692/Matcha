@@ -13,7 +13,7 @@ export type SortType =
   | "Distance"
   | "Fame rating";
 
-const Page2: React.FC = () => {
+const ResearchPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const { user, updateUser } = useUserContext();
@@ -256,4 +256,4 @@ const Page2: React.FC = () => {
   );
 };
 
-export default Page2;
+export default ResearchPage;

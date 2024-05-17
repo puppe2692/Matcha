@@ -31,7 +31,7 @@ def convert_data(data):
 	res["hashtags"] = random.sample(hashtags, random.randint(1, 5))
 	res["age"] = data["dob"]["age"]
 	res["verified"] = True
-	res["profile_picture"] = [data["picture"]["medium"]]
+	res["profile_picture"] = [data["picture"]["large"]]
 	res["latitude"] = random.uniform(44.0, 50.0)
 	res["longitude"] = random.uniform(0.0, 5.0)
 	res["fame_rating"] = random.randint(0, 20)
