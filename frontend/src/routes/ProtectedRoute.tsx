@@ -9,7 +9,11 @@ export const ProtectedRoute: React.FC = () => {
   return loading ? (
     <CircularProgress />
   ) : user ? (
-    <Outlet />
+    user.gender && user.hashtags && user.bio && user.age && user.sex_pref ? (
+      <Outlet />
+    ) : (
+      <Navigate to="/firstco" />
+    )
   ) : (
     <Navigate to="/signin" />
   );

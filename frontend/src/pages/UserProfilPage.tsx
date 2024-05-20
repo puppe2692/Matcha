@@ -3,23 +3,28 @@ import axios from "axios";
 import { User } from "../types";
 import { useParams } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
+import { useWebSocketContext } from "../context/WebSocketContext";
+import ReportedModal from "../components/ReportedModal";
 import UserCard from "../components/UserCard";
 import {
   LikeButton,
   UnlikeButton,
   BanButton,
   UnBanButton,
+  ReportButton,
 } from "../components/Buttons";
+import { set } from "react-hook-form";
 
 const UserProfile: React.FC = () => {
   const { username } = useParams();
-  const [userProfile, setUserProfile] = useState<User>({} as User);
+  const [userProfile, setUserProfile] = useState<User>();
   const [userId, setUserId] = useState<number | null>(null);
   const [updateUserRelation, setUpdateUserRelation] = useState<Boolean>(false);
   const [userRelation, setUserRelation] = useState<string>("view");
   const [userImage, setUserImage] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, updateUser } = useUserContext();
+  const [reported, setReported] = useState<boolean>(false);
   const [location, setLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -136,16 +141,13 @@ const UserProfile: React.FC = () => {
       try {
         setLoading(true);
         const userResponse = await axios.get(`/users/profile/${username}`);
-        setUserProfile(userResponse.data);
-        setUserProfile((prev) => ({
-          ...prev,
-          distance: findDistanceUser(
-            user!.latitude,
-            user!.longitude,
-            userResponse.data.latitude,
-            userResponse.data.longitude
-          ),
-        }));
+        const distance = findDistanceUser(
+          user!.latitude,
+          user!.longitude,
+          userResponse.data.latitude,
+          userResponse.data.longitude
+        );
+        setUserProfile({ ...userResponse.data, distance });
         setUserId(userResponse.data.id);
         console.log("USER NOT ME", userResponse.data);
         // setUserImage(userResponse.data.profile_picture);
@@ -163,6 +165,9 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     const fetchImg = async () => {
+      if (!userProfile) {
+        return;
+      }
       if (userProfile.isfake) {
         setUserImage(userProfile.profile_picture);
         return;
@@ -304,8 +309,32 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  const handleReport = async () => {
+    if (!user) return;
+    try {
+      await axios.put(
+        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/action/block`,
+        {
+          originId: user.id,
+          destinationId: userId,
+        },
+        { withCredentials: true }
+      );
+      setUpdateUserRelation((prev) => !prev);
+      setReported(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
+      <ReportedModal
+        showReportedModal={reported}
+        reportedModalMessage="User successfully reported"
+        closeReportedModal={() => setReported(false)}
+      />
+
       {userProfile && userImage ? (
         <UserCard profile={userProfile} userImage={userImage} />
       ) : null}
@@ -320,6 +349,7 @@ const UserProfile: React.FC = () => {
         ) : (
           <BanButton onClick={handleBlock} />
         )}
+        <ReportButton onClick={handleReport} />
       </div>
     </div>
   );

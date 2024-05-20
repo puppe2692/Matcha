@@ -82,17 +82,19 @@ export class WebSocket {
             socket!.leave(userId);
           });
         }
-        socket.broadcast.emit("user left", userId);
+        socket.broadcast.emit("user-left", userId);
       }
       userId = "";
     });
 
-    socket.on("check-connection", (checkId: string) => {
+    socket.on("check-connection", (checkId: string, callback) => {
       const socketsInRoom = this.io.sockets.adapter.rooms.get(checkId);
       if (socketsInRoom) {
-        return true;
+        console.log("user-connected", checkId);
+        callback(true);
       } else {
-        return false;
+        console.log("user-disconnected", checkId);
+        callback(false);
       }
     });
   };

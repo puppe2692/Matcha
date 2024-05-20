@@ -53,7 +53,7 @@ const SignUpPage: React.FC = () => {
         { withCredentials: true }
       );
       loginUser(response.data.user);
-      navigate("/loading");
+      navigate("/firstco");
     } catch (error: any) {
       setError(error.response.data.error);
     }

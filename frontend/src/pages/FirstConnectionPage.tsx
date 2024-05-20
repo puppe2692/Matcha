@@ -1,18 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useUserContext } from "../../context/UserContext";
-import ErrorsFormField from "../auth/ErrorsFormField";
-import UserImage from "./UserImages";
-import TristanSection from "../TristanSection";
-import { NavBarButton } from "../../components/Buttons";
-import { BIO_MAX_LENGTH, BIO_MIN_LENGTH } from "../../shared/misc";
-
-interface Props {
-  modalId: string;
-  title: string;
-  closeModal: () => void;
-}
+import { useUserContext } from "../context/UserContext";
+import ErrorsFormField from "../components/auth/ErrorsFormField";
+import UserImage from "../components/users/UserImages";
+import TristanSection from "../components/TristanSection";
+import { NavBarButton } from "../components/Buttons";
+import { BIO_MAX_LENGTH, BIO_MIN_LENGTH } from "../shared/misc";
 
 interface ModalInputs {
   gender: string;
@@ -23,14 +18,11 @@ interface ModalInputs {
   picture: string[];
 }
 
-const FirstConnectionMod: React.FC<Props> = ({
-  modalId,
-  title,
-  closeModal,
-}) => {
+const FirstConnectionPage: React.FC = () => {
   const [error, setError] = useState<string>();
   const { user, updateUser } = useUserContext();
   const [imageUpload, setImageUpload] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const {
     handleSubmit,
@@ -57,17 +49,13 @@ const FirstConnectionMod: React.FC<Props> = ({
       );
       console.log("RESPONSE", response.data.user);
       updateUser(response.data.user);
-      closeModal(); // a verifier ici
+      navigate("/loading");
     } catch (error: any) {
       setError(error.response.data.error);
     }
   };
 
   return (
-    // <div
-    // id={modalId}
-    // className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none no-scrollbar"
-    // >
     <TristanSection>
       <div className="relative w-full max-w-lg max-h-full no-scrollbar">
         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white mb-8">
@@ -184,20 +172,7 @@ const FirstConnectionMod: React.FC<Props> = ({
         </form>
       </div>
     </TristanSection>
-    // </div>
   );
 };
 
-export default FirstConnectionMod;
-
-// {display2FAModal ? (
-// 	<TwoFactorMod
-// 		title="TWO-FACTOR AUTHENTICATION"
-// 		qrCodeDataUrl={qrCodeDataUrl}
-// 		secret={twoFactorSecret}
-// 		modalId={'Enable-2fa-modal'}
-// 		closeModal={() => setDisplay2FAModal(false)}
-// 		onSubmit={enableTwoFactor}
-// 		error={error}
-// 	/>
-// ) : null}
+export default FirstConnectionPage;

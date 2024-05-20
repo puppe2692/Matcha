@@ -1,5 +1,12 @@
 import React from "react";
-import { Heart, HeartCrack, Ban, CircleCheck } from "lucide-react";
+import {
+  Heart,
+  HeartCrack,
+  Ban,
+  CircleCheck,
+  Flag,
+  FlagOff,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 export const NavBarButton: React.FC<{
@@ -131,6 +138,22 @@ export const UnBanButton: React.FC<{
       className="flex items-center justify-center w-16 h-16 text-white bg-blue-900 rounded-full"
     >
       <CircleCheck size={32} />
+    </motion.button>
+  );
+};
+
+export const ReportButton: React.FC<{
+  onClick: (event: React.FormEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.8 }}
+      className="flex items-center justify-center w-16 h-16 text-white bg-green-600 rounded-full"
+    >
+      <Flag size={32} />
     </motion.button>
   );
 };
