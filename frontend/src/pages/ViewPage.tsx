@@ -29,8 +29,6 @@ const LikePage: React.FC = () => {
   const sortType = (searchParams.get("sortType") as SortType) || "";
   const ascending = searchParams.get("ascending") === "true";
 
-  console.log("USER PAGE 2", user);
-
   const findDistanceUser = (
     lat1: number,
     lon1: number,
@@ -144,7 +142,6 @@ const LikePage: React.FC = () => {
         return;
       }
       try {
-        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/viewed_users`,
           { withCredentials: true }

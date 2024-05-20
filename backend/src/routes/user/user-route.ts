@@ -203,8 +203,6 @@ router.post(
       // console.log("IMAGES = " + imageBase64);;
       const url = request.body.url;
       const index = request.body.index;
-      console.log("INDEX", index);
-      console.log("FILE", file);
       await prismaFromWishInstance.update(
         "users",
         ["profile_picture[" + index + "]"],
@@ -217,7 +215,6 @@ router.post(
         ["id"],
         [user.id]
       );
-      console.log("UPDATED USER", updatedUser.data?.rows[0]);
       response
         .status(200)
         .json({ message: "Images uploaded", user: updatedUser.data?.rows[0] });
@@ -252,7 +249,6 @@ router.post(
   async (request: Request, response: Response) => {
     try {
       const user = request.user as CustomUser;
-      console.log("INDEX BACKEND", request.body.index);
       const index = request.body.index;
 
       await prismaFromWishInstance.update(
@@ -267,7 +263,6 @@ router.post(
         ["id"],
         [user.id]
       );
-      console.log("UPDATED USER", updatedUser.data?.rows[0]);
       response
         .status(200)
         .json({ message: "Image clear", user: updatedUser.data?.rows[0] });
@@ -316,7 +311,6 @@ router.post(
         [(request.user! as CustomUser).id]
       );
 
-      console.log("UPDATED USER", updatedUser.data?.rows[0]);
       response.status(200).json({
         message: "User profile updated",
         user: updatedUser.data?.rows[0],
@@ -354,11 +348,8 @@ router.get(
   "/users/get_relations",
   authJwtMiddleware,
   async (request: Request, response: Response) => {
-    console.log("GET RELATION 1");
     try {
       // console.log("request.body", request);
-      console.log("originId", request.query.originId);
-      console.log("destinationId", request.query.destinationId);
       const originId = Number(request.query.originId);
       const destinationId = Number(request.query.destinationId);
       const status = await prismaFromWishInstance.selectAll(
@@ -371,8 +362,6 @@ router.get(
         ["origin_user_id", "destination_user_id"],
         [Math.min(originId, destinationId), Math.max(originId, destinationId)]
       );
-      console.log("STATUS", status.data?.rows[0].status);
-      console.log("CONNECTION", connection);
       response.status(200).json({
         status: status.data?.rows[0].status,
         connection: connection.data?.rows[0],

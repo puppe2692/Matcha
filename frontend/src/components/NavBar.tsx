@@ -13,6 +13,7 @@ import NotificationMenu from "./NotificationMenu";
 export interface notification {
   id: number;
   user_id: number;
+  origin_username: string;
   date: Date;
   seen: boolean;
   new?: boolean;
