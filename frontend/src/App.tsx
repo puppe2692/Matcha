@@ -15,6 +15,7 @@ import SettingsPage from "./pages/SettingsPage";
 import UserProfile from "./pages/UserProfilPage";
 import ViewPage from "./pages/ViewPage";
 import LikePage from "./pages/LikePage";
+import FirstConnectionPage from "./pages/FirstConnectionPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
 import MyPage from "./pages/MyPage";
@@ -31,6 +32,7 @@ function App(): JSX.Element {
           <Routes>
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/firstco" element={<FirstConnectionPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/loading" element={<LoadingPage />} />
