@@ -4,7 +4,6 @@ import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
 import Page404 from "./pages/Page404";
 import Page1 from "./pages/Page1";
-import Page2 from "./pages/ResearchPage";
 import ChatPage from "./pages/ChatPage";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import { UserProvider } from "./context/UserContext";
@@ -14,12 +13,12 @@ import SignOutPage from "./pages/SignOutPage";
 import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import UserProfile from "./pages/UserProfilPage";
-import MyPage from "./pages/MyPage";
 import ViewPage from "./pages/ViewPage";
 import LikePage from "./pages/LikePage";
 import FirstConnectionPage from "./pages/FirstConnectionPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
+import MyPage from "./pages/MyPage";
 
 // pas bien compris la diff element vs compenent, tu peux m'expliquer?
 
@@ -39,11 +38,10 @@ function App(): JSX.Element {
               <Route path="/loading" element={<LoadingPage />} />
               <Route path="/signout" element={<SignOutPage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/page1" element={<Page1 />} />
               <Route path="/research" element={<ResearchPage />} />
               <Route path="/chat" element={<ChatPage />} />
-              <Route path="/profile/:username" Component={UserProfile} />
-              <Route path="/profile/me" Component={MyPage} />
+              <Route path="/profile/:username" element={<UserProfile />} />
+              <Route path="/profile/me" element={<MyPage />} />
               <Route path="/view" element={<ViewPage />} />
               <Route path="/like" element={<LikePage />} />
               <Route path="*" element={<Page404 />} />

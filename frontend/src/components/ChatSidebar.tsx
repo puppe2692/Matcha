@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Contact } from "../pages/ChatPage";
 import { Badge, styled } from "@mui/material";
-import { set } from "react-hook-form";
 import { useWebSocketContext } from "../context/WebSocketContext";
+import { User } from "../types";
+import axios from "axios";
+import ProfileAvatar from "./ProfileAvatar";
 
 const image: string =
   "https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato";
@@ -56,11 +58,26 @@ const DisconnectedBadge = styled(Badge)(({ theme }) => ({
 
 const ChatContact: React.FC<{
   contact: Contact;
-  image: string;
   onSelectContact: (contact: Contact) => void;
-}> = ({ contact, image, onSelectContact }) => {
+}> = ({ contact, onSelectContact }) => {
   const [isConnected, setIsConnected] = React.useState(false);
   const socket = useWebSocketContext();
+  const [originUser, setOriginUser] = useState<User>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/profile/${contact.connectedUser}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setOriginUser(response.data);
+      } catch {}
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     socket?.emit(
@@ -70,7 +87,7 @@ const ChatContact: React.FC<{
         setIsConnected(connected);
       }
     );
-  }, []);
+  }, [socket, contact.connectedUserId]);
 
   useEffect(() => {
     const handleConnection = (userId: string) => {
@@ -79,7 +96,9 @@ const ChatContact: React.FC<{
       }
     };
     const handleDisconnection = (userId: string) => {
-      setIsConnected(false);
+      if (userId === contact.connectedUserId.toString()) {
+        setIsConnected(false);
+      }
     };
     socket?.on("user-connected", handleConnection);
     socket?.on("user-left", handleDisconnection);
@@ -88,9 +107,9 @@ const ChatContact: React.FC<{
       socket?.off("user-connected", handleConnection);
       socket?.off("user-left", handleDisconnection);
     };
-  }, [socket]);
+  }, [socket, contact.connectedUserId]);
 
-  return (
+  return originUser ? (
     <div
       className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
       onClick={() => onSelectContact(contact)}
@@ -103,12 +122,7 @@ const ChatContact: React.FC<{
             color="primary"
             variant="dot"
           >
-            <img
-              // TODO: change the image source to the real contact profile picture
-              src={image}
-              alt="User Avatar"
-              className="w-12 h-12 rounded-full"
-            ></img>
+            <ProfileAvatar profile={originUser} width={48} height={48} />
           </ConnectedBadge>
         ) : (
           <DisconnectedBadge
@@ -117,12 +131,7 @@ const ChatContact: React.FC<{
             color="primary"
             variant="dot"
           >
-            <img
-              // TODO: change the image source to the real contact profile picture
-              src={image}
-              alt="User Avatar"
-              className="w-12 h-12 rounded-full"
-            ></img>
+            <ProfileAvatar profile={originUser} width={48} height={48} />
           </DisconnectedBadge>
         )}
         {contact.unreadMessages > 0 && (
@@ -138,7 +147,7 @@ const ChatContact: React.FC<{
 
       <h2 className="text-lg font-semibold">{contact.connectedUser}</h2>
     </div>
-  );
+  ) : null;
 };
 
 const ChatSidebar: React.FC<{
@@ -155,7 +164,6 @@ const ChatSidebar: React.FC<{
           <ChatContact
             key={index}
             contact={contact}
-            image={image}
             onSelectContact={onSelectContact}
           />
         ))}

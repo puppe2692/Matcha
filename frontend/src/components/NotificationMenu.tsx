@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { notification } from "./NavBar";
 import axios from "axios";
 import { useUserContext } from "../context/UserContext";
+import { User } from "../types";
+import ProfileAvatar from "./ProfileAvatar";
+import { Link } from "react-router-dom";
 
 const NotificationLine: React.FC<{
   notification: notification;
   setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
   setNotifications: React.Dispatch<React.SetStateAction<notification[]>>;
 }> = ({ notification, setUnreadCount, setNotifications }) => {
+  const [originUser, setOriginUser] = useState<User>();
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/profile/${notification.origin_username}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setOriginUser(response.data);
+      } catch {}
+    };
+    fetchUser();
+  }, []);
   const notifDate = new Date(notification.date);
   const formattedDate =
     notifDate.toLocaleDateString(undefined, {
@@ -38,55 +56,52 @@ const NotificationLine: React.FC<{
       console.error(error);
     }
     setTimeout(() => {
-      console.log("deleting" + notification.id);
       setNotifications((prev) =>
         prev.filter((notif) => notif.id !== notification.id)
       );
     }, 500);
   };
-  return (
-    <div
-      className={`relative flex items-center px-4 py-3 border-b ${
-        notification.seen
-          ? "hover:bg-gray-100"
-          : "bg-blue-100 hover:bg-blue-200"
-      } -mx-2 ${
-        isDeleting ? "opacity-0 -translate-x-full" : ""
-      } transition-all duration-500 ease-in-out`}
-    >
-      <img
-        className="h-8 w-8 rounded-full object-cover mx-1"
-        src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-        alt="avatar"
-      />
-      <div className="flex flex-col">
-        <p className="text-gray-600 max-w-40 text-sm mx-2 [overflow-wrap:anywhere]">
-          {notification.content}
-        </p>
-        <p className="text-gray-400 text-xs mx-2 mt-1">{formattedDate}</p>
-      </div>
-      <button
-        onClick={handleDelete}
-        className="absolute top-[17px] right-3 text-gray-400 hover:text-gray-500 focus:outline-none"
+  return originUser ? (
+    <Link to={`/profile/${originUser.username}`}>
+      <div
+        className={`relative flex items-center px-4 py-3 border-b ${
+          notification.seen
+            ? "hover:bg-gray-100"
+            : "bg-blue-100 hover:bg-blue-200"
+        } -mx-2 ${
+          isDeleting ? "opacity-0 -translate-x-full" : ""
+        } transition-all duration-500 ease-in-out`}
       >
-        <svg
-          className="h-3 w-3"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
+        <ProfileAvatar profile={originUser!} width={32} height={32} />
+        <div className="flex flex-col">
+          <p className="text-gray-600 max-w-40 text-sm mx-2 [overflow-wrap:anywhere]">
+            {notification.content}
+          </p>
+          <p className="text-gray-400 text-xs mx-2 mt-1">{formattedDate}</p>
+        </div>
+        <button
+          onClick={handleDelete}
+          className="absolute top-[17px] right-3 text-gray-400 hover:text-gray-500 focus:outline-none"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-    </div>
-  );
+          <svg
+            className="h-3 w-3"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </Link>
+  ) : null;
 };
 
 const NotificationMenu: React.FC<{

@@ -47,7 +47,6 @@ const FirstConnectionPage: React.FC = () => {
         },
         { withCredentials: true }
       );
-      console.log("RESPONSE", response.data.user);
       updateUser(response.data.user);
       navigate("/loading");
     } catch (error: any) {

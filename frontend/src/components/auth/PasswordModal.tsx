@@ -30,7 +30,6 @@ const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
   const passwordInput = watch("password");
 
   const onSubmit = async (data: ModalInputs) => {
-    console.log("TENTATIVE ASSWORD UPDATED");
     try {
       const response = await axios.post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/auth/updatepassword`,

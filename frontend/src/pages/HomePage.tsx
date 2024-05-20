@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/UserContext";
+import MyPage from "./MyPage";
 
 const HomePage: React.FC = () => {
-  return (
-    <div>
-      <h1>Homepage</h1>
-    </div>
-  );
+  return <MyPage />;
 };
 
 export default HomePage;

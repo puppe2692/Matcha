@@ -1,7 +1,6 @@
-import { Paper, Avatar, Typography, Divider, Grid } from "@mui/material";
+import { Paper, Avatar, Typography, Grid } from "@mui/material";
 import React from "react";
 import { User } from "../types";
-import StarIcon from "@mui/icons-material/Star";
 import { Link } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 

@@ -1,11 +1,11 @@
 import { Request } from "express";
-import { PrismaReturn } from "../../data_structures/data";
 import prismaFromWishInstance from "../../database/prismaFromWish";
 import { webSocket } from "../../server";
 
 export interface notification {
   id: number;
   user_id: number;
+  origin_username: string;
   date: Date;
   seen: boolean;
   new?: boolean;
@@ -116,12 +116,13 @@ export class notificationServices {
     } else {
       const notifId = await prismaFromWishInstance.create(
         "notifications",
-        ["user_id", "content"],
-        [destinationId, content]
+        ["user_id", "content", "origin_username"],
+        [destinationId, content, username]
       );
       const notif: notification = {
         id: notifId.data?.rows[0].id,
         user_id: destinationId,
+        origin_username: username,
         date: new Date(),
         seen: false,
         new: true,

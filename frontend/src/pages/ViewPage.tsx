@@ -29,8 +29,6 @@ const LikePage: React.FC = () => {
   const sortType = (searchParams.get("sortType") as SortType) || "";
   const ascending = searchParams.get("ascending") === "true";
 
-  console.log("USER PAGE 2", user);
-
   const findDistanceUser = (
     lat1: number,
     lon1: number,
@@ -138,64 +136,12 @@ const LikePage: React.FC = () => {
     }
   };
 
-  const updateUserLocation = async () => {
-    if (!location || !user) {
-      return;
-    }
-    try {
-      await axios.put(
-        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
-        {
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-        { withCredentials: true }
-      );
-      updateUser({
-        ...user,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchIPLocation = async () => {
-    const response = await axios.get("https://ipapi.co/json/");
-    setLocation({
-      latitude: response.data.latitude,
-      longitude: response.data.longitude,
-    });
-    updateUserLocation();
-  };
-
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          updateUserLocation();
-        },
-        () => {
-          fetchIPLocation();
-        }
-      );
-    } else {
-      fetchIPLocation();
-    }
-  };
-
   useEffect(() => {
     const fetchUsers = async () => {
       if (!user) {
         return;
       }
       try {
-        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/viewed_users`,
           { withCredentials: true }
@@ -220,17 +166,75 @@ const LikePage: React.FC = () => {
       }
     };
     fetchUsers();
-  }, [user, setUsers, user?.latitude, user?.longitude, user?.hashtags]);
+  }, [
+    user,
+    setUsers,
+    user?.latitude,
+    user?.longitude,
+    user?.hashtags,
+    sortType,
+    ascending,
+  ]);
 
   useEffect(() => {
     if (!user) return;
+    const updateUserLocation = async () => {
+      if (!location || !user) {
+        return;
+      }
+      try {
+        await axios.put(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
+          {
+            latitude: location.latitude,
+            longitude: location.longitude,
+          },
+          { withCredentials: true }
+        );
+        updateUser({
+          ...user,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchIPLocation = async () => {
+      const response = await axios.get("https://ipapi.co/json/");
+      setLocation({
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
+      });
+      updateUserLocation();
+    };
+
+    const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            updateUserLocation();
+          },
+          () => {
+            fetchIPLocation();
+          }
+        );
+      } else {
+        fetchIPLocation();
+      }
+    };
     getLocation();
-  }, [user]);
+  }, [user, location, updateUser]);
 
   useEffect(() => {
     if (!user || !users) return;
     sortUsers(sortType, ascending);
-  }, [sortType, ascending, user]);
+  }, [sortType, ascending, user, users]);
 
   return (
     <div className="max-w-screen mx-auto p-4">

@@ -7,11 +7,10 @@ const LoadingPage: React.FC = () => {
   const { user } = useUserContext();
 
   useEffect(() => {
-    console.log("BONJOUR", user);
     if (user) {
       navigate("/");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <div>

@@ -193,7 +193,6 @@ const LikePage: React.FC = () => {
         return;
       }
       try {
-        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/liked_users`,
           { withCredentials: true }

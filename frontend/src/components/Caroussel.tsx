@@ -8,7 +8,6 @@ interface CarouselProps {
 
 const ImageSlider: React.FC<CarouselProps> = ({ images }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  console.log("IMAGE CAROUSSEL", images);
 
   const showNextImage = () => {
     setActiveIndex((prevIndex) =>

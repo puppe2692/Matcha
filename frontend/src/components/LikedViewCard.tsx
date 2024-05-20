@@ -1,4 +1,4 @@
-import { Paper, Typography, Divider, Grid } from "@mui/material";
+import { Divider } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
@@ -91,12 +91,10 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
         return;
       }
       try {
-        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/liked_users`,
           { withCredentials: true }
         );
-        console.log("LIKE USERS", response.data.users);
         setLikeUsers(response.data.users);
         setLikeUsers((prevLikeUsers) =>
           prevLikeUsers.map((curLikeUser) => {
@@ -119,12 +117,10 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
         return;
       }
       try {
-        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/viewed_users`,
           { withCredentials: true }
         );
-        console.log("VIEW USERS", response.data.users);
         setViewUsers(response.data.users);
         setViewUsers((prevViewUsers) =>
           prevViewUsers.map((curViewUser) => {

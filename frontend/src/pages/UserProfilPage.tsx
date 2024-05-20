@@ -112,14 +112,11 @@ const UserProfile: React.FC = () => {
     // Call getRelation only if userId is set
     if (userId) {
       getRelation();
-      console.log("USER REELATION", userRelation);
     }
   }, [userId, updateUserRelation]);
 
   const getRelation = async () => {
-    console.log("GET RELATION 1");
     if (!user || !userId) return;
-    console.log("GET RELATION 2 user", user.id, "userId", userId);
     try {
       const response = await axios.get(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_relations`,
@@ -128,8 +125,6 @@ const UserProfile: React.FC = () => {
           withCredentials: true,
         }
       );
-      console.log("GET RELATION 3");
-      console.log("RELATION", response.data);
       setUserRelation(response.data.status);
     } catch (error) {
       console.error(error);
@@ -149,7 +144,6 @@ const UserProfile: React.FC = () => {
         );
         setUserProfile({ ...userResponse.data, distance });
         setUserId(userResponse.data.id);
-        console.log("USER NOT ME", userResponse.data);
         // setUserImage(userResponse.data.profile_picture);
         setLoading(false);
       } catch (error) {

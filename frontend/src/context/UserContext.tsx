@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { User } from "../types";
 import axios from "axios";
-import { set } from "react-hook-form";
 
 interface Prop {
   user: User | null;
@@ -36,7 +35,6 @@ export const UserProvider = ({ children }: any) => {
             withCredentials: true,
           }
         );
-        // console.log("USER FROM USER CONTEXT", response.data);
         setUser(response.data);
         //////////////////////////  RECUPERATION IMAGE //////////////////////////
         // for (let i = 0; i < user!.profile_picture.length; i++) {

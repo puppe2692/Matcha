@@ -28,7 +28,6 @@ const Avatar = ({
             withCredentials: true,
           }
         );
-        console.log("RESPONSE", response.data);
         const base64Image = btoa(
           new Uint8Array(response.data).reduce(
             (data, byte) => data + String.fromCharCode(byte),
@@ -46,9 +45,7 @@ const Avatar = ({
   }, [user]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Changing image");
     const selectedFile = e.target.files?.[0];
-    console.log("SELECTED FILE", selectedFile);
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -85,7 +82,6 @@ const Avatar = ({
             profile_picture: response.data.user.profile_picture,
           });
           setImage(true);
-          console.log("IMAGE", image);
           if (setImageUpload) setImageUpload(true);
         })
         .catch((error) => {
@@ -98,7 +94,6 @@ const Avatar = ({
 
   const clearImage = () => {
     const formData = new FormData();
-    console.log("SUPPRESSION IMANGE");
     formData.append("index", String(index));
     //console.log("FORMDATA", formData);
     axios
@@ -116,7 +111,6 @@ const Avatar = ({
         });
         setImage(false);
         if (setImageUpdate) setImageUpdate(null);
-        console.log("IMAGEUPADTE", imageUpdate);
         if (setImageUpload) setImageUpload(false);
       })
       .catch((error) => {

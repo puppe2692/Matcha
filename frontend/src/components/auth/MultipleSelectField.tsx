@@ -62,7 +62,6 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
     const [personName, setPersonName] = React.useState<string[]>([]);
 
     React.useEffect(() => {
-      console.log("user in multiple fields", user);
       if (user) {
         setPersonName(
           options
