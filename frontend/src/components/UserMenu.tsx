@@ -25,7 +25,6 @@ const MenuLink: React.FC<{
 const UserMenu: React.FC = () => {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const { user } = useUserContext();
-  const size = 8;
 
   return (
     <OutsideClickHandler

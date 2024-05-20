@@ -33,8 +33,6 @@ const ChatPage: React.FC = () => {
   const socket = useWebSocketContext();
   const { user } = useUserContext();
 
-  console.log(user);
-
   const readMessages = useCallback(async () => {
     if (!user || !selectedContact) return;
     try {

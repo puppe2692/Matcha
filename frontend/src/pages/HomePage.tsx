@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import FirstConnectionMod from "../components/users/firstConnectionMod";
+import MyPage from "./MyPage";
 
 const HomePage: React.FC = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(true);
   const { user } = useUserContext();
   const navigate = useNavigate();
-  console.log("GENDER", user?.gender);
-  console.log("HASTAGS", user?.hashtags);
-  console.log("PIC", user?.profile_picture);
   return (
     <div>
       {user?.gender === undefined || user?.gender === null ? (
@@ -19,7 +17,7 @@ const HomePage: React.FC = () => {
           closeModal={() => navigate("/")}
         />
       ) : (
-        <h1>Homepage</h1>
+        <MyPage />
       )}
     </div>
   );

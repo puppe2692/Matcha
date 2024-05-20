@@ -18,4 +18,5 @@ export interface CustomUser {
   latitude: number;
   longitude: number;
   fame_rating: number;
+  isfake: boolean;
 }

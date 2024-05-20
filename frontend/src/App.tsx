@@ -13,11 +13,11 @@ import SignOutPage from "./pages/SignOutPage";
 import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import UserProfile from "./pages/UserProfilPage";
-import MyPage from "./pages/MyPage";
 import ViewPage from "./pages/ViewPage";
 import LikePage from "./pages/LikePage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
+import MyPage from "./pages/MyPage";
 
 // pas bien compris la diff element vs compenent, tu peux m'expliquer?
 
@@ -32,13 +32,14 @@ function App(): JSX.Element {
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<MyPage />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/loading" element={<LoadingPage />} />
               <Route path="/signout" element={<SignOutPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/research" element={<ResearchPage />} />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/profile/:username" element={<UserProfile />} />
+              <Route path="/profile/me" element={<MyPage />} />
               <Route path="/view" element={<ViewPage />} />
               <Route path="/like" element={<LikePage />} />
               <Route path="*" element={<Page404 />} />

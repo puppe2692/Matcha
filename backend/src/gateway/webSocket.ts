@@ -2,6 +2,7 @@ import { Server as HTTPServer } from "http";
 import { Socket, Server as SocketServer } from "socket.io";
 import { Message, chatServices } from "../routes/chat/chat-service";
 import { notification } from "../routes/action/action-service";
+import prismaFromWishInstance from "../database/prismaFromWish";
 
 export class WebSocket {
   io: SocketServer;
@@ -19,20 +20,24 @@ export class WebSocket {
 
   startListeners = (socket: Socket) => {
     let userId: string = (socket.handshake.query?.id || "") as string;
-    // console.log("connection", socket.id, userId);
     if (userId && userId !== "") {
       socket.join(userId);
       socket.broadcast.emit("user-connected", userId);
     }
 
-    //TODO: update last seen in the db if its a deconnection
     socket.on("disconnect", () => {
       if (userId && userId !== "") {
         socket.leave(userId);
         const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
-        // console.log("sockets in room / userId:", socketsInRoom, userId);
         if (!socketsInRoom) {
           socket.broadcast.emit("user-left", userId);
+          prismaFromWishInstance.update(
+            "users",
+            ["updated_at"],
+            [new Date()],
+            ["id"],
+            [userId]
+          );
         }
       }
     });
@@ -82,17 +87,24 @@ export class WebSocket {
             socket!.leave(userId);
           });
         }
-        socket.broadcast.emit("user left", userId);
+        socket.broadcast.emit("user-left", userId);
+        prismaFromWishInstance.update(
+          "users",
+          ["updated_at"],
+          [new Date()],
+          ["id"],
+          [userId]
+        );
       }
       userId = "";
     });
 
-    socket.on("check-connection", (checkId: string) => {
+    socket.on("check-connection", (checkId: string, callback) => {
       const socketsInRoom = this.io.sockets.adapter.rooms.get(checkId);
       if (socketsInRoom) {
-        return true;
+        callback(true);
       } else {
-        return false;
+        callback(false);
       }
     });
   };

@@ -55,7 +55,6 @@ const FirstConnectionMod: React.FC<Props> = ({
         },
         { withCredentials: true }
       );
-      console.log("RESPONSE", response.data.user);
       updateUser(response.data.user);
       closeModal(); // a verifier ici
     } catch (error: any) {

@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserContext } from "../context/UserContext";
-import NotConnected from "../components/NotConnected";
-import NotFound from "../components/NotFound";
-import ImageSlider from "../components/Caroussel";
 import MeCard from "../components/MeCard";
-import { useParams } from "react-router-dom";
-import { set } from "react-hook-form";
 
 const MyPage: React.FC = () => {
   const { user } = useUserContext();
-  const [userLoaded, setUserLoaded] = useState<boolean>(false);
   const [userImage, setUserImage] = useState<string[]>([]);
 
   useEffect(() => {
@@ -54,13 +48,6 @@ const MyPage: React.FC = () => {
       fetchImg(); // Fetch images only if user data is available
     }
   }, []); // Run this effect whenever user data changes
-
-  while (!userLoaded) {
-    if (user) {
-      setUserLoaded(true);
-    }
-    return <div>Loading...</div>;
-  }
 
   return (
     <div>

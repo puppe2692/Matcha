@@ -193,12 +193,10 @@ const ResearchPage: React.FC = () => {
         return;
       }
       try {
-        console.log("fetching users");
         const response = await axios.get(
           `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/all_interesting`,
           { withCredentials: true }
         );
-        console.log("response", response.data.users);
         setUsers(response.data.users);
         setUsers((prevUsers) =>
           prevUsers.map((curUser) => {
@@ -214,7 +212,6 @@ const ResearchPage: React.FC = () => {
           })
         );
         sortUsers(sortType, ascending);
-        console.log("users", users);
       } catch (error) {
         console.error(error);
       }

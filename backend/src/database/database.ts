@@ -21,7 +21,7 @@ const messageField: string =
   "id SERIAL PRIMARY KEY, sender_id INTEGER REFERENCES users(id), receiver_id INTEGER, date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT";
 
 const notificationField: string =
-  "id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES users(id), date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT";
+  "id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES users(id), date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, seen BOOLEAN DEFAULT FALSE, content TEXT, origin_username VARCHAR(32)";
 
 class Database {
   pool: Pool;
@@ -68,12 +68,7 @@ class Database {
   }
 
   async populateExample(data: any): Promise<void> {
-    console.log("-------------------------------------------");
-    console.log("Starting db population");
-    console.log(data.default);
     for (const user of data.default) {
-      console.log("creating user");
-      console.log(user);
       user.password = await hashPassword(user.password);
       await prismaFromWishInstance.create(
         "users",
@@ -115,8 +110,6 @@ class Database {
         ]
       );
     }
-    console.log("-------------------------------------------");
-    console.log("Ending db population");
   }
 }
 
