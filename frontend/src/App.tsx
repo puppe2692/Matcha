@@ -1,9 +1,7 @@
 import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import NavBar from "./components/NavBar";
-import HomePage from "./pages/HomePage";
 import Page404 from "./pages/Page404";
-import Page1 from "./pages/Page1";
 import ChatPage from "./pages/ChatPage";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import { UserProvider } from "./context/UserContext";
@@ -34,7 +32,7 @@ function App(): JSX.Element {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/firstco" element={<FirstConnectionPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<MyPage />} />
               <Route path="/loading" element={<LoadingPage />} />
               <Route path="/signout" element={<SignOutPage />} />
               <Route path="/settings" element={<SettingsPage />} />

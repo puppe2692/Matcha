@@ -47,6 +47,20 @@ export class notificationServices {
     }
   }
 
+  static async getUnreadCount(request: Request): Promise<Number> {
+    const userId = parseInt(request.query.id as string);
+    const notifications = await prismaFromWishInstance.selectAll(
+      "notifications",
+      ["user_id", "seen"],
+      [userId, false]
+    );
+    if (!notifications.data?.rows) {
+      return 0;
+    } else {
+      return notifications.data.rows.length;
+    }
+  }
+
   static async deleteAllNotifications(request: Request): Promise<string> {
     try {
       const userId = parseInt(request.query.id as string);
