@@ -6,9 +6,6 @@ import { User } from "../types";
 import axios from "axios";
 import ProfileAvatar from "./ProfileAvatar";
 
-const image: string =
-  "https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato";
-
 const ConnectedBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: "#44b700",
@@ -77,7 +74,7 @@ const ChatContact: React.FC<{
       } catch {}
     };
     fetchUser();
-  }, []);
+  }, [contact.connectedUser]);
 
   useEffect(() => {
     socket?.emit(

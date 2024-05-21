@@ -19,6 +19,20 @@ notificationRouter.get(
   }
 );
 
+notificationRouter.get(
+  "/unreadNotifications",
+  authJwtMiddleware,
+  async (request: Request, response: Response) => {
+    const errors = validationResult(request); // Check for validation errors
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+    return response
+      .status(200)
+      .json(await notificationServices.getUnreadCount(request));
+  }
+);
+
 notificationRouter.put(
   "/read",
   authJwtMiddleware,

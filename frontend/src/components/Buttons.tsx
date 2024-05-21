@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Heart,
-  HeartCrack,
-  Ban,
-  CircleCheck,
-  Flag,
-  FlagOff,
-} from "lucide-react";
+import { Heart, HeartCrack, Ban, CircleCheck, Flag } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const NavBarButton: React.FC<{
