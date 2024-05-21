@@ -28,6 +28,7 @@ const NotificationLine: React.FC<{
     fetchUser();
   }, []);
   const notifDate = new Date(notification.date);
+  console.log("NOTIF DATE", notifDate);
   const formattedDate =
     notifDate.toLocaleDateString(undefined, {
       month: "long",

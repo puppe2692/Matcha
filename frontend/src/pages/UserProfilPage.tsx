@@ -144,7 +144,6 @@ const UserProfile: React.FC = () => {
         );
         setUserProfile({ ...userResponse.data, distance });
         setUserId(userResponse.data.id);
-        // setUserImage(userResponse.data.profile_picture);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -153,8 +152,6 @@ const UserProfile: React.FC = () => {
     };
 
     fetchUserData();
-    // console.log("USER NOT ME STATE", userProfile);
-    // console.log("USER NOT ME STATE ID", userId);
   }, [username, user, user?.latitude, user?.longitude, user?.hashtags]);
 
   useEffect(() => {
@@ -181,7 +178,6 @@ const UserProfile: React.FC = () => {
                 withCredentials: true,
               }
             );
-            //console.log("RESPONSE ALL IMAGE", response.data);
             if (response.status !== 404) {
               const base64Image = btoa(
                 new Uint8Array(response.data).reduce(

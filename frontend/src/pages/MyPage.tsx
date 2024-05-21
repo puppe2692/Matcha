@@ -21,7 +21,6 @@ const MyPage: React.FC = () => {
                 withCredentials: true,
               }
             );
-            //console.log("RESPONSE ALL IMAGE", response.data);
             if (response.status !== 404) {
               const base64Image = btoa(
                 new Uint8Array(response.data).reduce(

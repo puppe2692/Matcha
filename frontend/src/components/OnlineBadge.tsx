@@ -9,10 +9,10 @@ const OnlineBadge: React.FC<{
 }> = ({ profile }) => {
   const [isConnected, setIsConnected] = React.useState(true);
   const [updatedAt, setUpdatedAt] = React.useState<Date | null>(null);
+  const [formattedDate, setFormattedDate] = React.useState<string | null>(null);
   const socket = useWebSocketContext();
 
   useEffect(() => {
-    console.log("PROFILE: ", profile);
     socket?.emit(
       "check-connection",
       profile.id.toString(),
@@ -49,7 +49,10 @@ const OnlineBadge: React.FC<{
             withCredentials: true,
           }
         );
-        setUpdatedAt(response.data.updatedAt);
+        console.log("RESPONSE ONLINE BADGE: ", response.data.updated_at);
+        const newDate = new Date(response.data.updated_at);
+        console.log("NEW DATE: ", newDate);
+        setUpdatedAt(newDate);
       } catch (error) {
         console.error(error);
       }
@@ -57,8 +60,27 @@ const OnlineBadge: React.FC<{
 
     if (!isConnected) {
       onlineDate();
+      console.log("UPDATEDAT: ", updatedAt);
+      console.log("FORMATTEDDATE: ", formattedDate);
     }
   }, [isConnected]);
+
+  useEffect(() => {
+    if (updatedAt) {
+      const formDate =
+        updatedAt.toLocaleDateString(undefined, {
+          month: "long",
+          day: "numeric",
+        }) +
+        ", " +
+        updatedAt.toLocaleTimeString(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+      setFormattedDate(formDate);
+    }
+  }, [updatedAt]);
 
   return (
     <div>
@@ -76,7 +98,7 @@ const OnlineBadge: React.FC<{
           <div className="flex flex-row">
             <p className="font-semibold text-l truncate">Last seen:</p>
             <p className="text-black-900 ml-2">
-              {updatedAt ? updatedAt.toLocaleString() : "N/A"}
+              {formattedDate ? formattedDate : "N/A"}
             </p>
           </div>
         </div>

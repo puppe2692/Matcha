@@ -12,14 +12,12 @@ export const WebSocketProvider = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const { user } = useUserContext();
   useEffect(() => {
-    // console.log("Connecting to websocket with user: ", user);
     if (user?.id) {
       const s = io(`http://${process.env.REACT_APP_SERVER_ADDRESS}:5000`, {
         query: { id: user.id },
       });
       setSocket(s);
       return () => {
-        // console.log("Disconnecting from websocket with user: ", user);
         s.close();
       };
     }

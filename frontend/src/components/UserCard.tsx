@@ -11,7 +11,6 @@ const UserCard: React.FC<{ profile: User; userImage: string[] }> = ({
   userImage,
 }) => {
   const hashtagsString = profile?.hashtags?.join(", ");
-  console.log("PROFILE USER CARD: ", profile);
   return (
     <div className="flex justify-center items-center ">
       <div className="p-3 flex flex-col">
