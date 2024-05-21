@@ -36,6 +36,7 @@ export const UserProvider = ({ children }: any) => {
           }
         );
         setUser(response.data);
+
         setLoading(false);
       } catch (error: any) {
         if (error.response && error.response.status === 401) {

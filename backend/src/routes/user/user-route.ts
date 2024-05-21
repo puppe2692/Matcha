@@ -367,9 +367,7 @@ router.get(
         connection: connection.data?.rows[0],
       });
     } catch (error) {
-      response
-        .status(400)
-        .json({ error: " get relation: Internal server error" });
+      response.status(404).json({ error: " get relation: Relation not found" });
     }
   }
 );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowBigLeft, ArrowBigRight, Circle, CircleDot } from "lucide-react";
 import "./image-slider.css";
+import { color } from "framer-motion";
 
 interface CarouselProps {
   images: string[];
@@ -22,11 +23,18 @@ const ImageSlider: React.FC<CarouselProps> = ({ images }) => {
   };
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        position: "relative",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          width: "auto",
+          maxWidth: "800px",
+          aspectRatio: "16/9",
           display: "flex",
           overflow: "hidden",
         }}
@@ -35,8 +43,12 @@ const ImageSlider: React.FC<CarouselProps> = ({ images }) => {
           <img
             key={index}
             src={image}
-            className="img-slider-img"
-            style={{ translate: `${-100 * activeIndex}%` }}
+            className="object-cover img-slider-img"
+            style={{
+              width: "800px",
+              height: "100%",
+              transform: `translateX(${-100 * activeIndex}%)`,
+            }}
           />
         ))}
       </div>
@@ -59,7 +71,7 @@ const ImageSlider: React.FC<CarouselProps> = ({ images }) => {
           position: "absolute",
           bottom: ".5rem",
           left: "50%",
-          translate: "-50%",
+          transform: "translateX(-50%)", //ici
           display: "flex",
           gap: ".25rem",
         }}
