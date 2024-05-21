@@ -4,7 +4,7 @@ import Avatar from "./UserAvatar";
 interface Props {
   controllerName: string;
   label: string;
-  setImageUpload: React.Dispatch<React.SetStateAction<boolean>>;
+  setImageUpload?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UserImage: React.FC<Props> = ({

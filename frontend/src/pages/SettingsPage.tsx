@@ -23,7 +23,6 @@ interface ModalInputs {
 const SettingsPage: React.FC = () => {
   const [error, setError] = useState<string>();
   const { user, updateUser } = useUserContext();
-  const [imageUpload, setImageUpload] = useState<boolean>(false);
   const [passwordModal, setPasswordModal] = useState<boolean>(false);
 
   const {
@@ -168,7 +167,6 @@ const SettingsPage: React.FC = () => {
             <UserImage
               controllerName="Profil Pictures"
               label="Profil Pictures"
-              setImageUpload={setImageUpload}
             />
             <NavBarButton
               disabled={Object.keys(errors).length > 0}

@@ -20,7 +20,7 @@ interface ModalInputs {
 
 const FirstConnectionPage: React.FC = () => {
   const [error, setError] = useState<string>();
-  const { user, updateUser } = useUserContext();
+  const { updateUser } = useUserContext();
   const [imageUpload, setImageUpload] = useState<boolean>(false);
   const navigate = useNavigate();
 

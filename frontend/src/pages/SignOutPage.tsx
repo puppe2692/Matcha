@@ -28,7 +28,7 @@ const SignOutPage: React.FC = () => {
       }
     };
     signOut();
-  }, [navigate, logoutUser]);
+  }, [navigate, logoutUser, socket]);
 
   if (error) {
     return <NotConnected message="Please signup or log in" />;

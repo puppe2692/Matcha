@@ -76,11 +76,11 @@ export class WebSocket {
       userId = connectionId;
     });
 
-    //TODO: update last seen in the db
     socket.on("logout", () => {
       if (userId && userId !== "") {
         socket.leave(userId);
         const socketsInRoom = this.io.sockets.adapter.rooms.get(userId);
+        this.io.to(userId).emit("logoutTab");
         if (socketsInRoom) {
           socketsInRoom.forEach((socketId) => {
             const socket = this.io.sockets.sockets.get(socketId);

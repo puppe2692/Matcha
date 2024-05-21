@@ -24,7 +24,6 @@ export const UserProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [online, setOnline] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [printableImage, setPrintableImage] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchUser = async () => {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { useUserContext } from "../../context/UserContext";
 import ErrorsFormField from "../../components/auth/ErrorsFormField";
 import { NavBarButton } from "../../components/Buttons";
 
@@ -18,8 +17,6 @@ interface ModalInputs {
 
 const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
   const [error, setError] = useState<string>();
-  const { user, updateUser } = useUserContext();
-
   const {
     handleSubmit,
     control,
@@ -31,7 +28,7 @@ const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
 
   const onSubmit = async (data: ModalInputs) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/auth/updatepassword`,
         {
           password: data.password,
