@@ -18,7 +18,6 @@ router.get(
     }
     const user = request.user as CustomUser;
     delete user.password;
-    // console.log("USER", user);
     response.status(200).json(user);
   }
 );
@@ -199,8 +198,6 @@ router.post(
     try {
       const user = request.user as CustomUser;
       const file = request.file as Express.Multer.File;
-      // const imageBase64 = file.buffer.toString("base64");
-      // console.log("IMAGES = " + imageBase64);;
       const url = request.body.url;
       const index = request.body.index;
       await prismaFromWishInstance.update(
@@ -349,7 +346,6 @@ router.get(
   authJwtMiddleware,
   async (request: Request, response: Response) => {
     try {
-      // console.log("request.body", request);
       const originId = Number(request.query.originId);
       const destinationId = Number(request.query.destinationId);
       const status = await prismaFromWishInstance.selectAll(

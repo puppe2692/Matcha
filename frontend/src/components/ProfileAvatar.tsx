@@ -33,7 +33,6 @@ const ProfileAvatar: React.FC<{
         setImg(profile.profile_picture[0]);
       }
     };
-    // console.log("ProfileAvatar: profile", profile);
     fetchImg();
   }, [profile.id, profile.isfake, profile.profile_picture]);
   return (

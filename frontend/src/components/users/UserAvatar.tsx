@@ -34,11 +34,9 @@ const Avatar = ({
             ""
           )
         );
-        //console.log("BEFORE BASE64 IMAGE", base64Image, "INDEX", index);
         setImg(base64Image);
         setImageUpdate(`data:image/jpeg;base64,${base64Image}`);
         setImage(true);
-        //console.log("AFTER IMAGE img", img, "INDEX", index);
       } catch {}
     };
     fetchImg();
@@ -51,7 +49,6 @@ const Avatar = ({
       reader.onload = () => {
         setImageUpdate(reader.result as string);
       };
-      //console.log("IMAGE UPDATE---------------------", imageUpdate);
       reader.readAsDataURL(selectedFile);
     }
     if (
@@ -60,10 +57,8 @@ const Avatar = ({
         selectedFile.type === "image/png" ||
         selectedFile.type === "image/jpg")
     ) {
-      // const newImageUrl = URL.createObjectURL(selectedFile);
       const formData = new FormData();
       formData.append("image", selectedFile);
-      //formData.append("url", newImageUrl);
       formData.append("index", String(index + 1));
       axios
         .post(
@@ -95,7 +90,6 @@ const Avatar = ({
   const clearImage = () => {
     const formData = new FormData();
     formData.append("index", String(index));
-    //console.log("FORMDATA", formData);
     axios
       .post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/clear_image`,

@@ -38,8 +38,6 @@ const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
         },
         { withCredentials: true }
       );
-      //console.log("RESPONSE", response.data.user);
-      //updateUser(response.data.user);
       closeModal(); // a verifier ici
     } catch (error: any) {
       setError(error.response.data.error);
