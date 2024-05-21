@@ -77,6 +77,25 @@ const NavBar: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
+    const getUnreadNotifications = async () => {
+      if (!user) return;
+      try {
+        const response = await axios.get(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/notification/unreadNotifications`,
+          {
+            params: { id: user.id },
+            withCredentials: true,
+          }
+        );
+        setUnreadNotifications(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUnreadNotifications();
+  }, [user]);
+
+  useEffect(() => {
     const handleMessageNotification = () => {
       setUnreadCount((prev) => prev + 1);
     };

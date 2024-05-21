@@ -11,7 +11,7 @@ const ProfileAvatar: React.FC<{
   const [img, setImg] = React.useState<string>("");
   useEffect(() => {
     const fetchImg = async () => {
-      if (!profile.isfake) {
+      if (!profile.isfake && profile.profile_picture[0]) {
         try {
           const response = await axios.get(
             `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${profile.id}`,
@@ -34,7 +34,7 @@ const ProfileAvatar: React.FC<{
       }
     };
     fetchImg();
-  }, []);
+  }, [profile.id, profile.isfake, profile.profile_picture]);
   return (
     <Avatar
       src={img}

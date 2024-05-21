@@ -38,7 +38,6 @@ const UserMenu: React.FC = () => {
           className="flex mr-3 text-sm bg-gray-800 rounded-full lg:mr-0 active:ring-4 active:ring-gray-600"
           onClick={() => setShowInfo((prevval) => !prevval)}
         >
-          {/* TODO: user user profile picture */}
           <ProfileAvatar profile={user!} width={32} height={32} />
         </button>
 

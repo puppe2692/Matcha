@@ -9,9 +9,17 @@ const MyPage: React.FC = () => {
 
   useEffect(() => {
     const fetchImg = async () => {
+      if (!user) return;
+      if (user.isfake) {
+        setUserImage(user.profile_picture);
+        return;
+      }
       try {
         setUserImage([]); // Clear images before fetching new ones
         for (let i = 0; i < user!.profile_picture.length; i++) {
+          if (!user.profile_picture[i]) {
+            continue;
+          }
           try {
             const response = await axios.get(
               `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/get_img/${user?.id}`,

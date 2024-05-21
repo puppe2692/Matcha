@@ -26,7 +26,7 @@ const NotificationLine: React.FC<{
       } catch {}
     };
     fetchUser();
-  }, []);
+  }, [notification.origin_username]);
   const notifDate = new Date(notification.date);
   console.log("NOTIF DATE", notifDate);
   const formattedDate =

@@ -39,8 +39,12 @@ export const UserProvider = ({ children }: any) => {
 
         setLoading(false);
       } catch (error: any) {
-        setUser(null);
-        setLoading(false);
+        if (error.response && error.response.status === 401) {
+          setUser(null);
+          setLoading(false);
+        } else {
+          console.error(error);
+        }
       }
     };
 
