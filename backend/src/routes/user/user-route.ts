@@ -135,6 +135,7 @@ router.put(
   authJwtMiddleware,
   [body("latitude").isNumeric(), body("longitude").isNumeric()],
   async (request: Request, response: Response) => {
+    console.log("UPDATE LOCATION");
     const errors = validationResult(request); // Check for validation errors
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() });
