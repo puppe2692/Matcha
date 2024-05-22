@@ -29,10 +29,7 @@ const SettingsPage: React.FC = () => {
     handleSubmit,
     control,
     formState: { errors },
-    watch,
   } = useForm<ModalInputs>({ mode: "onTouched", criteriaMode: "all" });
-
-  const passwordInput = watch("password");
 
   const onSubmit = async (data: ModalInputs) => {
     if (

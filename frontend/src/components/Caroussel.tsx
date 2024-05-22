@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ArrowBigLeft, ArrowBigRight, Circle, CircleDot } from "lucide-react";
 import "./image-slider.css";
-import { color } from "framer-motion";
 
 interface CarouselProps {
   images: string[];
@@ -44,6 +43,7 @@ const ImageSlider: React.FC<CarouselProps> = ({ images }) => {
             key={index}
             src={image}
             className="object-cover img-slider-img"
+            alt="User-gallery"
             style={{
               width: "800px",
               height: "100%",

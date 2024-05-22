@@ -20,7 +20,7 @@ const OnlineBadge: React.FC<{
         setIsConnected(connected);
       }
     );
-  }, []);
+  }, [profile.id, socket]);
 
   useEffect(() => {
     const handleConnection = (userId: string) => {
@@ -38,7 +38,7 @@ const OnlineBadge: React.FC<{
       socket?.off("user-connected", handleConnection);
       socket?.off("user-left", handleDisconnection);
     };
-  }, [socket]);
+  }, [socket, profile.id]);
 
   useEffect(() => {
     const onlineDate = async () => {
@@ -49,9 +49,7 @@ const OnlineBadge: React.FC<{
             withCredentials: true,
           }
         );
-        console.log("RESPONSE ONLINE BADGE: ", response.data.updated_at);
         const newDate = new Date(response.data.updated_at);
-        console.log("NEW DATE: ", newDate);
         setUpdatedAt(newDate);
       } catch (error) {
         console.error(error);
@@ -60,10 +58,8 @@ const OnlineBadge: React.FC<{
 
     if (!isConnected) {
       onlineDate();
-      console.log("UPDATEDAT: ", updatedAt);
-      console.log("FORMATTEDDATE: ", formattedDate);
     }
-  }, [isConnected]);
+  }, [isConnected, profile.username]);
 
   useEffect(() => {
     if (updatedAt) {
