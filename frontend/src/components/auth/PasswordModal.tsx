@@ -7,7 +7,7 @@ import { NavBarButton } from "../../components/Buttons";
 interface Props {
   modalId: string;
   title: string;
-  closeModal: () => void;
+  closeModal: (updated: boolean) => void;
 }
 
 interface ModalInputs {
@@ -35,7 +35,7 @@ const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
         },
         { withCredentials: true }
       );
-      closeModal(); // a verifier ici
+      closeModal(true);
     } catch (error: any) {
       setError(error.response.data.error);
     }
@@ -109,7 +109,9 @@ const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
                 />
                 <div className="ml-28">
                   <NavBarButton
-                    onClick={closeModal}
+                    onClick={() => {
+                      closeModal(false);
+                    }}
                     text="Close"
                     type="button"
                   />

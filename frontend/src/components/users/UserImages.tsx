@@ -5,12 +5,14 @@ interface Props {
   controllerName: string;
   label: string;
   setImageUpload?: React.Dispatch<React.SetStateAction<boolean>>;
+  setNewImage?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UserImage: React.FC<Props> = ({
   controllerName,
   label,
   setImageUpload,
+  setNewImage,
 }) => {
   return (
     <div>
@@ -21,11 +23,15 @@ const UserImage: React.FC<Props> = ({
         {label}
       </label>
       <div className="flex flex-row items-center justify-center w-full bg-gray-100 bg-opacity-0 p-4 space-x-4">
-        <Avatar index={0} setImageUpload={setImageUpload} />
-        <Avatar index={1} />
-        <Avatar index={2} />
-        <Avatar index={3} />
-        <Avatar index={4} />
+        <Avatar
+          index={0}
+          setImageUpload={setImageUpload}
+          setNewImage={setNewImage}
+        />
+        <Avatar index={1} setNewImage={setNewImage} />
+        <Avatar index={2} setNewImage={setNewImage} />
+        <Avatar index={3} setNewImage={setNewImage} />
+        <Avatar index={4} setNewImage={setNewImage} />
       </div>
     </div>
   );

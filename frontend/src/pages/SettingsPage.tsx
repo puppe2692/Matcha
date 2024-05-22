@@ -26,6 +26,7 @@ const SettingsPage: React.FC = () => {
   const { user, updateUser } = useUserContext();
   const [passwordModal, setPasswordModal] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [newImage, setNewImage] = useState<boolean>(false);
 
   const {
     handleSubmit,
@@ -40,7 +41,7 @@ const SettingsPage: React.FC = () => {
       data.bio === undefined &&
       data.sex_pref === undefined &&
       data.hashtags === undefined &&
-      data.picture === undefined
+      !newImage
     ) {
       setError("You should update at least one field before submiting.");
       return;
@@ -64,7 +65,13 @@ const SettingsPage: React.FC = () => {
         setIsSubmitted(false);
       }, 3000);
     } catch (error: any) {
-      setError(error.response.data.error);
+      if (newImage) {
+        setError("");
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 3000);
+      } else setError(error.response.data.error);
     }
   };
 
@@ -72,7 +79,7 @@ const SettingsPage: React.FC = () => {
     <div>
       <ReportedModal
         showReportedModal={isSubmitted}
-        reportedModalMessage="User successfully reported"
+        reportedModalMessage="User successfully updated"
         isReportedMod={false}
         closeReportedModal={() => setIsSubmitted(false)}
       />
@@ -179,7 +186,7 @@ const SettingsPage: React.FC = () => {
               <UserImage
                 controllerName="Profil Pictures"
                 label="Profil Pictures"
-                setImageUpload={setImageUpload}
+                setNewImage={setNewImage}
               />
               <NavBarButton
                 disabled={Object.keys(errors).length > 0}
@@ -193,7 +200,15 @@ const SettingsPage: React.FC = () => {
           <PasswordMod
             title="Password Modal"
             modalId={"Password Modal"}
-            closeModal={() => setPasswordModal(false)}
+            closeModal={(updated) => {
+              setPasswordModal(false);
+              if (updated) {
+                setIsSubmitted(true);
+                setTimeout(() => {
+                  setIsSubmitted(false);
+                }, 3000);
+              }
+            }}
           />
         ) : null}
       </div>
