@@ -130,6 +130,7 @@ router.put(
       return response.status(400).json({ errors: errors.array() });
     }
     const data = matchedData(request);
+    console.log("updating location");
     await prismaFromWishInstance.update(
       "users",
       ["latitude", "longitude"],

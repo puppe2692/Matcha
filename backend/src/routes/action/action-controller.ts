@@ -56,6 +56,7 @@ actionRouter.put(
         data.destinationId,
         "like"
       );
+      await actionServices.updateRating(data.destinationId, 1);
       if (returnVal.newConnection) {
         await notificationServices.createSendNotification(
           data.originId,
@@ -95,6 +96,7 @@ actionRouter.put(
         data.destinationId,
         "unlike"
       );
+      await actionServices.updateRating(data.destinationId, -1);
       await notificationServices.createSendNotification(
         data.originId,
         data.destinationId,

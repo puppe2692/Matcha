@@ -136,36 +136,12 @@ const ResearchPage: React.FC = () => {
     }
   };
 
-  const updateUserLocation = async () => {
-    if (!location || !user) {
-      return;
-    }
-    try {
-      await axios.put(
-        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
-        {
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-        { withCredentials: true }
-      );
-      updateUser({
-        ...user,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const fetchIPLocation = async () => {
     const response = await axios.get("https://ipapi.co/json/");
     setLocation({
       latitude: response.data.latitude,
       longitude: response.data.longitude,
     });
-    updateUserLocation();
   };
 
   const getLocation = () => {
@@ -176,7 +152,6 @@ const ResearchPage: React.FC = () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          updateUserLocation();
         },
         () => {
           fetchIPLocation();
@@ -221,10 +196,39 @@ const ResearchPage: React.FC = () => {
   }, [user, setUsers, user?.latitude, user?.longitude, user?.hashtags]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     getLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user?.id]);
+
+  useEffect(() => {
+    const updateUserLocation = async () => {
+      if (!location || !user) {
+        return;
+      }
+      try {
+        await axios.put(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
+          {
+            latitude: location.latitude,
+            longitude: location.longitude,
+          },
+          { withCredentials: true }
+        );
+        updateUser({
+          ...user,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    updateUserLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   useEffect(() => {
     if (!user || !users) return;
