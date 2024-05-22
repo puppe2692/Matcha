@@ -5,9 +5,11 @@ import axios from "axios";
 const Avatar = ({
   index,
   setImageUpload,
+  setNewImage,
 }: {
   index: number;
   setImageUpload?: React.Dispatch<React.SetStateAction<boolean>>;
+  setNewImage?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, updateUser } = useUserContext();
@@ -75,6 +77,7 @@ const Avatar = ({
           });
           setImage(true);
           if (setImageUpload) setImageUpload(true);
+          if (setNewImage) setNewImage(true);
         })
         .catch((error) => {
           console.error(error);

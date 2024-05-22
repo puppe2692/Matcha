@@ -303,6 +303,9 @@ const UserProfile: React.FC = () => {
       );
       setUpdateUserRelation((prev) => !prev);
       setReported(true);
+      setTimeout(() => {
+        setReported(false);
+      }, 3000);
     } catch (error) {
       console.error(error);
     }
@@ -313,6 +316,7 @@ const UserProfile: React.FC = () => {
       <ReportedModal
         showReportedModal={reported}
         reportedModalMessage="User successfully reported"
+        isReportedMod={true}
         closeReportedModal={() => setReported(false)}
       />
 
