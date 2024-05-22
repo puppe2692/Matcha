@@ -32,7 +32,7 @@ router.get(
     }
     const user = request.user as CustomUser;
     let relevantUsers: PrismaReturn;
-    if (user.sex_pref === "Male") {
+    if (user.sex_pref === "Both") {
       relevantUsers = await prismaFromWishInstance.customQuery(
         `select users.*
       FROM users 
@@ -41,20 +41,8 @@ router.get(
         AND status.origin_user_id = $1
       WHERE users.id <> $1 
         AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
-        AND users.gender = $2;`,
-        [user.id, "Male"]
-      );
-    } else if (user.sex_pref === "Female") {
-      relevantUsers = await prismaFromWishInstance.customQuery(
-        `select users.*
-      FROM users 
-      LEFT JOIN status 
-        on users.id = status.destination_user_id 
-        AND status.origin_user_id = $1
-      WHERE users.id <> $1 
-        AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
-        AND users.gender = $2;`,
-        [user.id, "Female"]
+        AND users.sex_pref = $2`,
+        [user.id, user.gender]
       );
     } else {
       relevantUsers = await prismaFromWishInstance.customQuery(
@@ -64,8 +52,10 @@ router.get(
         on users.id = status.destination_user_id 
         AND status.origin_user_id = $1
       WHERE users.id <> $1 
-        AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))`,
-        [user.id]
+        AND (status.status IS NULL OR status.status NOT IN ('liked', 'blocked'))
+        AND users.gender = $2
+        AND users.sex_pref = $3;`,
+        [user.id, user.sex_pref, user.gender]
       );
     }
     response.status(200).json({
