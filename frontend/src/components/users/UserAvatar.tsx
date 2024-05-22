@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import CloseButton from "react-bootstrap/CloseButton";
 import { useUserContext } from "../../context/UserContext";
 import axios from "axios";
 
@@ -14,7 +13,6 @@ const Avatar = ({
   const { user, updateUser } = useUserContext();
   const [image, setImage] = useState<boolean>(false);
   const [imageUpdate, setImageUpdate] = useState<string | null>(null);
-  const [img, setImg] = useState<string | null>();
 
   useEffect(() => {
     const fetchImg = async () => {
@@ -34,13 +32,12 @@ const Avatar = ({
             ""
           )
         );
-        setImg(base64Image);
         setImageUpdate(`data:image/jpeg;base64,${base64Image}`);
         setImage(true);
       } catch {}
     };
     fetchImg();
-  }, [user]);
+  }, [user, index]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];

@@ -106,14 +106,19 @@ const NavBar: React.FC = () => {
       setNotifications((prev) => [notif, ...prev]);
       setUnreadNotifications((prev) => prev + 1);
     };
+    const handleLogoutOtherTabs = () => {
+      window.location.reload();
+    };
     socket?.on("receive-message", handleMessageNotification);
     socket?.on("notify-read", handleReadMessages);
     socket?.on("notification", handleNotification);
+    socket?.on("logoutTab", handleLogoutOtherTabs);
 
     return () => {
       socket?.off("receive-message", handleMessageNotification);
       socket?.off("notify-read", handleReadMessages);
       socket?.off("notification", handleNotification);
+      socket?.off("logoutTab", handleLogoutOtherTabs);
     };
   }, [socket]);
 

@@ -57,10 +57,10 @@ export class actionServices {
       type === "unlike"
         ? "viewed"
         : type === "like"
-          ? "liked"
-          : type === "block"
-            ? "blocked"
-            : "viewed";
+        ? "liked"
+        : type === "block"
+        ? "blocked"
+        : "viewed";
     await prismaFromWishInstance.update(
       "status",
       ["last_update", "status"],
@@ -132,6 +132,30 @@ export class actionServices {
       } else {
         return false;
       }
+    }
+  }
+
+  static async updateRating(
+    destinationId: number,
+    ratingEvolution: number
+  ): Promise<void> {
+    const user = await prismaFromWishInstance.selectAll(
+      "users",
+      ["id"],
+      [destinationId]
+    );
+    if (user.data?.rows.length === 0) {
+      return;
+    } else {
+      const fame = user.data!.rows[0].fame_rating;
+      const new_fame = Math.max(0, fame + ratingEvolution);
+      await prismaFromWishInstance.update(
+        "users",
+        ["fame_rating"],
+        [new_fame],
+        ["id"],
+        [destinationId]
+      );
     }
   }
 }

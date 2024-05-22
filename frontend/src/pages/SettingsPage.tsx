@@ -24,7 +24,6 @@ interface ModalInputs {
 const SettingsPage: React.FC = () => {
   const [error, setError] = useState<string>();
   const { user, updateUser } = useUserContext();
-  const [imageUpload, setImageUpload] = useState<boolean>(false);
   const [passwordModal, setPasswordModal] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
@@ -32,10 +31,7 @@ const SettingsPage: React.FC = () => {
     handleSubmit,
     control,
     formState: { errors },
-    //watch,
   } = useForm<ModalInputs>({ mode: "onTouched", criteriaMode: "all" });
-
-  //const passwordInput = watch("password");
 
   const onSubmit = async (data: ModalInputs) => {
     if (
