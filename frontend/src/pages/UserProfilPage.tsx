@@ -100,7 +100,8 @@ const UserProfile: React.FC = () => {
       }
     };
     getLocation();
-  }, [user, location, updateUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, updateUser]);
 
   /////// User data //////
 

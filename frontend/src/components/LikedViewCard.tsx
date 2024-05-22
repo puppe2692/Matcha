@@ -152,6 +152,7 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
   useEffect(() => {
     if (!user) return;
     getLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (

@@ -217,16 +217,19 @@ const LikePage: React.FC = () => {
       }
     };
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUsers, user?.latitude, user?.longitude, user?.hashtags]);
 
   useEffect(() => {
     if (!user) return;
     getLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
     if (!user || !users) return;
     sortUsers(sortType, ascending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortType, ascending, user]);
 
   return (

@@ -1,5 +1,4 @@
 import * as React from "react";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -69,6 +68,7 @@ const MultipleSelectCheckmarks: React.FC<Props> = React.forwardRef<
             .map((option) => option.value)
         );
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleChange = (event: SelectChangeEvent<typeof personName>) => {

@@ -54,7 +54,7 @@ const MyPage: React.FC = () => {
     if (user) {
       fetchImg(); // Fetch images only if user data is available
     }
-  }, []); // Run this effect whenever user data changes
+  }, [user]); // Run this effect whenever user data changes
 
   return (
     <div>

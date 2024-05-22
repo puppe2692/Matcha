@@ -1,4 +1,4 @@
-import { Paper, Avatar, Typography, Divider, Grid } from "@mui/material";
+import { Paper, Typography, Divider, Grid } from "@mui/material";
 import React from "react";
 import { User } from "../types";
 import { Link } from "react-router-dom";
