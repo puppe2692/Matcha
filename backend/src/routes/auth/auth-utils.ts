@@ -117,7 +117,7 @@ export async function generatePasswordToken(user: PrismaReturn, email: string) {
     token.data.rows.length != 0 &&
     token.data.rows[0].expires_at.getTime() > currentTimestamp
   )
-    await deleteToken(user.data!.rows[0].id, token.data.rows[0].token);
+    await deleteToken(token.data.rows[0].token, user.data!.rows[0].id);
   const passToken = crypto.randomBytes(32).toString("hex");
   const userToken = await prismaFromWishInstance.create(
     "tokens",
@@ -127,9 +127,10 @@ export async function generatePasswordToken(user: PrismaReturn, email: string) {
   if (!userToken.data) {
     return { error: userToken.errorMessage };
   } else {
-    const url = `${process.env.BASE_URL}/auth/resetpassword/${
-      user.data!.rows[0].id
-    }/${passToken}`;
+    // const url = `${process.env.BASE_URL}/auth/resetpassword/${
+    //   user.data!.rows[0].id
+    // }/${passToken}`;
+    const url = ` http://localhost:3000/resetpassword?id=${user.data!.rows[0].id}&token=${passToken}`;
     await sendVerificationMail(
       email,
       "MATCHA: Reset your password",
