@@ -6,7 +6,18 @@ import json
 
 fake = Faker()
 
-hashtags = ["#hiking", "#cooking", "#movies", "#nature", "#sport", "#foodie", "#well-being", "#cat", "#dog", "#livelaughlove", "#gaming", "#kids"]
+hashtags = [
+  "#art",
+  "#cinema",
+  "#gaming",
+  "#livelaughlove",
+  "#money",
+  "#music",
+  "#pokedle",
+  "#sex",
+  "#sport",
+  "#travel",
+]
 
 def fetch_random_user():
 	try:
@@ -40,7 +51,7 @@ def convert_data(data):
 
 profiles = []
 
-nb = 50
+nb = 500
 for _ in range(nb):
 	print(f"{_ + 1}/{nb}")
 	user_data = fetch_random_user()
