@@ -188,7 +188,6 @@ router.post(
     try {
       const user = request.user as CustomUser;
       const file = request.file as Express.Multer.File;
-      const url = request.body.url;
       const index = request.body.index;
       await prismaFromWishInstance.update(
         "users",
@@ -206,7 +205,7 @@ router.post(
         .status(200)
         .json({ message: "Images uploaded", user: updatedUser.data?.rows[0] });
     } catch (error) {
-      response.status(500).json({ error: "IMAGE server error" });
+      response.status(401).json({ error: "Failed to upload image" });
     }
   }
 );
@@ -255,8 +254,8 @@ router.post(
         .json({ message: "Image clear", user: updatedUser.data?.rows[0] });
     } catch (error) {
       response
-        .status(500)
-        .json({ error: "IMAGE server error: enable to delete" });
+        .status(401)
+        .json({ error: "IMAGE server error: failed to delete image" });
     }
   }
 );
@@ -304,7 +303,7 @@ router.post(
       });
     } catch (error) {
       console.error("Error updating user profile:", error);
-      response.status(500).json({ error: "Internal server error" });
+      response.status(401).json({ error: "Failed to update user" });
     }
   }
 );

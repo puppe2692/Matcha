@@ -157,7 +157,7 @@ router.get(
       });
       response.status(200).json({ message: "User succesfully signed out" });
     } catch (error) {
-      response.status(500).json({ error: "Logout: Internal Server Error" });
+      response.status(401).json({ error: "Logout: failed" });
     }
   }
 );
@@ -199,7 +199,7 @@ router.get(
       );
       response.json({ message: "User succesfully verified" });
     } catch (error) {
-      response.status(500).json({ error: "Internal Server Error 1" });
+      response.status(401).json({ error: "Failed verifying the user" });
     }
   }
 );
@@ -255,7 +255,7 @@ router.get(
       }
       response.status(200).json({ message: "Valid Url" });
     } catch (error) {
-      response.status(500).json({ error: "Internal Server Error" });
+      response.status(401).json({ error: "Failed to reset password" });
     }
   }
 );
@@ -302,7 +302,7 @@ router.post(
       await deleteToken(request.params.token, user.data.rows[0].id);
       response.status(200).json({ message: "Password succesfully reset" });
     } catch (error) {
-      response.status(500).json({ error: "Internal Server Error" });
+      response.status(401).json({ error: "Failed to reset password" });
     }
   }
 );
@@ -330,7 +330,7 @@ router.post(
       );
       response.status(200).json({ message: "Password succesfully updated" });
     } catch (error) {
-      response.status(500).json({ error: "Internal Server Error" });
+      response.status(401).json({ error: "Failed to update password" });
     }
   }
 );
