@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import LoginForm from "../components/auth/LoginForm";
-import TristanSection from "../components/TristanSection";
 import AlreadyConnected from "../components/AlreadyConnected";
 import { useUserContext } from "../context/UserContext";
+import TristanSectionNoNavBar from "../components/TristanSectionNoNavBar";
 
 const SignInPage: React.FC = () => {
   // eslint-disable-next-line
@@ -11,9 +11,9 @@ const SignInPage: React.FC = () => {
   return user ? (
     <AlreadyConnected />
   ) : (
-    <TristanSection>
+    <TristanSectionNoNavBar>
       <LoginForm setUsername={setUsername} />
-    </TristanSection>
+    </TristanSectionNoNavBar>
   );
 };
 

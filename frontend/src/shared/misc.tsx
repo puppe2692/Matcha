@@ -12,16 +12,14 @@ export const NEARLY_BLACK = "#0f0f0f";
 export const BIO_MIN_LENGTH = 30;
 export const BIO_MAX_LENGTH = 500;
 export const HASHTAGS = [
-  "#hiking",
-  "#cooking",
-  "#movies",
-  "#nature",
-  "#sport",
-  "#foodie",
-  "#well-being",
-  "#cat",
-  "#dog",
-  "#livelaughlove",
+  "#art",
+  "#cinema",
   "#gaming",
-  "#kids",
+  "#livelaughlove",
+  "#money",
+  "#music",
+  "#pokedle",
+  "#sex",
+  "#sport",
+  "#travel",
 ];

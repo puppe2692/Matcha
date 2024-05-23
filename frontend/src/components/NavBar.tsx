@@ -32,14 +32,14 @@ const NavLinks: React.FC<{ current: string; wideView: boolean }> = ({
           wideView={wideView}
           title="My Profile"
           link="/"
-          icon="/favicon.ico"
+          icon="/cupidon_profil.png"
         />
         <NavLink
           current={current}
           wideView={wideView}
           title="Find your match"
           link="/research"
-          icon="/favicon.ico"
+          icon="/cupidon_findyourmatch.png"
         />
       </ul>
     </div>
@@ -124,38 +124,41 @@ const NavBar: React.FC = () => {
 
   const isSignIn = location.pathname === "/signin";
   const isSignUp = location.pathname === "/signup";
+  const isWelcome = location.pathname === "/welcome";
 
   return (
-    <nav
-      className="sticky top-0 border-gray-200 bg-gray-900 z-50"
-      style={{ height: NAVBAR_HEIGHT }}
-    >
-      <div
-        className={`max-w-full flex flex-wrap items-center justify-between mx-auto ${
-          width >= NAVBAR_BREAKPOINT ? "p-2" : "p-4"
-        }`}
-      >
-        <Link
-          to="/"
-          className="items-center"
-          style={
-            wideView
-              ? { display: "flex", width: CORNERS_WIDTH }
-              : { display: "none" }
-          }
+    <>
+      {!isSignIn && !isSignUp && !isWelcome && (
+        <nav
+          className="sticky top-0 border-gray-200 bg-gray-900 z-50"
+          style={{ height: NAVBAR_HEIGHT }}
         >
-          <img
-            src="/logo192.png"
-            className="w-8 h-8 mr-3"
-            alt="ft_tinder logo"
-          />
-          <div className="flex flex-col whitespace-nowrap text-white">
-            <span className="text-2xl font-semibold">ft_tinder.com</span>
-            <span className="text-m italic">Plus tu paies, plus t'es beau</span>
-          </div>
-        </Link>
-        {!isSignIn && !isSignUp && (
-          <>
+          <div
+            className={`max-w-full flex flex-wrap items-center justify-between mx-auto ${
+              width >= NAVBAR_BREAKPOINT ? "p-2" : "p-4"
+            }`}
+          >
+            <Link
+              to="/"
+              className="items-center"
+              style={
+                wideView
+                  ? { display: "flex", width: CORNERS_WIDTH }
+                  : { display: "none" }
+              }
+            >
+              <img
+                src="/cupidon_logo_app.png"
+                className="w-8 h-8 mr-3"
+                alt="cupide-on logo"
+              />
+              <div className="flex flex-col whitespace-nowrap text-white">
+                <span className="text-2xl font-semibold">Cupide ON</span>
+                <span className="text-m italic">
+                  Plus tu paies, plus t'es beau
+                </span>
+              </div>
+            </Link>
             <NavLinks current={location.pathname} wideView={wideView} />
             <div
               className="flex items-center justify-end space-x-4"
@@ -182,10 +185,10 @@ const NavBar: React.FC = () => {
                 />
               )}
             </div>
-          </>
-        )}
-      </div>
-    </nav>
+          </div>
+        </nav>
+      )}
+    </>
   );
 };
 

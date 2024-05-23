@@ -13,8 +13,8 @@ import {
   LASTNAME_MIN_LENGTH,
   LASTNAME_MAX_LENGTH,
 } from "../shared/misc";
-import TristanSection from "../components/TristanSection";
 import AlreadyConnected from "../components/AlreadyConnected";
+import TristanSectionNoNavBar from "../components/TristanSectionNoNavBar";
 
 interface Inputs {
   username: string;
@@ -53,7 +53,7 @@ const SignUpPage: React.FC = () => {
         { withCredentials: true }
       );
       loginUser(response.data.user);
-      navigate("/firstco");
+      navigate("/welcome");
     } catch (error: any) {
       setError(error.response.data.error);
     }
@@ -62,7 +62,7 @@ const SignUpPage: React.FC = () => {
   return user ? (
     <AlreadyConnected />
   ) : (
-    <TristanSection>
+    <TristanSectionNoNavBar>
       <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
         Create your account
       </h1>
@@ -217,7 +217,7 @@ const SignUpPage: React.FC = () => {
           Sign in here
         </a>
       </p>
-    </TristanSection>
+    </TristanSectionNoNavBar>
   );
 };
 

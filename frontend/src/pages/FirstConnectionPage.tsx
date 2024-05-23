@@ -7,7 +7,7 @@ import ErrorsFormField from "../components/auth/ErrorsFormField";
 import UserImage from "../components/users/UserImages";
 import TristanSection from "../components/TristanSection";
 import { NavBarButton } from "../components/Buttons";
-import { BIO_MAX_LENGTH, BIO_MIN_LENGTH } from "../shared/misc";
+import { BIO_MAX_LENGTH, BIO_MIN_LENGTH, HASHTAGS } from "../shared/misc";
 
 interface ModalInputs {
   gender: string;
@@ -148,12 +148,10 @@ const FirstConnectionPage: React.FC = () => {
             label="Hashtags"
             placeholder="Hashtags"
             type="hashtags"
-            options={["#music", "#cinema", "#voyage", "#art", "#sex"].map(
-              (value) => ({
-                value,
-                label: value,
-              })
-            )}
+            options={HASHTAGS.map((value) => ({
+              value,
+              label: value,
+            }))}
             rules={{
               required: "Hashtags are required",
             }}

@@ -32,7 +32,11 @@ const ImgNavLink: React.FC<{
         isActive ? "inset shadow-inner bg-indigo-700" : ""
       }`}
     >
-      <img src={icon} className="w-6 h-6 mx-1" alt={`${title} icon`} />
+      <img
+        src={icon}
+        className="w-6 h-6 mx-1 rounded-full"
+        alt={`${title} icon`}
+      />
     </div>
   );
 };

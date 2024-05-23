@@ -8,7 +8,7 @@ import TristanSection from "../components/TristanSection";
 import PasswordMod from "../components/auth/PasswordModal";
 import { NavBarButton } from "../components/Buttons";
 import ReportedModal from "../components/ReportedModal";
-import { BIO_MAX_LENGTH, BIO_MIN_LENGTH } from "../shared/misc";
+import { BIO_MAX_LENGTH, BIO_MIN_LENGTH, HASHTAGS } from "../shared/misc";
 
 interface ModalInputs {
   gender: string;
@@ -171,12 +171,10 @@ const SettingsPage: React.FC = () => {
                 label="Hashtags"
                 placeholder={user?.hashtags.join(",") || ""}
                 type="hashtags"
-                options={["#music", "#cinema", "#voyage", "#art", "#sex"].map(
-                  (value) => ({
-                    value,
-                    label: value,
-                  })
-                )}
+                options={HASHTAGS.map((value) => ({
+                  value,
+                  label: value,
+                }))}
               />
               <NavBarButton
                 onClick={() => setPasswordModal(true)}

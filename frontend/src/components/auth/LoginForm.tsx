@@ -41,7 +41,7 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
       );
       loginUser(response.data.user);
       socket?.emit("login", response.data.user.id);
-      navigate("/");
+      navigate("/welcome");
     } catch (error: any) {
       console.error("ERROR", error.response);
       setError(error.response.data.error);
