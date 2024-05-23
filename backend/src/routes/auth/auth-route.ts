@@ -78,8 +78,8 @@ router.post(
 router.post(
   "/auth/signin",
   [
-    body("username").isLength({ min: 3, max: 16 }),
-    body("password").isLength({ min: 8, max: 32 }),
+    body("username").isLength({ min: 1 }),
+    body("password").isLength({ min: 1 }),
   ],
   async (request: Request, response: Response) => {
     const errors = validationResult(request); // Check for validation errors
@@ -255,7 +255,7 @@ router.get(
       }
       response.status(200).json({ message: "Valid Url" });
     } catch (error) {
-      response.status(500).json({ error: "Internal Server Error" });
+      response.status(400).json({ error: "Internal Server Error" });
     }
   }
 );
@@ -302,7 +302,7 @@ router.post(
       await deleteToken(request.params.token, user.data.rows[0].id);
       response.status(200).json({ message: "Password succesfully reset" });
     } catch (error) {
-      response.status(500).json({ error: "Internal Server Error" });
+      response.status(400).json({ error: "Internal Server Error" });
     }
   }
 );
