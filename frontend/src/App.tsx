@@ -17,8 +17,7 @@ import FirstConnectionPage from "./pages/FirstConnectionPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
 import MyPage from "./pages/MyPage";
-
-// pas bien compris la diff element vs compenent, tu peux m'expliquer?
+import WelcomePage from "./pages/WelcomePage";
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -42,6 +41,7 @@ function App(): JSX.Element {
               <Route path="/profile/me" element={<MyPage />} />
               <Route path="/view" element={<ViewPage />} />
               <Route path="/like" element={<LikePage />} />
+              <Route path="/welcome" element={<WelcomePage />} />
               <Route path="*" element={<Page404 />} />
             </Route>
           </Routes>

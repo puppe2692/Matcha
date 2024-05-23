@@ -4,7 +4,15 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {keyframes: {
+      fadeOut: {
+        '0%': { opacity: 1 },
+        '100%': { opacity: 0 },
+      },
+    },
+    animation: {
+      fadeOut: 'fadeOut 2s forwards',
+    },},
   },
   plugins: [],
 }
