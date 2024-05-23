@@ -78,8 +78,8 @@ router.post(
 router.post(
   "/auth/signin",
   [
-    body("username").isLength({ min: 3, max: 16 }),
-    body("password").isLength({ min: 8, max: 32 }),
+    body("username").isLength({ min: 1 }),
+    body("password").isLength({ min: 1 }),
   ],
   async (request: Request, response: Response) => {
     const errors = validationResult(request); // Check for validation errors

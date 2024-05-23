@@ -43,6 +43,7 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
       socket?.emit("login", response.data.user.id);
       navigate("/welcome");
     } catch (error: any) {
+      console.error("ERROR", error.response);
       setError(error.response.data.error);
     }
   };
@@ -106,6 +107,15 @@ const LoginForm: React.FC<Props> = ({ setUsername }) => {
           className="font-medium text-blue-500 hover:underline dark:text-primary-500"
         >
           Sign up
+        </a>
+      </p>
+      <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+        You forgot your password?{" "}
+        <a
+          href="/forgotpassword"
+          className="font-medium text-blue-500 hover:underline dark:text-primary-500"
+        >
+          Reset your password
         </a>
       </p>
     </div>

@@ -13,6 +13,9 @@ import SettingsPage from "./pages/SettingsPage";
 import UserProfile from "./pages/UserProfilPage";
 import ViewPage from "./pages/ViewPage";
 import LikePage from "./pages/LikePage";
+import EmailPasswordRecupPage from "./pages/EmailPasswordRecupPage";
+import RecupPasswordTokenVerifPage from "./pages/RecupPasswordTokenVerifPage";
+import PasswordUpdatePage from "./pages/PasswordUpdatePage";
 import FirstConnectionPage from "./pages/FirstConnectionPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
@@ -30,6 +33,15 @@ function App(): JSX.Element {
             <Route path="/signin" element={<SigninPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/firstco" element={<FirstConnectionPage />} />
+            <Route
+              path="/forgotpassword"
+              element={<EmailPasswordRecupPage />}
+            />
+            <Route
+              path="/resetpassword"
+              element={<RecupPasswordTokenVerifPage />}
+            />
+            <Route path="/updatepassword" element={<PasswordUpdatePage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<MyPage />} />
               <Route path="/loading" element={<LoadingPage />} />
