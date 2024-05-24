@@ -16,11 +16,7 @@ export type SortType =
 const LikePage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const { user, updateUser } = useUserContext();
-  const [location, setLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const { user } = useUserContext();
   const searchParams = useSearchParams({
     sortType: "",
     ascending: "true",
@@ -177,61 +173,6 @@ const LikePage: React.FC = () => {
   ]);
 
   useEffect(() => {
-    if (!user) return;
-    const updateUserLocation = async () => {
-      if (!location || !user) {
-        return;
-      }
-      try {
-        await axios.put(
-          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
-          {
-            latitude: location.latitude,
-            longitude: location.longitude,
-          },
-          { withCredentials: true }
-        );
-        updateUser({
-          ...user,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const fetchIPLocation = async () => {
-      const response = await axios.get("https://ipapi.co/json/");
-      setLocation({
-        latitude: response.data.latitude,
-        longitude: response.data.longitude,
-      });
-      updateUserLocation();
-    };
-
-    const getLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setLocation({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            });
-            updateUserLocation();
-          },
-          () => {
-            fetchIPLocation();
-          }
-        );
-      } else {
-        fetchIPLocation();
-      }
-    };
-    getLocation();
-  }, [user, location, updateUser]);
-
-  useEffect(() => {
     if (!user || !users) return;
     sortUsers(sortType, ascending);
   }, [sortType, ascending, user, users]);
@@ -239,23 +180,19 @@ const LikePage: React.FC = () => {
   return (
     <div className="max-w-screen mx-auto p-4">
       {user ? (
-        location ? (
-          users.length === 0 ? (
-            <p>You are invisible but maybe loved?</p>
-          ) : (
-            <>
-              <SearchFilterSection
-                users={users}
-                setUsers={setUsers}
-                setFilteredUsers={setFilteredUsers}
-                sortUsers={sortUsers}
-              />
-
-              <ProfileGrid users={filteredUsers} />
-            </>
-          )
+        users.length === 0 ? (
+          <p>You are invisible but maybe loved?</p>
         ) : (
-          <p>Please select geolocation option</p>
+          <>
+            <SearchFilterSection
+              users={users}
+              setUsers={setUsers}
+              setFilteredUsers={setFilteredUsers}
+              sortUsers={sortUsers}
+            />
+
+            <ProfileGrid users={filteredUsers} />
+          </>
         )
       ) : (
         <p>Please sign in</p>

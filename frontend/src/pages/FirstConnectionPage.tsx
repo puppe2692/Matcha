@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,7 @@ interface ModalInputs {
 
 const FirstConnectionPage: React.FC = () => {
   const [error, setError] = useState<string>();
-  const { updateUser } = useUserContext();
+  const { user, updateUser } = useUserContext();
   const [imageUpload, setImageUpload] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -53,6 +53,61 @@ const FirstConnectionPage: React.FC = () => {
       setError(error.response.data.error);
     }
   };
+
+  useEffect(() => {
+    const updateUserLocation = async (latitude: number, longitude: number) => {
+      try {
+        await axios.put(
+          `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
+          {
+            latitude: latitude,
+            longitude: longitude,
+          },
+          { withCredentials: true }
+        );
+        updateUser({
+          ...user,
+          latitude: latitude,
+          longitude: longitude,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchIPLocation = async () => {
+      const response = await axios.get("https://ipapi.co/json/");
+      return {
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
+      };
+    };
+
+    const getLocation = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            updateUserLocation(
+              position.coords.latitude,
+              position.coords.longitude
+            );
+          },
+          async () => {
+            const data = await fetchIPLocation();
+            await updateUserLocation(data.latitude, data.longitude);
+          }
+        );
+      } else {
+        const data = await fetchIPLocation();
+        await updateUserLocation(data.latitude, data.longitude);
+      }
+    };
+    if (!user) {
+      return;
+    }
+    getLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   return (
     <TristanSection>

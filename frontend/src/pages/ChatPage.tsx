@@ -4,6 +4,8 @@ import { NAVBAR_HEIGHT } from "../data/const";
 import ChatSidebar from "../components/ChatSidebar";
 import axios from "axios";
 import { useUserContext } from "../context/UserContext";
+import ProfileAvatarId from "../components/ProfileAvatarId";
+import ProfileAvatar from "../components/ProfileAvatar";
 
 export interface Contact {
   connectedUser: string;
@@ -238,11 +240,11 @@ const ChatPage: React.FC = () => {
                   >
                     {msg.sender_id !== user!.id && (
                       <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
-                        <img
-                          src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                          alt="User Avatar"
-                          className="w-8 h-8 rounded-full"
-                        ></img>
+                        <ProfileAvatarId
+                          profileUsername={selectedContact?.connectedUser!}
+                          width={32}
+                          height={32}
+                        />
                       </div>
                     )}
                     <div
@@ -256,11 +258,7 @@ const ChatPage: React.FC = () => {
                     </div>
                     {msg.sender_id === user!.id && (
                       <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
-                        <img
-                          src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                          alt="User Avatar"
-                          className="w-8 h-8 rounded-full"
-                        ></img>
+                        <ProfileAvatar profile={user!} width={32} height={32} />
                       </div>
                     )}
                   </div>
