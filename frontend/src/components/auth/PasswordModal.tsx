@@ -47,7 +47,7 @@ const PasswordMod: React.FC<Props> = ({ modalId, title, closeModal }) => {
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <div className="relative w-full max-w-lg max-h-full no-scrollbar">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white mb-8">
-              Update your password
+              Update your Password
             </h1>
             {error && (
               <p className="error mt-2 text-sm font-bold text-red-600 dark:text-red-500">

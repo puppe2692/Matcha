@@ -6,11 +6,21 @@ import ErrorsFormField from "../components/auth/ErrorsFormField";
 import UserImage from "../components/users/UserImages";
 import TristanSection from "../components/TristanSection";
 import PasswordMod from "../components/auth/PasswordModal";
+import PositionModal from "../components/PositionModal";
 import { NavBarButton } from "../components/Buttons";
 import ReportedModal from "../components/ReportedModal";
+import {
+  FIRSTNAME_MIN_LENGTH,
+  FIRSTNAME_MAX_LENGTH,
+  LASTNAME_MIN_LENGTH,
+  LASTNAME_MAX_LENGTH,
+} from "../shared/misc";
 import { BIO_MAX_LENGTH, BIO_MIN_LENGTH, HASHTAGS } from "../shared/misc";
 
 interface ModalInputs {
+  firstname: string;
+  lastname: string;
+  email: string;
   gender: string;
   sex_pref: string;
   bio: string;
@@ -22,9 +32,10 @@ interface ModalInputs {
 }
 
 const SettingsPage: React.FC = () => {
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string>("");
   const { user, updateUser } = useUserContext();
   const [passwordModal, setPasswordModal] = useState<boolean>(false);
+  const [positionModal, setPositionModal] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [newImage, setNewImage] = useState<boolean>(false);
 
@@ -36,6 +47,9 @@ const SettingsPage: React.FC = () => {
 
   const onSubmit = async (data: ModalInputs) => {
     if (
+      data.firstname === undefined &&
+      data.lastname === undefined &&
+      data.email === undefined &&
       data?.gender === undefined &&
       data.age === undefined &&
       data.bio === undefined &&
@@ -50,6 +64,9 @@ const SettingsPage: React.FC = () => {
       const response = await axios.post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_profile`,
         {
+          firstname: data?.firstname,
+          lastname: data?.lastname,
+          email: data?.email,
           gender: data?.gender,
           sex_pref: data?.sex_pref,
           bio: data?.bio,
@@ -98,6 +115,66 @@ const SettingsPage: React.FC = () => {
               className="space-y-4 md:space-y-6"
               onSubmit={handleSubmit(onSubmit)}
             >
+              <ErrorsFormField
+                control={control}
+                errors={errors}
+                hasError={!!errors.firstname}
+                controllerName="firstname"
+                label="Firstname"
+                placeholder={user?.firstname || ""}
+                rules={{
+                  minLength: {
+                    value: FIRSTNAME_MIN_LENGTH,
+                    message: `Firstname must be at least ${FIRSTNAME_MIN_LENGTH} characters long`,
+                  },
+                  maxLength: {
+                    value: FIRSTNAME_MAX_LENGTH,
+                    message: `Firstname must be at most ${FIRSTNAME_MAX_LENGTH} characters long`,
+                  },
+                  pattern: {
+                    value: /^[a-zA-Z0-9_]+$/,
+                    message:
+                      "Firstname can only contain letters, numbers, and underscores",
+                  },
+                }}
+              />
+              <ErrorsFormField
+                control={control}
+                errors={errors}
+                hasError={!!errors.lastname}
+                controllerName="lastname"
+                label="Lastname"
+                placeholder={user?.lastname || ""}
+                rules={{
+                  minLength: {
+                    value: LASTNAME_MIN_LENGTH,
+                    message: `Lastname must be at least ${LASTNAME_MIN_LENGTH} characters long`,
+                  },
+                  maxLength: {
+                    value: LASTNAME_MAX_LENGTH,
+                    message: `Lastname must be at most ${LASTNAME_MAX_LENGTH} characters long`,
+                  },
+                  pattern: {
+                    value: /^[a-zA-Z0-9_]+$/,
+                    message:
+                      "Lastname can only contain letters, numbers, and underscores",
+                  },
+                }}
+              />
+              <ErrorsFormField
+                control={control}
+                errors={errors}
+                hasError={!!errors.email}
+                controllerName="email"
+                label="Email"
+                placeholder={user?.email || ""}
+                rules={{
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email format",
+                  },
+                }}
+              />
               <ErrorsFormField
                 input="select"
                 control={control}
@@ -176,15 +253,23 @@ const SettingsPage: React.FC = () => {
                   label: value,
                 }))}
               />
-              <NavBarButton
-                onClick={() => setPasswordModal(true)}
-                text="Update Password"
-                type="button"
-              />
+              <div className="flex flex-col">
+                <NavBarButton
+                  onClick={() => setPasswordModal(true)}
+                  text="Update Password"
+                  type="button"
+                />
+                <NavBarButton
+                  onClick={() => setPositionModal(true)}
+                  text="Update Position"
+                  type="button"
+                />
+              </div>
               <UserImage
                 controllerName="Profil Pictures"
                 label="Profil Pictures"
                 setNewImage={setNewImage}
+                setError={setError}
               />
               <NavBarButton
                 disabled={Object.keys(errors).length > 0}
@@ -200,6 +285,21 @@ const SettingsPage: React.FC = () => {
             modalId={"Password Modal"}
             closeModal={(updated) => {
               setPasswordModal(false);
+              if (updated) {
+                setIsSubmitted(true);
+                setTimeout(() => {
+                  setIsSubmitted(false);
+                }, 3000);
+              }
+            }}
+          />
+        ) : null}
+        {positionModal ? (
+          <PositionModal
+            title="Position Modal"
+            modalId={"Position Modal"}
+            closeModal={(updated) => {
+              setPositionModal(false);
               if (updated) {
                 setIsSubmitted(true);
                 setTimeout(() => {
