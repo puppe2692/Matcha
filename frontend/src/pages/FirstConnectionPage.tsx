@@ -19,7 +19,7 @@ interface ModalInputs {
 }
 
 const FirstConnectionPage: React.FC = () => {
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string>("");
   const { updateUser } = useUserContext();
   const [imageUpload, setImageUpload] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -160,6 +160,7 @@ const FirstConnectionPage: React.FC = () => {
             controllerName="Profil Pictures"
             label="Profil Pictures"
             setImageUpload={setImageUpload}
+            setError={setError}
           />
           <NavBarButton
             disabled={Object.keys(errors).length > 0}

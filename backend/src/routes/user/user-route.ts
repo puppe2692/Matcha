@@ -125,8 +125,11 @@ router.put(
   authJwtMiddleware,
   [body("latitude").isNumeric(), body("longitude").isNumeric()],
   async (request: Request, response: Response) => {
+    console.log("Latitude: ", request.body.latitude);
+    console.log("Longitude: ", request.body.longitude);
     const errors = validationResult(request); // Check for validation errors
     if (!errors.isEmpty()) {
+      console.log(errors);
       return response.status(400).json({ errors: errors.array() });
     }
     const data = matchedData(request);

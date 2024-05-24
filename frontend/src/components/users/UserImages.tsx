@@ -6,6 +6,7 @@ interface Props {
   label: string;
   setImageUpload?: React.Dispatch<React.SetStateAction<boolean>>;
   setNewImage?: React.Dispatch<React.SetStateAction<boolean>>;
+  setError?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const UserImage: React.FC<Props> = ({
@@ -13,6 +14,7 @@ const UserImage: React.FC<Props> = ({
   label,
   setImageUpload,
   setNewImage,
+  setError,
 }) => {
   return (
     <div>
@@ -27,11 +29,12 @@ const UserImage: React.FC<Props> = ({
           index={0}
           setImageUpload={setImageUpload}
           setNewImage={setNewImage}
+          setError={setError}
         />
-        <Avatar index={1} setNewImage={setNewImage} />
-        <Avatar index={2} setNewImage={setNewImage} />
-        <Avatar index={3} setNewImage={setNewImage} />
-        <Avatar index={4} setNewImage={setNewImage} />
+        <Avatar index={1} setNewImage={setNewImage} setError={setError} />
+        <Avatar index={2} setNewImage={setNewImage} setError={setError} />
+        <Avatar index={3} setNewImage={setNewImage} setError={setError} />
+        <Avatar index={4} setNewImage={setNewImage} setError={setError} />
       </div>
     </div>
   );
