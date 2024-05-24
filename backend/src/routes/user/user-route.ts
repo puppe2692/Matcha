@@ -267,7 +267,16 @@ router.post(
   "/users/update_profile",
   authJwtMiddleware,
   async (request: Request, response: Response) => {
-    const allowedFields = ["gender", "sex_pref", "bio", "age", "hashtags"];
+    const allowedFields = [
+      "firstname",
+      "lastname",
+      "email",
+      "gender",
+      "sex_pref",
+      "bio",
+      "age",
+      "hashtags",
+    ];
     const updateFields: { [key: string]: any } = {};
 
     // Iterate through allowed fields and add them to updateFields object if present in request body
@@ -286,13 +295,18 @@ router.post(
 
     // Execute update query with the provided fields
     try {
-      await prismaFromWishInstance.update(
+      const result = await prismaFromWishInstance.update(
         "users",
         Object.keys(updateFields), // Use Object.keys to get an array of field names
         Object.values(updateFields), // Use Object.values to get an array of field values
         ["id"],
         [(request.user! as CustomUser).id]
       );
+      if (result.error) {
+        console.error("Error updating user profile:", result.errorMessage);
+        // If the result object itself contains an error flag
+        throw new Error(result.errorMessage!);
+      }
 
       const updatedUser = await prismaFromWishInstance.selectAll(
         "users",
@@ -304,9 +318,9 @@ router.post(
         message: "User profile updated",
         user: updatedUser.data?.rows[0],
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating user profile:", error);
-      response.status(401).json({ error: "Failed to update user" });
+      response.status(401).json({ error: `Failed to update user ${error}` });
     }
   }
 );
