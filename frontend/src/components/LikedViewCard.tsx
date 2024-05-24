@@ -7,13 +7,9 @@ import axios from "axios";
 import LightProfileGrid from "./LightProfileGrid";
 
 const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
-  const { user, updateUser } = useUserContext();
+  const { user } = useUserContext();
   const [likeUsers, setLikeUsers] = useState<User[]>([]);
   const [viewUsers, setViewUsers] = useState<User[]>([]);
-  const [location, setLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
 
   const findDistanceUser = (
     lat1: number,
@@ -32,57 +28,6 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
         2;
 
     return 2 * r * Math.asin(Math.sqrt(a));
-  };
-
-  const updateUserLocation = async () => {
-    if (!location || !user) {
-      return;
-    }
-    try {
-      await axios.put(
-        `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/update_location`,
-        {
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-        { withCredentials: true }
-      );
-      updateUser({
-        ...user,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchIPLocation = async () => {
-    const response = await axios.get("https://ipapi.co/json/");
-    setLocation({
-      latitude: response.data.latitude,
-      longitude: response.data.longitude,
-    });
-    updateUserLocation();
-  };
-
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          updateUserLocation();
-        },
-        () => {
-          fetchIPLocation();
-        }
-      );
-    } else {
-      fetchIPLocation();
-    }
   };
 
   useEffect(() => {
@@ -148,12 +93,6 @@ const LikedViewCard: React.FC<{ profile: User }> = ({ profile }) => {
     user?.longitude,
     user?.hashtags,
   ]);
-
-  useEffect(() => {
-    if (!user) return;
-    getLocation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   return (
     <div>
