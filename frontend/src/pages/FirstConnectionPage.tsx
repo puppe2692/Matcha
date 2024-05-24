@@ -35,6 +35,10 @@ const FirstConnectionPage: React.FC = () => {
       setError("You must upload at least one profile picture");
       return;
     }
+    if (!user?.latitude || !user?.longitude) {
+      setError("Please select a geolocation option");
+      return;
+    }
     try {
       const response = await axios.post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/users/firstco`,
