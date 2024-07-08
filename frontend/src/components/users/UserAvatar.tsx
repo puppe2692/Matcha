@@ -6,10 +6,12 @@ const Avatar = ({
   index,
   setImageUpload,
   setNewImage,
+  setError,
 }: {
   index: number;
   setImageUpload?: React.Dispatch<React.SetStateAction<boolean>>;
   setNewImage?: React.Dispatch<React.SetStateAction<boolean>>;
+  setError?: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, updateUser } = useUserContext();
@@ -76,6 +78,7 @@ const Avatar = ({
             profile_picture: response.data.user.profile_picture,
           });
           setImage(true);
+          if (setError) setError("");
           if (setImageUpload) setImageUpload(true);
           if (setNewImage) setNewImage(true);
         })
@@ -83,6 +86,8 @@ const Avatar = ({
           console.error(error);
         });
     } else {
+      if (setError)
+        setError("Invalid file type, you must upload a jpeg, jpg or png file");
       console.error("No file selected");
     }
   };
