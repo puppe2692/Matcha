@@ -45,7 +45,7 @@ def convert_data(data):
 	res["profile_picture"] = [data["picture"]["large"]]
 	res["latitude"] = random.uniform(44.0, 50.0)
 	res["longitude"] = random.uniform(0.0, 5.0)
-	res["fame_rating"] = random.randint(0, 20)
+	res["fame_rating"] = random.randint(0, 100)
 	return res
 
 

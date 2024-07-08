@@ -148,7 +148,10 @@ export class actionServices {
       return;
     } else {
       const fame = user.data!.rows[0].fame_rating;
-      const new_fame = Math.max(0, fame + ratingEvolution);
+      let new_fame = Math.max(0, fame + ratingEvolution);
+      if (new_fame > 100) {
+        new_fame = 100;
+      }
       await prismaFromWishInstance.update(
         "users",
         ["fame_rating"],
