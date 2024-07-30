@@ -21,6 +21,7 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 import ResearchPage from "./pages/ResearchPage";
 import MyPage from "./pages/MyPage";
 import WelcomePage from "./pages/WelcomePage";
+import WelcomeVerifiedPage from "./pages/WelcomeVerifiedPage";
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -37,6 +38,7 @@ function App(): JSX.Element {
               path="/forgotpassword"
               element={<EmailPasswordRecupPage />}
             />
+            <Route path="/welcomeVerified" element={<WelcomeVerifiedPage />} />
             <Route
               path="/resetpassword"
               element={<RecupPasswordTokenVerifPage />}

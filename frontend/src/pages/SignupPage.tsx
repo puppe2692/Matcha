@@ -28,7 +28,7 @@ interface Inputs {
 const SignUpPage: React.FC = () => {
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
-  const { user, loginUser } = useUserContext();
+  const { user } = useUserContext();
 
   const {
     handleSubmit,
@@ -41,7 +41,7 @@ const SignUpPage: React.FC = () => {
 
   const onSubmit = async (data: Inputs) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `http://${process.env.REACT_APP_SERVER_ADDRESS}:5000/auth/signup`,
         {
           username: data.username,
@@ -52,8 +52,8 @@ const SignUpPage: React.FC = () => {
         },
         { withCredentials: true }
       );
-      loginUser(response.data.user);
-      navigate("/welcome");
+      // loginUser(response.data.user);
+      navigate("/welcomeVerified");
     } catch (error: any) {
       setError(error.response.data.error);
     }

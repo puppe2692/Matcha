@@ -50,12 +50,12 @@ router.post(
         ["id"],
         [user.data.rows[0].id]
       );
-      await generateToken(
-        user.data.rows[0].id,
-        data.email,
-        data.username,
-        response
-      );
+      // await generateToken(
+      //   user.data.rows[0].id,
+      //   data.email,
+      //   data.username,
+      //   response
+      // );
       const updatedUser = await prismaFromWishInstance.selectAll(
         "users",
         ["id"],
@@ -101,20 +101,30 @@ router.post(
     ) {
       return response.status(400).json({ error: "Invalid credentials" });
     } else {
-      // if (!user.data.rows[0].verified) {
-      // 	const token = await prismaFromWishInstance.selectAll(
-      // 		"tokens",
-      // 		["user_id"],
-      // 		[user.data.rows[0].id]
-      // 	);
-      // 	const currentTimestamp = new Date().getTime();	// Get the current timestamp
-      // 	if (!token.data || token.data.rows[0].expires_at.getTime() > currentTimestamp) {
-      // 		if (token.data && token.data.rows[0].expires_at.getTime() > currentTimestamp)
-      // 			await deleteToken(user.data.rows[0].id, token.data.rows[0].token);
-      // 		await generateMailToken(user.data.rows[0].id, user.data.rows[0].email);
-      // 	}
-      // 	return response.status(400).json({ error: "User not verified" });
-      // }
+      //ici
+      if (!user.data.rows[0].verified) {
+        const token = await prismaFromWishInstance.selectAll(
+          "tokens",
+          ["user_id"],
+          [user.data.rows[0].id]
+        );
+        const currentTimestamp = new Date().getTime(); // Get the current timestamp
+        if (
+          !token.data ||
+          token.data.rows[0].expires_at.getTime() > currentTimestamp
+        ) {
+          if (
+            token.data &&
+            token.data.rows[0].expires_at.getTime() > currentTimestamp
+          )
+            await deleteToken(user.data.rows[0].id, token.data.rows[0].token);
+          await generateMailToken(
+            user.data.rows[0].id,
+            user.data.rows[0].email
+          );
+        }
+        return response.status(400).json({ error: "User not verified" });
+      }
 
       await generateToken(
         user.data.rows[0].id,

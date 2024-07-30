@@ -130,7 +130,9 @@ export async function generatePasswordToken(user: PrismaReturn, email: string) {
     // const url = `${process.env.BASE_URL}/auth/resetpassword/${
     //   user.data!.rows[0].id
     // }/${passToken}`;
-    const url = ` http://localhost:3000/resetpassword?id=${user.data!.rows[0].id}&token=${passToken}`;
+    const url = ` http://localhost:3000/resetpassword?id=${
+      user.data!.rows[0].id
+    }&token=${passToken}`;
     await sendVerificationMail(
       email,
       "MATCHA: Reset your password",
