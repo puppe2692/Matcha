@@ -53,6 +53,29 @@ export const ChatButton: React.FC<{
   );
 };
 
+export const LogoutButton: React.FC<{
+  onClick: (event: React.FormEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative flex items-center text-sm font-medium text-center text-white rounded-lg hover:text-gray-300 hover:scale-110 mx-auto"
+    >
+      <svg
+        className="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="white"
+        viewBox="0 0 512 512"
+      >
+        <path d="M497 273l-80-80c-9-9-25-9-34 0-9 9-9 25 0 34l39 39H192v48h230l-39 39c-9 9-9 25 0 34s25 9 34 0l80-80c9-9 9-25 0-34zM432 32H80C35.8 32 0 67.8 0 112v288c0 44.2 35.8 80 80 80h352c44.2 0 80-35.8 80-80V112c0-44.2-35.8-80-80-80zM432 400c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h304c26.5 0 48 21.5 48 48v288z" />
+      </svg>
+      <span className="sr-only">Logout</span>
+    </button>
+  );
+};
+
 export const BasicButton: React.FC<{
   disabled?: boolean;
   text: string;

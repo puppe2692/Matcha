@@ -34,7 +34,7 @@ const WelcomeVerifiedPage: React.FC = () => {
           Welcome to Cupide ON,
         </p>
         <p className="text-white text-6xl font-cursive">
-          Please verified your email, you will be redirected to signin page
+          Please verify your email, you will be redirected to the signin page
           shortly
         </p>
       </div>

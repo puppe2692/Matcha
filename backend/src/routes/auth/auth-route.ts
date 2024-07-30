@@ -117,7 +117,7 @@ router.post(
             token.data &&
             token.data.rows[0].expires_at.getTime() > currentTimestamp
           )
-            await deleteToken(user.data.rows[0].id, token.data.rows[0].token);
+            await deleteToken(token.data.rows[0].token, user.data.rows[0].id);
           await generateMailToken(
             user.data.rows[0].id,
             user.data.rows[0].email

@@ -3,7 +3,7 @@ import { NAVBAR_HEIGHT, NAVBAR_BREAKPOINT, CORNERS_WIDTH } from "../data/const";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useWindowSize } from "usehooks-ts";
 import NavLink from "./NavLink";
-import { NavBarButton, ChatButton } from "./Buttons";
+import { NavBarButton, ChatButton, LogoutButton } from "./Buttons";
 import { useUserContext } from "../context/UserContext";
 import UserMenu from "./UserMenu";
 import axios from "axios";
@@ -174,6 +174,7 @@ const NavBar: React.FC = () => {
                 onClick={() => navigate("/chat")}
                 unread={unreadCount}
               />
+              <LogoutButton onClick={() => navigate("/signout")} />
               {user ? (
                 <UserMenu />
               ) : (
