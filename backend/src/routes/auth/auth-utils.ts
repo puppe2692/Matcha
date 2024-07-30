@@ -56,7 +56,7 @@ export async function generateMailToken(userId: Number, email: string) {
   if (!userToken.data) {
     return { error: userToken.errorMessage };
   } else {
-    const url = `${process.env.BASE_URL}/auth/${userId}/verify/${token}`;
+    const url = `http://localhost:3000/verifyConnection?id=${userId}&token=${token}`; //la
     await sendVerificationMail(
       email,
       "MATCHA: Verify your email",

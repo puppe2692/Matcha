@@ -22,6 +22,7 @@ import ResearchPage from "./pages/ResearchPage";
 import MyPage from "./pages/MyPage";
 import WelcomePage from "./pages/WelcomePage";
 import WelcomeVerifiedPage from "./pages/WelcomeVerifiedPage";
+import VerifyConnectionToken from "./pages/verifyConnectionToken";
 
 function App(): JSX.Element {
   // boilerplate for a route
@@ -42,6 +43,10 @@ function App(): JSX.Element {
             <Route
               path="/resetpassword"
               element={<RecupPasswordTokenVerifPage />}
+            />
+            <Route
+              path="/verifyConnection"
+              element={<VerifyConnectionToken />}
             />
             <Route path="/updatepassword" element={<PasswordUpdatePage />} />
             <Route element={<ProtectedRoute />}>
